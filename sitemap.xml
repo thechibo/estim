@@ -10,6 +10,12 @@
     <loc>/index.html</loc>
   </url>
   <url>
+    <loc>/reference/Dirichlet-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/MGamma-class.html</loc>
+  </url>
+  <url>
     <loc>/reference/acov_me.html</loc>
   </url>
   <url>
@@ -17,6 +23,12 @@
   </url>
   <url>
     <loc>/reference/acov_same.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dDirichlet.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dMGamma.html</loc>
   </url>
   <url>
     <loc>/reference/estimators-package.html</loc>
