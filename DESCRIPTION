@@ -1,0 +1,28 @@
+Package: estimators
+Title: Distribution Parameter Estimation Methods
+Version: 0.1.0
+Authors@R: c(
+    person(given = "Ioannis", family = "Oikonomidis",
+           email = "goikon@math.uoa.gr", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-8130-2104")),
+    person(given = "Samis", family = "Trevezas",
+           email = "strevezas@math.uoa.gr", role = c("aut", "ths")))
+Description: This package provides and compares estimators for parameters of
+             common distribution families.
+Language: en-US
+License: GPL (>= 3)
+Depends: 
+    R (>= 4.0.0),
+    distr
+Imports:
+    stats
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Suggests:
+    covr,
+    knitr,
+    methods,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
