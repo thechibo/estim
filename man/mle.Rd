@@ -65,15 +65,43 @@ mle(x, distr, ...)
 \arguments{
 \item{x}{numeric. A sample under estimation.}
 
-\item{distr}{A subclass of \code{Distribution}. The distribution of interest.}
+\item{distr}{A subclass of \code{Distribution}. The distribution family assumed.}
 
 \item{...}{extra arguments.}
 
-\item{margin}{numeric. Used if \code{x} is a matrix. Passed to \code{apply}.}
+\item{par0}{function. The estimator to use for initialization of the
+likelihood maximization algorithm.}
+
+\item{method, lower, upper}{arguments passed to optim.}
 }
 \value{
-numeric. The estimator produced by the sample.
+numeric or list. The estimator produced by the sample. In case the
+distribution parameters hold specific structures (e.g. the Matrix Gamma
+parameters are a positive real number and a positive definite matrix), a
+list is returned instead.
 }
 \description{
-Maximum Likelihood Estimator
+Calculates the MLE of a sample under the assumption the observations are
+independent and identically distributed (iid) according to a specified
+family of distributions.
+}
+\examples{
+\dontrun{
+# Distribution
+d_beta <- Beta(shape1 = 1, shape2 = 1.5)
+
+# Simulation
+set.seed(2)
+x <- r(d_beta)(50)
+
+# Estimation
+me(x, "Beta")
+same(x, "Beta")
+mle(x, "Beta")
+
+# Asymptotic Covariance Matrix
+acov_me(d_beta)
+acov_same(d_beta)
+acov_mle(d_beta)
+}
 }

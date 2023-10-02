@@ -2,9 +2,11 @@
 # Tools
 #-------------------------------------------------------------------------------
 
+# Turn distribution name from character to an S4 class
 get_distr_class <- function(distr) {
 
-  distr <- stringr::str_to_title(distr)
+  distr <- paste(toupper(substr(distr, 1, 1)),
+                 substr(tolower(distr), 2, nchar(distr)), sep = "")
 
   if (distr == "Gamma") {
     distr <- "Gammad"
@@ -16,60 +18,78 @@ get_distr_class <- function(distr) {
 
 }
 
+# Gamma Function ----
+
+# Calculate the Trigamma Inverse function
 trigammaInverse <- function(x) {
-  if (!is.numeric(x))
-    stop("Non-numeric argument to mathematical function")
-  if (length(x) == 0)
+
+  if (!is.numeric(x)) {
+    stop("Non-numeric argument to mathematical function.")
+  }
+
+  if (length(x) == 0) {
     return(numeric(0))
+  }
+
   omit <- is.na(x)
   if (any(omit)) {
     y <- x
-    if (any(!omit))
+    if (any(!omit)) {
       y[!omit] <- Recall(x[!omit])
+    }
     return(y)
   }
+
   omit <- (x < 0)
   if (any(omit)) {
     y <- x
     y[omit] <- NaN
     warning("NaNs produced")
-    if (any(!omit))
+    if (any(!omit)) {
       y[!omit] <- Recall(x[!omit])
+    }
     return(y)
   }
+
   omit <- (x > 1e+07)
   if (any(omit)) {
     y <- x
-    y[omit] <- 1/sqrt(x[omit])
-    if (any(!omit))
+    y[omit] <- 1 / sqrt(x[omit])
+    if (any(!omit)) {
       y[!omit] <- Recall(x[!omit])
+    }
     return(y)
   }
+
   omit <- (x < 1e-06)
   if (any(omit)) {
     y <- x
-    y[omit] <- 1/x[omit]
-    if (any(!omit))
+    y[omit] <- 1 / x[omit]
+    if (any(!omit)) {
       y[!omit] <- Recall(x[!omit])
+    }
     return(y)
   }
-  y <- 0.5 + 1/x
+
+  y <- 0.5 + 1 / x
   iter <- 0
-  repeat {
+
+  while (max(- dif / y) > 1e-08) {
     iter <- iter + 1
     tri <- trigamma(y)
-    dif <- tri * (1 - tri/x)/psigamma(y, deriv = 2)
+    dif <- tri * (1 - tri / x) / psigamma(y, deriv = 2)
     y <- y + dif
-    if (max(-dif/y) < 1e-08)
-      break
     if (iter > 50) {
-      warning("Iteration limit exceeded")
+      warning("Iteration limit exceeded in Trigamma Inverse calculation.")
       break
     }
   }
+
   y
+
 }
 
+# p-variate Gamma function
 gammap <- function(x, p) {
   g <- x
   for (i in seq_along(x)) {
@@ -78,6 +98,7 @@ gammap <- function(x, p) {
   g
 }
 
+# logarithm of p-variate Gamma function
 lgammap <- function(x, p) {
   g <- x
   for (i in seq_along(x)) {
@@ -85,6 +106,8 @@ lgammap <- function(x, p) {
   }
   g
 }
+
+# Matrix Algebra ----
 
 vec_to_mat <- function(prm) {
 
@@ -94,6 +117,7 @@ vec_to_mat <- function(prm) {
   L[lower.tri(L)] <- prm[(p+1):length(prm)]
 
   L %*% diag(d) %*% t(L)
+
 }
 
 mat_to_vec <- function(Sigma) {
@@ -102,8 +126,30 @@ mat_to_vec <- function(Sigma) {
   d <- x$d
   L <- x$lower
   c(d, L[lower.tri(L)])
+
+}
+
+is_symmetric <- function(x) {
+  sum(x == t(x)) == (nrow(x)^2)
 }
 
 is_pd <- function(x) {
-  LaplacesDemon::is.positive.definite(x)
+
+  if (!is_symmetric(x)) {
+    stop("x is not a symmetric matrix.")
+  }
+
+  eigs <- eigen(x, symmetric = TRUE)$values
+  if (any(is.complex(eigs))) {
+    return(FALSE)
+  }
+
+  if (all(eigs > 0)) {
+    pd <- TRUE
+  } else {
+    pd <- FALSE
+  }
+
+  pd
+
 }

@@ -6,7 +6,7 @@
 \alias{estimators-package}
 \title{estimators: Distribution Parameter Estimation Methods}
 \description{
-This package provides and compares estimators for parameters of common distribution families.
+This package provides estimators for parameters of common distribution families.
 }
 \author{
 \strong{Maintainer}: Ioannis Oikonomidis \email{goikon@math.uoa.gr} (\href{https://orcid.org/0000-0001-8130-2104}{ORCID})

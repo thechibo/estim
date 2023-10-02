@@ -2,6 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom methods new
 #' @importFrom stats dbeta
 #' @importFrom stats dgamma
 #' @importFrom stats optim

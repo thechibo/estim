@@ -2,7 +2,7 @@
 # Log-Likelihood
 #-------------------------------------------------------------------------------
 
-#' Log-Likelihood
+#' @title Log-Likelihood
 #'
 #' @param prm numeric. A vector of the distribution parameters.
 #' @param x numeric. A sample under estimation.
@@ -54,7 +54,7 @@ setMethod("ll",
           signature  = c(prm = "numeric", x = "matrix", distr = "Dirichlet"),
           definition = function(prm, x, distr) {
 
-  sum(apply(x, MAR = 2, FUN = dDirichlet, prm = prm, log = TRUE))
+  sum(apply(x, MARGIN = 2, FUN = dDirichlet, prm = prm, log = TRUE))
 
 })
 
@@ -66,6 +66,6 @@ setMethod("ll",
           definition = function(prm, x, distr) {
 
   Sigma <- vec_to_mat(prm[2:length(prm)])
-  sum(apply(x, MAR = 3, FUN = dMGamma, shape = prm[1], Sigma = Sigma, log = TRUE))
+  sum(apply(x, MARGIN = 3, FUN = dMGamma, shape = prm[1], Sigma = Sigma, log = TRUE))
 
 })

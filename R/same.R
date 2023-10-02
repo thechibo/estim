@@ -2,14 +2,24 @@
 # Score-Adjusted Moment Estimator
 #-------------------------------------------------------------------------------
 
-#' Score-Adjusted Moment Estimator
+#' @title Score-Adjusted Moment Estimator
 #'
-#' @inherit mle params return examples
+#' @description
+#' Calculates the SAMΕ of a sample under the assumption the observations are
+#' independent and identically distributed (iid) according to a specified
+#' family of distributions.
+#'
+#' @param x numeric. A sample under estimation.
+#' @param distr A subclass of `Distribution`. The distribution family assumed.
+#' @param ... extra arguments.
+#'
+#' @inherit mle return examples
 #' @export
 setGeneric("same", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("same") })
 
-#' @inherit acov_mle title params return examples
+#' @inherit acov_mle title params return
+#' @inherit mle examples
 #' @export
 setGeneric("acov_same", signature = c("distr"),
            function(distr, ...) { standardGeneric("acov_same") })
@@ -160,15 +170,15 @@ setMethod("same",
           signature  = c(x = "array", distr = "MGamma"),
           definition = function(x, distr) {
 
-  ldx  <- apply(x, FUN = function(x) {log(det(x))}, MAR = 3)
+  ldx  <- apply(x, FUN = function(x) {log(det(x))}, MARGIN = 3)
   xldx <- x
   for (k in 1:dim(x)[3]) {
     xldx[, , k] <- x[, , k] * ldx[k]
   }
 
-  m  <- apply(x, FUN = mean, MAR = 1:2)
+  m  <- apply(x, FUN = mean, MARGIN = 1:2)
   mldx <- mean(ldx)
-  mxldx  <- apply(xldx, FUN = mean, MAR = 1:2)
+  mxldx  <- apply(xldx, FUN = mean, MARGIN = 1:2)
 
   Sigma <- mxldx - m * mldx
   shape <- mean(diag(m %*% solve(Sigma)))

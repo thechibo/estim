@@ -2,14 +2,24 @@
 # Moment Estimator
 #-------------------------------------------------------------------------------
 
-#' Moment Estimator
+#' @title Moment Estimator
 #'
-#' @inherit mle params return examples
+#' @description
+#' Calculates the MΕ of a sample under the assumption the observations are
+#' independent and identically distributed (iid) according to a specified
+#' family of distributions.
+#'
+#' @param x numeric. A sample under estimation.
+#' @param distr A subclass of `Distribution`. The distribution family assumed.
+#' @param ... extra arguments.
+#'
+#' @inherit mle return examples
 #' @export
 setGeneric("me", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("me") })
 
-#' @inherit acov_mle title params return examples
+#' @inherit acov_mle title params return
+#' @inherit mle examples
 #' @export
 setGeneric("acov_me", signature = c("distr"),
            function(distr, ...) { standardGeneric("acov_me") })
@@ -155,8 +165,8 @@ setMethod("me",
     x2[, , k] <- x2[, , k] %*% x2[, , k]
   }
 
-  m  <- apply(x, FUN = mean, MAR = 1:2)
-  m2  <- apply(x2, FUN = mean, MAR = 1:2)
+  m  <- apply(x, FUN = mean, MARGIN = 1:2)
+  m2  <- apply(x2, FUN = mean, MARGIN = 1:2)
   m2minv <- m2 %*% solve(m)
   m2minv[lower.tri(m2minv)] <- m2minv[upper.tri(m2minv)]
 

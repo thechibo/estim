@@ -4,15 +4,44 @@
 
 #' @title Maximum Likelihood Estimator
 #'
+#' @description
+#' Calculates the MLE of a sample under the assumption the observations are
+#' independent and identically distributed (iid) according to a specified
+#' family of distributions.
+#'
 #' @param x numeric. A sample under estimation.
-#' @param distr A subclass of `Distribution`. The distribution of interest.
-#' @param margin numeric. Used if `x` is a matrix. Passed to `apply`.
+#' @param distr A subclass of `Distribution`. The distribution family assumed.
+#' @param par0 function. The estimator to use for initialization of the
+#' likelihood maximization algorithm.
+#' @param method,lower,upper arguments passed to optim.
 #' @param ... extra arguments.
 #'
-#' @return numeric. The estimator produced by the sample.
+#' @return numeric or list. The estimator produced by the sample. In case the
+#' distribution parameters hold specific structures (e.g. the Matrix Gamma
+#' parameters are a positive real number and a positive definite matrix), a
+#' list is returned instead.
 #'
 #' @importClassesFrom distr Beta Gammad
 #' @export
+#'
+#' @examples \dontrun{
+#' # Distribution
+#' d_beta <- Beta(shape1 = 1, shape2 = 1.5)
+#'
+#' # Simulation
+#' set.seed(2)
+#' x <- r(d_beta)(50)
+#'
+#' # Estimation
+#' me(x, "Beta")
+#' same(x, "Beta")
+#' mle(x, "Beta")
+#'
+#' # Asymptotic Covariance Matrix
+#' acov_me(d_beta)
+#' acov_same(d_beta)
+#' acov_mle(d_beta)
+#' }
 setGeneric("mle", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("mle") })
 
@@ -24,6 +53,8 @@ setGeneric("mle", signature = c("x", "distr"),
 #' @return matrix. The asymptotic covariance matrix of the estimator.
 #'
 #' @export
+#'
+#'@inherit mle examples
 setGeneric("acov_mle", signature = c("distr"),
            function(distr, ...) { standardGeneric("acov_mle") })
 
@@ -112,7 +143,6 @@ setMethod("mle",
 
 })
 
-
 #' @rdname mle
 setMethod("mle",
           signature  = c(x = "matrix", distr = "Gammad"),
@@ -148,7 +178,7 @@ setMethod("acov_mle",
   # Ye and Chen (2017)
 
   a <- distr::shape(distr)
-  b <- param(distr)@scale
+  b <- distr::param(distr)@scale
 
   psi1a <- trigamma(a)
   d <- 1 / (a * psi1a - 1)
