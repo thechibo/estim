@@ -20,6 +20,10 @@ setGeneric("me", signature = c("x", "distr"),
 
 #' @inherit acov_mle title params return
 #' @inherit mle examples
+#'
+#' @param comp logical. Should the components A, B of the delta method be
+#' returned instead of the final variance-covariance matrix?
+#'
 #' @export
 setGeneric("acov_me", signature = c("distr"),
            function(distr, ...) { standardGeneric("acov_me") })
@@ -148,33 +152,57 @@ setMethod("me",
 #' @rdname acov_me
 setMethod("acov_me",
           signature  = c(distr = "Dirichlet"),
-          definition = function(distr) {
+          definition = function(distr, comp = FALSE) {
 
+  a <- shape(distr)
+  a0 <- sum(a)
+  b <- a0 - a
+  k <- length(a)
+
+  A1 <- diag(a0 * (2 * a0 + 1) * (a + 1) / b)
+  A2 <- diag(- a0 * (a0 + 1) ^ 2 / b)
+  A <- Matrix(rbind(A1, A2))
+
+  B11 <- - Matrix(a, k, 1) %*% Matrix(a, 1, k)
+  diag(B11) <- a * b
+  B11 <- B11 / (a0 ^ 2 * (a0 + 1))
+  B11 <- nearPD(B11)
+
+  B12 <- - Matrix(a, k, 1) %*% Matrix(a * (a + 1), 1, k)
+  diag(B12) <- a * (a + 1) * b
+  B12 <- B12 * 2 / (a0 ^ 2 * (a0 + 1) * (a0 + 2))
+
+  c22 <- - 2 * (2 * a0 + 3) / (a0 ^ 2 * (a0 + 1) ^ 2 * (a0 + 2) * (a0 + 3))
+  B22 <- c22 * Matrix(a * (a + 1), k, 1) %*% Matrix(a * (a + 1), 1, k)
+  diag(B22) <- (a * (a + 1) * (a + 2) * (a + 3)) / (a0 * (a0 + 1) * (a0 + 2) * (a0 + 3)) - (a * (a + 1) / (a0 * (a0 + 1))) ^ 2
+  B22 <- nearPD(B22)
+
+  B <- rbind(cbind(B11, B12),
+             cbind(Matrix::t(B12), B22))
+  B <- nearPD(B)
+
+  if (!comp) {
+    D <- nearPD(Matrix::t(A) %*% B %*% A)
+    return(as.matrix(D))
+  } else {
+    return(list(A = as.matrix(A), B = as.matrix(B)))
+  }
 
 })
 
-# Matrix Gamma ----
+# Multivariate Gamma ----
 
 #' @rdname me
 setMethod("me",
-          signature  = c(x = "array", distr = "MGamma"),
+          signature  = c(x = "matrix", distr = "MGamma"),
           definition = function(x, distr) {
 
-  x2 <- x
-  for (k in 1:dim(x)[3]) {
-    x2[, , k] <- x2[, , k] %*% x2[, , k]
-  }
+  w <- gendir(x)
+  shape <- me(w, Dirichlet())
+  xk <- mean(x[nrow(x), ])
+  scale <- xk / sum(shape)
 
-  m  <- apply(x, FUN = mean, MARGIN = 1:2)
-  m2  <- apply(x2, FUN = mean, MARGIN = 1:2)
-  m2minv <- m2 %*% solve(m)
-  m2minv[lower.tri(m2minv)] <- m2minv[upper.tri(m2minv)]
-
-  Sigma <- 2 * m2minv - 2 * m
-  diag(Sigma) <- diag(Sigma) - sum(diag(Sigma)) / (nrow(Sigma) + 1)
-  shape <- mean(diag(m %*% solve(Sigma)))
-
-  list(shape = shape, Sigma = Sigma)
+  c(shape, scale = scale)
 
 })
 
@@ -183,5 +211,24 @@ setMethod("acov_me",
           signature  = c(distr = "MGamma"),
           definition = function(distr) {
 
+  a <- shape(distr)
+  b <- distr::scale(distr)
+  a0 <- sum(a)
+
+  acov <- acov_me(Dirichlet(shape = a), comp = TRUE)
+  AD <- acov$A
+  BD <- acov$B
+
+  A12 <- matrix(rowSums(AD) * b / a0)
+
+  A <- rbind(cbind(AD, A12),
+             c(rep(0, ncol(AD)), 1 / a0))
+
+  B <- rbind(cbind(BD, c(rep(0, ncol(BD)))),
+             c(rep(0, nrow(BD)), a0 * b ^ 2))
+
+  D <- nearPD(Matrix::t(A) %*% B %*% A)
+
+  as.matrix(D)
 
 })

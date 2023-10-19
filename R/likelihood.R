@@ -54,18 +54,18 @@ setMethod("ll",
           signature  = c(prm = "numeric", x = "matrix", distr = "Dirichlet"),
           definition = function(prm, x, distr) {
 
-  sum(apply(x, MARGIN = 2, FUN = dDirichlet, prm = prm, log = TRUE))
+  sum(apply(x, MARGIN = 2, FUN = dDirichlet, shape = prm, log = TRUE))
 
 })
 
-# Matrix Gamma ---
+# Multivariate Gamma ---
 
 #' @rdname ll
 setMethod("ll",
-          signature  = c(prm = "numeric", x = "array", distr = "MGamma"),
+          signature  = c(prm = "numeric", x = "matrix", distr = "MGamma"),
           definition = function(prm, x, distr) {
 
-  Sigma <- vec_to_mat(prm[2:length(prm)])
-  sum(apply(x, MARGIN = 3, FUN = dMGamma, shape = prm[1], Sigma = Sigma, log = TRUE))
+  k <- length(prm)
+  sum(apply(x, MARGIN = 2, FUN = dMGamma, shape = prm[1:(k-1)], scale = prm[k], log = TRUE))
 
 })

@@ -8,7 +8,7 @@
 \alias{same,numeric,Gammad-method}
 \alias{same,matrix,Gammad-method}
 \alias{same,matrix,Dirichlet-method}
-\alias{same,array,MGamma-method}
+\alias{same,matrix,MGamma-method}
 \title{Score-Adjusted Moment Estimator}
 \usage{
 same(x, distr, ...)
@@ -25,7 +25,7 @@ same(x, distr, ...)
 
 \S4method{same}{matrix,Dirichlet}(x, distr)
 
-\S4method{same}{array,MGamma}(x, distr)
+\S4method{same}{matrix,MGamma}(x, distr)
 }
 \arguments{
 \item{x}{numeric. A sample under estimation.}

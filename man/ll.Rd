@@ -5,7 +5,7 @@
 \alias{ll,numeric,numeric,Beta-method}
 \alias{ll,numeric,numeric,Gammad-method}
 \alias{ll,numeric,matrix,Dirichlet-method}
-\alias{ll,numeric,array,MGamma-method}
+\alias{ll,numeric,matrix,MGamma-method}
 \title{Log-Likelihood}
 \usage{
 ll(prm, x, distr, ...)
@@ -16,7 +16,7 @@ ll(prm, x, distr, ...)
 
 \S4method{ll}{numeric,matrix,Dirichlet}(prm, x, distr)
 
-\S4method{ll}{numeric,array,MGamma}(prm, x, distr)
+\S4method{ll}{numeric,matrix,MGamma}(prm, x, distr)
 }
 \arguments{
 \item{prm}{numeric. A vector of the distribution parameters.}

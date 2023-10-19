@@ -22,6 +22,7 @@
 #' list is returned instead.
 #'
 #' @importClassesFrom distr Beta Gammad
+#' @importFrom Matrix Matrix nearPD
 #' @export
 #'
 #' @examples \dontrun{
@@ -221,50 +222,44 @@ setMethod("acov_mle",
           signature  = c(distr = "Dirichlet"),
           definition = function(distr) {
 
+  a <- shape(distr)
+  k <- length(a)
+
+  D <- solve(diag(trigamma(a)) - matrix(trigamma(sum(a)), k, k))
+  as.matrix(Matrix::nearPD(D)$mat)
 
 })
 
-# Matrix Gamma ----
+# Multivariate Gamma ----
 
 #' @rdname mle
 setMethod("mle",
-          signature  = c(x = "array", distr = "MGamma"),
+          signature  = c(x = "matrix", distr = "MGamma"),
           definition = function(x, distr,
                                 par0 = same,
                                 method = "L-BFGS-B",
                                 lower = NULL,
                                 upper = NULL) {
 
-  p <- dim(x)[1]
-
+  k <- nrow(x)
   if (is.null(lower)) {
-    lower <- c(0.5 * (p - 1), rep(0.01, times = p), rep(-Inf, times = 0.5 * (p ^ 2 - p)))
+    lower <- rep(1e-5, k)
   }
   if (is.null(upper)) {
-    upper <- rep(Inf, times = 0.5 * (p ^ 2 + p + 4))
+    upper <- rep(Inf, k)
   }
 
-  # Initialize
-  par0 <- do.call(par0, list(x = x, distr = distr))
+  theta <- optim(par = do.call(par0, list(x = x, distr = distr)),
+                 fn = ll,
+                 x = x,
+                 distr = distr,
+                 method = method,
+                 lower = lower,
+                 upper = upper,
+                 control = list(fnscale = -1))$par
 
-  if (!is_pd(par0$Sigma)) {
-    par0$Sigma <- matrix(0, nrow = p, ncol = p)
-    diag(par0$Sigma) <- rep(1, times = p)
-    warning("Setting Sigma to Identity matrix for initialization.")
-  }
-
-  par0 <- c(par0$shape, mat_to_vec(par0$Sigma))
-
-  prm <- optim(par = par0,
-                fn = ll,
-                x = x,
-                distr = distr,
-                method = method,
-                lower = lower,
-                upper = upper,
-                control = list(fnscale = -1))$par
-
-  list(shape = prm[1], Sigma = vec_to_mat(prm[2:length(prm)]))
+  names(theta) <- c(paste0("shape", 1:k), "scale")
+  theta
 
 })
 
@@ -273,6 +268,14 @@ setMethod("acov_mle",
           signature  = c(distr = "MGamma"),
           definition = function(distr) {
 
+  a <- shape(distr)
+  b <- distr::scale(distr)
+  k <- length(a)
+  a0 <- sum(a)
 
+  D <- solve(rbind(cbind(diag(trigamma(a)), matrix(1 / b, nrow = k, ncol = 1)),
+             c(rep(1 / b, k), a0 / b ^ 2)))
+
+  as.matrix(Matrix::nearPD(D)$mat)
 
 })

@@ -8,7 +8,7 @@
 \alias{mle,numeric,Gammad-method}
 \alias{mle,matrix,Gammad-method}
 \alias{mle,matrix,Dirichlet-method}
-\alias{mle,array,MGamma-method}
+\alias{mle,matrix,MGamma-method}
 \title{Maximum Likelihood Estimator}
 \usage{
 mle(x, distr, ...)
@@ -60,7 +60,7 @@ mle(x, distr, ...)
   upper = rep(Inf, times = nrow(x))
 )
 
-\S4method{mle}{array,MGamma}(x, distr, par0 = same, method = "L-BFGS-B", lower = NULL, upper = NULL)
+\S4method{mle}{matrix,MGamma}(x, distr, par0 = same, method = "L-BFGS-B", lower = NULL, upper = NULL)
 }
 \arguments{
 \item{x}{numeric. A sample under estimation.}

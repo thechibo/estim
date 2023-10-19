@@ -8,7 +8,7 @@
 \alias{me,numeric,Gammad-method}
 \alias{me,matrix,Gammad-method}
 \alias{me,matrix,Dirichlet-method}
-\alias{me,array,MGamma-method}
+\alias{me,matrix,MGamma-method}
 \title{Moment Estimator}
 \usage{
 me(x, distr, ...)
@@ -25,7 +25,7 @@ me(x, distr, ...)
 
 \S4method{me}{matrix,Dirichlet}(x, distr)
 
-\S4method{me}{array,MGamma}(x, distr)
+\S4method{me}{matrix,MGamma}(x, distr)
 }
 \arguments{
 \item{x}{numeric. A sample under estimation.}

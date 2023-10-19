@@ -14,7 +14,7 @@ acov_me(distr, ...)
 
 \S4method{acov_me}{Gammad}(distr)
 
-\S4method{acov_me}{Dirichlet}(distr)
+\S4method{acov_me}{Dirichlet}(distr, comp = FALSE)
 
 \S4method{acov_me}{MGamma}(distr)
 }
@@ -22,6 +22,9 @@ acov_me(distr, ...)
 \item{distr}{A subclass of \code{Distribution}. The distribution of interest.}
 
 \item{...}{extra arguments.}
+
+\item{comp}{logical. Should the components A, B of the delta method be
+returned instead of the final variance-covariance matrix?}
 }
 \value{
 matrix. The asymptotic covariance matrix of the estimator.

@@ -20,6 +20,10 @@ setGeneric("same", signature = c("x", "distr"),
 
 #' @inherit acov_mle title params return
 #' @inherit mle examples
+#'
+#' @param comp logical. Should the components A, B of the delta method be
+#' returned instead of the final variance-covariance matrix?
+#'
 #' @export
 setGeneric("acov_same", signature = c("distr"),
            function(distr, ...) { standardGeneric("acov_same") })
@@ -158,31 +162,80 @@ setMethod("same",
 #' @rdname acov_same
 setMethod("acov_same",
           signature  = c(distr = "Dirichlet"),
-          definition = function(distr) {
+          definition = function(distr, comp = FALSE) {
 
+  # Required variables
+  a <- shape(distr)
+  a0 <- sum(a)
+  b <- a0 - a
+  k <- length(a)
+
+  # Matrix A
+
+  A1 <- Matrix(Ddigamma(a, a0), k, 1) %*% Matrix(a, 1, k)
+  A2 <- Matrix(a, k, 1) %*% Matrix(a, 1, k)
+  A3 <- - Matrix(1, k, 1) %*% Matrix(a, 1, k)
+  Ik <- diag(k)
+  Ok <- 0 * Ik
+
+  A <- a0 * (rbind(A1, A2 / a0, A3) / (k - 1) + rbind(Ik, Ok, Ok))
+
+  # Matrix B
+
+  B11 <- - A2
+  diag(B11) <- a * b
+  B11 <- B11 / (a0 ^ 2 * (a0 + 1))
+  B11 <- nearPD(B11)
+
+  B22 <- trigamma(a) * Ik - Matrix(trigamma(a0), k, k)
+  B22 <- nearPD(B22)
+
+  c331 <- Ddigamma(a + 1, a0 + 2)
+  B331 <- Matrix(c331, k, 1) %*% Matrix(c331, 1, k)
+  c332 <- Ddigamma(a + 1, a0 + 1)
+  B332 <- Matrix(c332, k, 1) %*% Matrix(c332, 1, k)
+
+  B33 <- A2 * (B331 - trigamma(a0 + 2)) / (a0 * (a0 + 1)) - A2 * B332 / (a0 ^ 2)
+  diag(B33) <- (Ddigamma(a + 2, a0 + 2) ^ 2 + Dtrigamma(a + 2, a0 + 2))  * a * (a + 1) / (a0 * (a0 + 1)) - (Ddigamma(a + 1, a0 + 1) * a / a0) ^ 2
+  B33 <- nearPD(B33)
+
+  B12 <- Ik / a0 - Matrix(a, k, 1) %*% Matrix(1, 1, k) / a0 ^ 2
+
+  c13 <- a * (Ddigamma(a + 1, a0 + 2) + 1) / (a0 ^ 2 * (a0 + 1))
+  B13 <- - Matrix(a, k, 1) %*% Matrix(c13, 1, k)
+  diag(B13) <- - Matrix::diag(B13) * b / a
+
+  c231 <- (Ddigamma(a + 1, a0 + 1) + a * trigamma(a + 1)) / a0
+  c232 <- (Ddigamma(a + 1, a0 + 1) / a0 + trigamma(a0 + 1)) * a / a0
+  B23 <- c231 * Ik - Matrix(1, k, 1) %*% Matrix(c232, 1, k)
+
+  B <- rbind(cbind(B11, B12, B13),
+             cbind(Matrix::t(B12), B22, B23),
+             cbind(Matrix::t(B13), Matrix::t(B23), B33))
+  B <- nearPD(B)
+
+  if (!comp) {
+    D <- nearPD(Matrix::t(A) %*% B %*% A)
+    return(as.matrix(D))
+  } else {
+    return(list(A = as.matrix(A), B = as.matrix(B)))
+  }
 
 })
 
-# Matrix Gamma ----
+# Multivariate Gamma ----
 
 #' @rdname same
 setMethod("same",
-          signature  = c(x = "array", distr = "MGamma"),
+          signature  = c(x = "matrix", distr = "MGamma"),
           definition = function(x, distr) {
 
-  ldx  <- apply(x, FUN = function(x) {log(det(x))}, MARGIN = 3)
-  xldx <- x
-  for (k in 1:dim(x)[3]) {
-    xldx[, , k] <- x[, , k] * ldx[k]
-  }
+  w <- gendir(x)
+  shape <- same(w, Dirichlet())
+  xk <- mean(x[nrow(x), ])
+  scale <- xk / sum(shape)
 
-  m  <- apply(x, FUN = mean, MARGIN = 1:2)
-  mldx <- mean(ldx)
-  mxldx  <- apply(xldx, FUN = mean, MARGIN = 1:2)
-
-  Sigma <- mxldx - m * mldx
-  shape <- mean(diag(m %*% solve(Sigma)))
-  list(shape = shape, Sigma = Sigma)
+  c(shape, scale = scale)
 
 })
 
@@ -191,6 +244,24 @@ setMethod("acov_same",
           signature  = c(distr = "MGamma"),
           definition = function(distr) {
 
+  a <- shape(distr)
+  b <- distr::scale(distr)
+  a0 <- sum(a)
+
+  acov <- acov_same(Dirichlet(shape = a), comp = TRUE)
+  AD <- acov$A
+  BD <- acov$B
+
+  A12 <- matrix(rowSums(AD) * b / a0)
+
+  A <- rbind(cbind(AD, A12),
+             c(rep(0, ncol(AD)), 1 / a0))
+
+  B <- rbind(cbind(BD, c(rep(0, ncol(BD)))),
+             c(rep(0, nrow(BD)), a0 * b ^ 2))
+
+  D <- nearPD(Matrix::t(A) %*% B %*% A)
+
+  as.matrix(D)
 
 })
-

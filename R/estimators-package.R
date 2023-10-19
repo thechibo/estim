@@ -6,5 +6,6 @@
 #' @importFrom stats dbeta
 #' @importFrom stats dgamma
 #' @importFrom stats optim
+#' @importFrom stats var
 ## usethis namespace: end
 NULL

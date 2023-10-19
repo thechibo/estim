@@ -13,7 +13,7 @@ This package provides estimators for parameters of common distribution families.
 
 Authors:
 \itemize{
-  \item Samis Trevezas \email{strevezas@math.uoa.gr} [thesis advisor]
+  \item Samis Trevezas \email{strevezas@math.uoa.gr} (\href{https://orcid.org/0000-0003-2262-8299}{ORCID}) [thesis advisor]
 }
 
 }

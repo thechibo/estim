@@ -3,18 +3,18 @@
 \name{dMGamma}
 \alias{dMGamma}
 \alias{rMGamma}
-\title{The Dirichlet Distribution}
+\title{The Multivariate Gamma Distribution}
 \usage{
-dMGamma(X, shape = 1, Sigma = diag(2), log = FALSE)
+dMGamma(x, shape, scale, log = FALSE)
 
-rMGamma(n, shape = 1, Sigma = diag(2))
+rMGamma(n, shape, scale)
 }
 \arguments{
-\item{X}{matrix. The random matrix.}
+\item{x}{numeric. The quantile vector.}
 
-\item{shape}{numeric. The shape parameter.}
+\item{shape}{numeric. The shape parameter vector.}
 
-\item{Sigma}{matrix. The matrix parameter.}
+\item{scale}{numeric. The scale parameter vector.}
 
 \item{log}{logical. If TRUE, probabilities p are given as log(p).}
 
@@ -25,21 +25,19 @@ rMGamma(n, shape = 1, Sigma = diag(2))
 \code{rMGamma} performs Monte-Carlo simulation.
 }
 \description{
-The Dirichlet Distribution
+The Multivariate Gamma Distribution
 }
 \examples{
 \dontrun{
 # Classic R Stats Format
-X <- matrix(c(2, 1, 3, 2), 2, 2)
-dMGamma(X, shape = 3, Sigma = diag(2))
+dMGamma(c(4, 6), shape = c(2, 3), scale = 2)
 set.seed(1)
-rMGamma(1, shape = 3, Sigma = diag(2))
+rMGamma(10, shape = c(2, 3), scale = 2)
 
 # S4 Distribution Class
-X <- matrix(c(2, 1, 3, 2), 2, 2)
-d_mgamma <- MGamma(shape = 3, Sigma = diag(2))
-d(d_mgamma)(X)
+d_MGamma <- MGamma(shape = c(2, 3), scale = 2)
+d(d_MGamma)(c(4, 6))
 set.seed(1)
-r(d_mgamma)(1)
+r(d_MGamma)(10)
 }
 }

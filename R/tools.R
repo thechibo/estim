@@ -1,6 +1,5 @@
-#-------------------------------------------------------------------------------
-# Tools
-#-------------------------------------------------------------------------------
+# Tools ------------------------------------------------------------------------
+#_______________________________________________________________________________
 
 # Turn distribution name from character to an S4 class
 get_distr_class <- function(distr) {
@@ -89,6 +88,16 @@ trigammaInverse <- function(x) {
 
 }
 
+# Digamma Difference
+Ddigamma <- function(x, y) {
+  digamma(x) - digamma(y)
+}
+
+# Trigamma Difference
+Dtrigamma <- function(x, y) {
+  trigamma(x) - trigamma(y)
+}
+
 # p-variate Gamma function
 gammap <- function(x, p) {
   g <- x
@@ -109,6 +118,14 @@ lgammap <- function(x, p) {
 
 # Matrix Algebra ----
 
+Matrix <- function(...) {
+  Matrix::Matrix(...)
+}
+
+nearPD <- function(x) {
+  Matrix::nearPD(x)$mat
+}
+
 vec_to_mat <- function(prm) {
 
   p <- 0.5 * (- 1 + sqrt(1 + 8 * length(prm)))
@@ -122,6 +139,7 @@ vec_to_mat <- function(prm) {
 
 mat_to_vec <- function(Sigma) {
 
+  # check Matrix::Cholesky
   x <- fastmatrix::ldl(Sigma)
   d <- x$d
   L <- x$lower
@@ -152,4 +170,33 @@ is_pd <- function(x) {
 
   pd
 
+}
+
+# Statistics ----
+
+s2 <- function(x) {
+  ((length(x) - 1) / length(x)) * var(x)
+}
+
+# Multivariate Gamma ----
+
+fd <- function(x) {
+  if (is.matrix(x)) {
+    return(rbind(x[1,], diff(x)))
+  } else if (is.vector(x)) {
+    return(c(x[1], diff(x)))
+  } else {
+    stop("x must be an atomic vector or a matrix.")
+  }
+}
+
+gendir <- function(x) {
+  z <- fd(x)
+  if (is.matrix(x)) {
+    return(t(t(z) / x[nrow(x), ]))
+  } else if (is.vector(x)) {
+    return(z / x[length(x)])
+  } else {
+    stop("x must be an atomic vector or a matrix.")
+  }
 }

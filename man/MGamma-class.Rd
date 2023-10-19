@@ -4,34 +4,32 @@
 \name{MGamma-class}
 \alias{MGamma-class}
 \alias{MGamma}
-\title{Matrix Gamma Distribution S4 Class}
+\title{Multivariate Gamma Distribution S4 Class}
 \value{
 An object of class \code{MGamma}.
 }
 \description{
-Matrix Gamma Distribution S4 Class
+Multivariate Gamma Distribution S4 Class
 }
 \section{Slots}{
 
 \describe{
-\item{\code{shape}}{numeric. The shape parameter.}
+\item{\code{shape}}{numeric. The shape parameter vector.}
 
-\item{\code{Sigma}}{matrix. The matrix parameter.}
+\item{\code{scale}}{numeric. The scale parameter vector.}
 }}
 
 \examples{
 \dontrun{
 # Classic R Stats Format
-X <- matrix(c(2, 1, 3, 2), 2, 2)
-dMGamma(X, shape = 3, Sigma = diag(2))
+dMGamma(c(4, 6), shape = c(2, 3), scale = 2)
 set.seed(1)
-rMGamma(1, shape = 3, Sigma = diag(2))
+rMGamma(10, shape = c(2, 3), scale = 2)
 
 # S4 Distribution Class
-X <- matrix(c(2, 1, 3, 2), 2, 2)
-d_mgamma <- MGamma(shape = 3, Sigma = diag(2))
-d(d_mgamma)(X)
+d_MGamma <- MGamma(shape = c(2, 3), scale = 2)
+d(d_MGamma)(c(4, 6))
 set.seed(1)
-r(d_mgamma)(1)
+r(d_MGamma)(10)
 }
 }

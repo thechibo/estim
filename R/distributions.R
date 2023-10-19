@@ -2,6 +2,11 @@
 # Distributions
 #-------------------------------------------------------------------------------
 
+# Generics ----
+
+setGeneric("shape", function(object) standardGeneric("shape"))
+setGeneric("shape<-", function(object, value) standardGeneric("shape<-"))
+
 # Dirichlet      ----
 
 #' @title The Dirichlet Distribution
@@ -29,6 +34,11 @@
 #' r(d_dirichlet)(10)
 #' }
 dDirichlet <- function(x, shape, log = FALSE) {
+
+  if (length(x) != length(shape)) {
+    stop("The lengths of x (", length(x), ") and shape (",
+         length(shape), ") must be equal.")
+  }
 
   ld <- log(gamma(sum(shape))) - sum(log(gamma(shape))) + sum((shape - 1) * log(x))
 
@@ -84,9 +94,6 @@ Dirichlet <- setClass("Dirichlet",
  contains = "AbscontDistribution"
 )
 
-setGeneric("shape", function(object) standardGeneric("shape"))
-setGeneric("shape<-", function(object, value) standardGeneric("shape<-"))
-
 ## Access methods
 setMethod("shape", "DirichletParameter", function(object) object@shape)
 
@@ -95,9 +102,11 @@ setReplaceMethod("shape", "DirichletParameter",
                  function(object, value){ object@shape <- value; object})
 
 setValidity("DirichletParameter", function(object){
-  if(any(shape(object) <= 0))
-      stop("shape has to be positive")
-  else return(TRUE)
+  if (any(shape(object) <= 0)) {
+    stop("shape has to be positive")
+  } else {
+    return(TRUE)
+  }
 })
 
 ## wrapped access methods
@@ -139,13 +148,13 @@ setMethod("initialize", "Dirichlet",
     .Object
 })
 
-# Matrix Gamma   ----
+# Multivariate Gamma ----
 
-#' @title The Dirichlet Distribution
+#' @title The Multivariate Gamma Distribution
 #'
-#' @param X matrix. The random matrix.
-#' @param shape numeric. The shape parameter.
-#' @param Sigma matrix. The matrix parameter.
+#' @param x numeric. The quantile vector.
+#' @param shape numeric. The shape parameter vector.
+#' @param scale numeric. The scale parameter vector.
 #' @param log logical. If TRUE, probabilities p are given as log(p).
 #' @param n numeric. The number of observations.
 #'
@@ -156,25 +165,27 @@ setMethod("initialize", "Dirichlet",
 #'
 #' @examples \dontrun{
 #' # Classic R Stats Format
-#' X <- matrix(c(2, 1, 3, 2), 2, 2)
-#' dMGamma(X, shape = 3, Sigma = diag(2))
+#' dMGamma(c(4, 6), shape = c(2, 3), scale = 2)
 #' set.seed(1)
-#' rMGamma(1, shape = 3, Sigma = diag(2))
+#' rMGamma(10, shape = c(2, 3), scale = 2)
 #'
 #' # S4 Distribution Class
-#' X <- matrix(c(2, 1, 3, 2), 2, 2)
-#' d_mgamma <- MGamma(shape = 3, Sigma = diag(2))
-#' d(d_mgamma)(X)
+#' d_MGamma <- MGamma(shape = c(2, 3), scale = 2)
+#' d(d_MGamma)(c(4, 6))
 #' set.seed(1)
-#' r(d_mgamma)(1)
+#' r(d_MGamma)(10)
 #' }
-dMGamma <- function(X, shape = 1, Sigma = diag(2), log = FALSE) {
+dMGamma <- function(x, shape, scale, log = FALSE) {
 
-  p <- nrow(Sigma)
-  ldetS <- log(det(Sigma))
-  ldetX <- log(det(X))
+  if (length(x) != length(shape)) {
+    stop("The lengths of x (", length(x), ") and shape (",
+         length(shape), ") must be equal.")
+  }
 
-  ld <- - shape * ldetS - lgammap(shape, p) + (shape - (p + 1) / 2) * ldetX - sum(diag(solve(Sigma) %*% X))
+  z <- fd(x)
+  a0 <- sum(shape)
+
+  ld <- - a0 * log(scale) - sum(log(gamma(shape))) - x[length(x)] / scale + sum(shape * log(z))
 
   if (!log) {
     ld <- exp(ld)
@@ -185,106 +196,119 @@ dMGamma <- function(X, shape = 1, Sigma = diag(2), log = FALSE) {
 }
 
 #' @rdname dMGamma
-#' @importFrom matrixsampling rmatrixgamma
-rMGamma <- function(n, shape = 1, Sigma = diag(2)) {
+rMGamma <- function(n, shape, scale) {
 
-  matrixsampling::rmatrixgamma(n, nu = shape, theta = 1, Sigma = Sigma, checkSymmetry = TRUE)
+  k <- length(shape)
+  x <- matrix(nrow = k, ncol = n)
+  for (i in 1:k) {
+    x[i, ] <- stats::rgamma(n, shape[i], scale = scale)
+  }
+
+  apply(x, 2, cumsum)
 
 }
 
 setClass("MGammaParameter",
-         representation = representation(shape = "numeric", Sigma = "matrix"),
-         prototype = prototype(shape = 2, Sigma = diag(2),
-                               name = gettext("Parameter of a MGamma distribution")),
-         contains = "Parameter"
+ representation = representation(shape = "numeric", scale = "numeric"),
+ prototype = prototype(shape = c(1, 1), scale = 1,
+                       name = gettext("Parameter of a MGamma distribution")),
+ contains = "Parameter"
 )
 
-#' @title Matrix Gamma Distribution S4 Class
+#' @title Multivariate Gamma Distribution S4 Class
 #'
-#' @slot shape numeric. The shape parameter.
-#' @slot Sigma matrix. The matrix parameter.
+#' @slot shape numeric. The shape parameter vector.
+#' @slot scale numeric. The scale parameter vector.
 #'
 #' @return An object of class `MGamma`.
 #' @export
 #'
 #' @inherit dMGamma examples
 MGamma <- setClass("MGamma",
- slots = list(shape = "numeric",
-              Sigma = "matrix"),
- prototype = prototype(
-   r = function(n){
-     rMGamma(n, shape = 2, Sigma = diag(2))
-   },
-   d = function(x, log = FALSE){
-     dMGamma(x, shape = 2, Sigma = diag(2), log = log)
-   },
-   param = new("MGammaParameter"),
-   .logExact = TRUE,
-   .lowerExact = TRUE
- ),
- contains = "AbscontDistribution"
+  slots = list(shape = "numeric", scale = "numeric"),
+  prototype = prototype(
+    r = function(n) {
+      rMGamma(n, shape = c(1, 1), scale = 1)
+    },
+    d = function(x, log = FALSE) {
+      dMGamma(x, shape = c(1, 1), scale = 1, log = log)
+    },
+    param = new("MGammaParameter"),
+    .logExact = TRUE,
+    .lowerExact = TRUE
+  ),
+  contains = "AbscontDistribution"
 )
 
-setGeneric("Sigma", function(object) standardGeneric("Sigma"))
-setGeneric("Sigma<-", function(object, value) standardGeneric("Sigma<-"))
-
 ## Access methods
-setMethod("shape", "MGammaParameter", function(object) object@shape)
-setMethod("Sigma", "MGammaParameter", function(object) object@Sigma)
+setMethod("shape", "MGammaParameter",
+          function(object) object@shape)
 
-## Replace Methoden
+setMethod("scale", signature = c(x = "MGammaParameter"),
+          function(x, center = TRUE, scale = TRUE) x@scale)
+
+## Replace Methods
 setReplaceMethod("shape", "MGammaParameter",
                  function(object, value){ object@shape <- value; object})
-setReplaceMethod("Sigma", "MGammaParameter",
-                 function(object, value){ object@Sigma <- value; object})
+
+setReplaceMethod("scale", signature = c(object = "MGammaParameter"),
+                 function(object, value){ object@scale <- value; object})
 
 setValidity("MGammaParameter", function(object){
-  if(shape(object) <= 0) {
+  if (any(shape(object) <= 0)) {
     stop("shape has to be positive")
-  } else if (!matrixcalc::is.positive.definite(Sigma(object))){
-    stop("Sigma has to be a positive definite matrix")
+  } else if (object@scale <= 0) {
+    stop("scale has to be positive")
   } else {
     return(TRUE)
   }
 })
 
 ## wrapped access methods
-setMethod("shape", "MGamma", function(object) shape(distr::param(object)))
-setMethod("Sigma", "MGamma", function(object) Sigma(distr::param(object)))
+setMethod("shape", "MGamma",
+          function(object) { shape(distr::param(object)) })
+
+setMethod("scale", signature = c(x = "MGamma"),
+          function(x, center = TRUE, scale = TRUE) {
+            distr::param(x)@scale
+          })
 
 ## wrapped replace methods
 setMethod("shape<-", "MGamma",
-          function(object, value) new("MGamma", shape = value(object)))
-setMethod("Sigma<-", "MGamma",
-          function(object, value) new("MGamma", Sigma = value(object)))
+          function(object, value) { new("MGamma", shape = value(object)) })
+
+setMethod("scale<-", "MGamma",
+          function(object, value) {
+            new("MGamma", shape = shape(object), scale = value)
+          })
 
 setMethod("initialize", "MGamma",
-          function(.Object, shape = 2, Sigma = diag(2)) {
-  .Object@img <- new("Reals")
-  .Object@param <- new("MGammaParameter", shape = shape, Sigma = Sigma)
-  .Object@r <- function(n){}
-  .Object@d <- function(x, log = FALSE){}
-  .Object@p <- function(q, lower.tail = TRUE, log.p = FALSE){}
-  .Object@q <- function(p, lower.tail = TRUE, log.p = FALSE){}
-  body(.Object@r) <- substitute(
-    { rMGamma(n, shape = shapeSub, Sigma = SigmaSub) },
-    list(shapeSub = shape, SigmaSub = Sigma)
-  )
-  body(.Object@d) <- substitute(
-    { dMGamma(x, shape = shapeSub, Sigma = SigmaSub, log = log) },
-    list(shapeSub = shape, SigmaSub = Sigma)
-  )
-  body(.Object@p) <- substitute(
-    { pMGamma(q, shape = shapeSub, Sigma = SigmaSub, lower.tail = lower.tail,
+  function(.Object, shape = c(1, 1), scale = 1) {
+    .Object@img <- new("Reals")
+    .Object@param <- new("MGammaParameter", shape = shape, scale = scale)
+    .Object@r <- function(n){}
+    .Object@d <- function(x, log = FALSE){}
+    .Object@p <- function(q, lower.tail = TRUE, log.p = FALSE){}
+    .Object@q <- function(p, lower.tail = TRUE, log.p = FALSE){}
+    body(.Object@r) <- substitute(
+      { rMGamma(n, shape = shapeSub, scale = scaleSub) },
+      list(shapeSub = shape, scaleSub = scale)
+    )
+    body(.Object@d) <- substitute(
+      { dMGamma(x, shape = shapeSub, scale = scaleSub, log = log) },
+      list(shapeSub = shape, scaleSub = scale)
+    )
+    body(.Object@p) <- substitute(
+      { pMGamma(q, shape = shapeSub, scale = scaleSub, lower.tail = lower.tail,
                    log.p = log.p) },
-    list(shapeSub = shape, SigmaSub = Sigma)
-  )
-  body(.Object@q) <- substitute(
-    { qMGamma(p, shape = shapeSub, Sigma = SigmaSub, lower.tail = lower.tail,
+      list(shapeSub = shape, scaleSub = scale)
+    )
+    body(.Object@q) <- substitute(
+      { qMGamma(p, shape = shapeSub, scale = scaleSub, lower.tail = lower.tail,
                    log.p = log.p) },
-    list(shapeSub = shape, SigmaSub = Sigma)
-  )
-  .Object@.withSim   <- FALSE
-  .Object@.withArith <- FALSE
-  .Object
+      list(shapeSub = shape, scaleSub = scale)
+    )
+    .Object@.withSim   <- FALSE
+    .Object@.withArith <- FALSE
+    .Object
 })
