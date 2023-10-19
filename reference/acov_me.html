@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">estimators</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.2.0</span>
       </span>
     </div>
 
@@ -53,7 +53,7 @@
 <span><span class="fu">acov_me</span><span class="op">(</span><span class="va">distr</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Dirichlet</span></span>
-<span><span class="fu">acov_me</span><span class="op">(</span><span class="va">distr</span><span class="op">)</span></span>
+<span><span class="fu">acov_me</span><span class="op">(</span><span class="va">distr</span>, comp <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for MGamma</span></span>
 <span><span class="fu">acov_me</span><span class="op">(</span><span class="va">distr</span><span class="op">)</span></span></code></pre></div>
@@ -67,6 +67,11 @@
 
 <dt>...</dt>
 <dd><p>extra arguments.</p></dd>
+
+
+<dt>comp</dt>
+<dd><p>logical. Should the components A, B of the delta method be
+returned instead of the final variance-covariance matrix?</p></dd>
 
 </dl></div>
     <div id="value">
