@@ -74,7 +74,7 @@ vec_to_mat <- function(prm) {
 
 mat_to_vec <- function(Sigma) {
 
-  x <- Matrix::Cholesky(A, perm = FALSE)
+  x <- Matrix::Cholesky(Sigma, perm = FALSE)
   D <- Matrix::expand1(x, "D")
   L <- Matrix::expand1(x, "L1")
   c(diag(D), L[lower.tri(L)])

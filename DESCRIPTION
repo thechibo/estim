@@ -1,6 +1,6 @@
 Package: estimators
 Title: Distribution Parameter Estimation Methods
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: c(
     person(given = "Ioannis", family = "Oikonomidis",
            email = "goikon@math.uoa.gr", role = c("aut", "cre"),
@@ -28,3 +28,4 @@ Suggests:
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
 VignetteBuilder: knitr
+URL: https://thechibo.github.io/estimators/
