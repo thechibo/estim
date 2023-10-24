@@ -1,6 +1,6 @@
 Package: estimators
 Title: Distribution Parameter Estimation Methods
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: c(
     person(given = "Ioannis", family = "Oikonomidis",
            email = "goikon@math.uoa.gr", role = c("aut", "cre"),
@@ -17,7 +17,6 @@ Depends:
     distr
 Imports:
     stats,
-    fastmatrix,
     methods,
     Matrix
 Encoding: UTF-8

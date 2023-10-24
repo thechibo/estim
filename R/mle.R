@@ -22,7 +22,7 @@
 #' list is returned instead.
 #'
 #' @importClassesFrom distr Beta Gammad
-#' @importFrom Matrix Matrix nearPD
+#' @importFrom Matrix Matrix nearPD Cholesky expand1
 #' @export
 #'
 #' @examples \dontrun{
@@ -200,17 +200,22 @@ setMethod("mle",
           definition = function(x, distr,
                                 par0 = same,
                                 method = "L-BFGS-B",
-                                lower = rep(1e-5, times = nrow(x)),
-                                upper = rep(Inf, times = nrow(x))) {
+                                lower = 1e-5,
+                                upper = Inf) {
 
-  shape <- optim(par = do.call(par0, list(x = x, distr = distr)),
-                fn = ll,
-                x = x,
-                distr = distr,
-                method = method,
-                lower = lower,
-                upper = upper,
-                control = list(fnscale = -1))$par
+  tx  <- rowMeans(log(x))
+
+  a0 <- optim(par = sum(do.call(par0, list(x = x, distr = distr))),
+              fn = lloptim,
+              gr = dlloptim,
+              tx = tx,
+              distr = distr,
+              method = method,
+              lower = lower,
+              upper = upper,
+              control = list(fnscale = -1))$par
+
+  shape <- idigamma(digamma(a0) + tx)
 
   names(shape) <- paste0("shape", seq_along(shape))
   shape
@@ -226,7 +231,7 @@ setMethod("acov_mle",
   k <- length(a)
 
   D <- solve(diag(trigamma(a)) - matrix(trigamma(sum(a)), k, k))
-  as.matrix(Matrix::nearPD(D)$mat)
+  as.matrix(nearPD(D))
 
 })
 
@@ -238,28 +243,30 @@ setMethod("mle",
           definition = function(x, distr,
                                 par0 = same,
                                 method = "L-BFGS-B",
-                                lower = NULL,
-                                upper = NULL) {
+                                lower = 1e-5,
+                                upper = Inf) {
 
   k <- nrow(x)
-  if (is.null(lower)) {
-    lower <- rep(1e-5, k)
-  }
-  if (is.null(upper)) {
-    upper <- rep(Inf, k)
-  }
+  logz <- rowMeans(log(fd(x)))
+  xk <- mean(x[k, ])
 
-  theta <- optim(par = do.call(par0, list(x = x, distr = distr)),
-                 fn = ll,
-                 x = x,
-                 distr = distr,
-                 method = method,
-                 lower = lower,
-                 upper = upper,
-                 control = list(fnscale = -1))$par
+  par <- optim(par = sum(do.call(par0, list(x = x, distr = distr))[1:k]),
+               fn = lloptim,
+               gr = dlloptim,
+               tx = c(logz, xk),
+               distr = distr,
+               method = method,
+               lower = lower,
+               upper = upper,
+               control = list(fnscale = -1))$par
 
-  names(theta) <- c(paste0("shape", 1:k), "scale")
-  theta
+  b <- xk / par
+  a <- idigamma(logz - log(b))
+
+  par <- c(a, b)
+
+  names(par) <- c(paste0("shape", 1:k), "scale")
+  par
 
 })
 
@@ -276,6 +283,6 @@ setMethod("acov_mle",
   D <- solve(rbind(cbind(diag(trigamma(a)), matrix(1 / b, nrow = k, ncol = 1)),
              c(rep(1 / b, k), a0 / b ^ 2)))
 
-  as.matrix(Matrix::nearPD(D)$mat)
+  as.matrix(nearPD(D))
 
 })

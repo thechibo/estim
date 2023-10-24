@@ -51,16 +51,9 @@ mle(x, distr, ...)
   upper = c(Inf, Inf)
 )
 
-\S4method{mle}{matrix,Dirichlet}(
-  x,
-  distr,
-  par0 = same,
-  method = "L-BFGS-B",
-  lower = rep(1e-05, times = nrow(x)),
-  upper = rep(Inf, times = nrow(x))
-)
+\S4method{mle}{matrix,Dirichlet}(x, distr, par0 = same, method = "L-BFGS-B", lower = 1e-05, upper = Inf)
 
-\S4method{mle}{matrix,MGamma}(x, distr, par0 = same, method = "L-BFGS-B", lower = NULL, upper = NULL)
+\S4method{mle}{matrix,MGamma}(x, distr, par0 = same, method = "L-BFGS-B", lower = 1e-05, upper = Inf)
 }
 \arguments{
 \item{x}{numeric. A sample under estimation.}

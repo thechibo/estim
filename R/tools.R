@@ -19,73 +19,8 @@ get_distr_class <- function(distr) {
 
 # Gamma Function ----
 
-# Calculate the Trigamma Inverse function
-trigammaInverse <- function(x) {
-
-  if (!is.numeric(x)) {
-    stop("Non-numeric argument to mathematical function.")
-  }
-
-  if (length(x) == 0) {
-    return(numeric(0))
-  }
-
-  omit <- is.na(x)
-  if (any(omit)) {
-    y <- x
-    if (any(!omit)) {
-      y[!omit] <- Recall(x[!omit])
-    }
-    return(y)
-  }
-
-  omit <- (x < 0)
-  if (any(omit)) {
-    y <- x
-    y[omit] <- NaN
-    warning("NaNs produced")
-    if (any(!omit)) {
-      y[!omit] <- Recall(x[!omit])
-    }
-    return(y)
-  }
-
-  omit <- (x > 1e+07)
-  if (any(omit)) {
-    y <- x
-    y[omit] <- 1 / sqrt(x[omit])
-    if (any(!omit)) {
-      y[!omit] <- Recall(x[!omit])
-    }
-    return(y)
-  }
-
-  omit <- (x < 1e-06)
-  if (any(omit)) {
-    y <- x
-    y[omit] <- 1 / x[omit]
-    if (any(!omit)) {
-      y[!omit] <- Recall(x[!omit])
-    }
-    return(y)
-  }
-
-  y <- 0.5 + 1 / x
-  iter <- 0
-
-  while (max(- dif / y) > 1e-08) {
-    iter <- iter + 1
-    tri <- trigamma(y)
-    dif <- tri * (1 - tri / x) / psigamma(y, deriv = 2)
-    y <- y + dif
-    if (iter > 50) {
-      warning("Iteration limit exceeded in Trigamma Inverse calculation.")
-      break
-    }
-  }
-
-  y
-
+idigamma <- function(x) {
+  distr::igamma(x)
 }
 
 # Digamma Difference
@@ -131,7 +66,7 @@ vec_to_mat <- function(prm) {
   p <- 0.5 * (- 1 + sqrt(1 + 8 * length(prm)))
   d <- prm[1:p]
   L <- diag(p)
-  L[lower.tri(L)] <- prm[(p+1):length(prm)]
+  L[lower.tri(L)] <- prm[(p + 1):length(prm)]
 
   L %*% diag(d) %*% t(L)
 
@@ -139,11 +74,10 @@ vec_to_mat <- function(prm) {
 
 mat_to_vec <- function(Sigma) {
 
-  # check Matrix::Cholesky
-  x <- fastmatrix::ldl(Sigma)
-  d <- x$d
-  L <- x$lower
-  c(d, L[lower.tri(L)])
+  x <- Matrix::Cholesky(A, perm = FALSE)
+  D <- Matrix::expand1(x, "D")
+  L <- Matrix::expand1(x, "L1")
+  c(diag(D), L[lower.tri(L)])
 
 }
 
@@ -170,12 +104,6 @@ is_pd <- function(x) {
 
   pd
 
-}
-
-# Statistics ----
-
-s2 <- function(x) {
-  ((length(x) - 1) / length(x)) * var(x)
 }
 
 # Multivariate Gamma ----

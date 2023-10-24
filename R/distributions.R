@@ -185,7 +185,7 @@ dMGamma <- function(x, shape, scale, log = FALSE) {
   z <- fd(x)
   a0 <- sum(shape)
 
-  ld <- - a0 * log(scale) - sum(log(gamma(shape))) - x[length(x)] / scale + sum(shape * log(z))
+  ld <- - a0 * log(scale) - sum(lgamma(shape)) - x[length(x)] / scale + sum(shape * log(z))
 
   if (!log) {
     ld <- exp(ld)
