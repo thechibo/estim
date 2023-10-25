@@ -2,30 +2,34 @@ Package: estimators
 Title: Distribution Parameter Estimation Methods
 Version: 0.4.0
 Authors@R: c(
-    person(given = "Ioannis", family = "Oikonomidis",
-           email = "goikon@math.uoa.gr", role = c("aut", "cre"),
+    person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8130-2104")),
-    person(given = "Samis", family = "Trevezas",
-           email = "strevezas@math.uoa.gr", role = c("aut", "ths"),
-           comment = c(ORCID = "0000-0003-2262-8299")))
+    person("Samis", "Trevezas", , "strevezas@math.uoa.gr", role = c("aut", "ths"),
+           comment = c(ORCID = "0000-0003-2262-8299"))
+  )
 Description: This package provides estimators for parameters of common
-             distribution families.
-Language: en-US
+    distribution families.
 License: GPL (>= 3)
+URL: https://thechibo.github.io/estimators/
 Depends: 
-    R (>= 4.0.0),
-    distr
+    distr,
+    R (>= 4.0.0)
 Imports:
-    stats,
+    ggplot2,
+    grDevices,
+    Matrix,
     methods,
-    Matrix
-Encoding: UTF-8
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+    progress,
+    stats
 Suggests:
     covr,
     knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: 
+    knitr
 Config/testthat/edition: 3
-VignetteBuilder: knitr
-URL: https://thechibo.github.io/estimators/
+Encoding: UTF-8
+Language: en-US
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3

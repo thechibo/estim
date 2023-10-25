@@ -27,9 +27,9 @@ set.seed(1)
 rMGamma(10, shape = c(2, 3), scale = 2)
 
 # S4 Distribution Class
-d_MGamma <- MGamma(shape = c(2, 3), scale = 2)
-d(d_MGamma)(c(4, 6))
+D <- MGamma(shape = c(2, 3), scale = 2)
+d(D)(c(4, 6))
 set.seed(1)
-r(d_MGamma)(10)
+r(D)(10)
 }
 }

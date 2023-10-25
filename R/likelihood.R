@@ -1,6 +1,6 @@
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Log-Likelihood
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title Log-Likelihood
 #'
@@ -14,7 +14,8 @@
 setGeneric("ll", signature = c("prm", "x", "distr"),
            function(prm, x, distr, ...) { standardGeneric("ll") })
 
-# Beta ---
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Beta                   ----
 
 #' @rdname ll
 setMethod("ll",
@@ -36,7 +37,8 @@ setMethod("ll",
 #  sum(do.call(dbeta, c(list(x = x, log = TRUE), prm))) + ld
 #}
 
-# Gamma ---
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Gamma                  ----
 
 #' @rdname ll
 setMethod("ll",
@@ -47,7 +49,8 @@ setMethod("ll",
 
 })
 
-# Dirichlet ---
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dirichlet              ----
 
 #' @rdname ll
 setMethod("ll",
@@ -58,7 +61,8 @@ setMethod("ll",
 
 })
 
-# Multivariate Gamma ---
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Multivariate Gamma     ----
 
 #' @rdname ll
 setMethod("ll",

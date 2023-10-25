@@ -25,9 +25,9 @@ set.seed(1)
 rDirichlet(10, shape = c(2, 3))
 
 # S4 Distribution Class
-d_dirichlet <- Dirichlet(shape = c(2, 3))
-d(d_dirichlet)(c(0.3, 0.7))
+D <- Dirichlet(shape = c(2, 3))
+d(D)(c(0.3, 0.7))
 set.seed(1)
-r(d_dirichlet)(10)
+r(D)(10)
 }
 }

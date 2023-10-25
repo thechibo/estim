@@ -1,6 +1,6 @@
-#-------------------------------------------------------------------------------
-# Maximum Likelihood Estimator
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Maximum Likelihood Estimator                                              ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title Maximum Likelihood Estimator
 #'
@@ -16,13 +16,10 @@
 #' @param method,lower,upper arguments passed to optim.
 #' @param ... extra arguments.
 #'
-#' @return numeric or list. The estimator produced by the sample. In case the
-#' distribution parameters hold specific structures (e.g. the Matrix Gamma
-#' parameters are a positive real number and a positive definite matrix), a
-#' list is returned instead.
+#' @return numeric. The estimator produced by the sample.
 #'
 #' @importClassesFrom distr Beta Gammad
-#' @importFrom Matrix Matrix nearPD Cholesky expand1
+#' @importFrom Matrix Matrix nearPD Cholesky
 #' @export
 #'
 #' @examples \dontrun{
@@ -68,7 +65,9 @@ setMethod("mle",
 
 })
 
-# Beta         ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Beta                                                                     ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname mle
 setMethod("mle",
@@ -128,7 +127,9 @@ setMethod("acov_mle",
 
 })
 
-# Gamma        ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Gamma                                                                    ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname mle
 setMethod("mle",
@@ -192,7 +193,9 @@ setMethod("acov_mle",
 
 })
 
-# Dirichlet    ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Dirichlet                                                                ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname mle
 setMethod("mle",
@@ -227,7 +230,7 @@ setMethod("acov_mle",
           signature  = c(distr = "Dirichlet"),
           definition = function(distr) {
 
-  a <- shape(distr)
+  a <- distr::shape(distr)
   k <- length(a)
 
   D <- solve(diag(trigamma(a)) - matrix(trigamma(sum(a)), k, k))
@@ -235,7 +238,9 @@ setMethod("acov_mle",
 
 })
 
-# Multivariate Gamma ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Multivariate Gamma                                                       ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname mle
 setMethod("mle",
@@ -275,7 +280,7 @@ setMethod("acov_mle",
           signature  = c(distr = "MGamma"),
           definition = function(distr) {
 
-  a <- shape(distr)
+  a <- distr::shape(distr)
   b <- distr::scale(distr)
   k <- length(a)
   a0 <- sum(a)

@@ -1,6 +1,6 @@
-#-------------------------------------------------------------------------------
-# Moment Estimator
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Moment Estimator                                                          ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title Moment Estimator
 #'
@@ -37,7 +37,8 @@ setMethod("me",
 
 })
 
-# Beta         ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Beta                   ----
 
 #' @rdname me
 setMethod("me",
@@ -90,7 +91,8 @@ setMethod("acov_me",
 
 })
 
-# Gamma        ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Gamma                  ----
 
 #' @rdname me
 setMethod("me",
@@ -133,7 +135,8 @@ setMethod("acov_me",
 
 })
 
-# Dirichlet    ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dirichlet              ----
 
 #' @rdname me
 setMethod("me",
@@ -154,7 +157,7 @@ setMethod("acov_me",
           signature  = c(distr = "Dirichlet"),
           definition = function(distr, comp = FALSE) {
 
-  a <- shape(distr)
+  a <- distr::shape(distr)
   a0 <- sum(a)
   b <- a0 - a
   k <- length(a)
@@ -190,7 +193,8 @@ setMethod("acov_me",
 
 })
 
-# Multivariate Gamma ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Multivariate Gamma     ----
 
 #' @rdname me
 setMethod("me",
@@ -211,7 +215,7 @@ setMethod("acov_me",
           signature  = c(distr = "MGamma"),
           definition = function(distr) {
 
-  a <- shape(distr)
+  a <- distr::shape(distr)
   b <- distr::scale(distr)
   a0 <- sum(a)
 

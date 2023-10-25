@@ -14,16 +14,18 @@ rDirichlet(n, shape)
 
 \item{shape}{numeric. The parameter vector.}
 
-\item{log}{logical. If TRUE, probabilities p are given as log(p).}
+\item{log}{logical. If \code{TRUE}, probabilities \code{p} are given as \code{log(p)}.}
 
 \item{n}{numeric. The number of observations.}
 }
 \value{
-\code{dDirichlet} returns the evaluated density function.
-\code{rDirichlet} performs Monte-Carlo simulation.
+\code{dDirichlet} returns a numeric vector (the evaluated density
+function). \code{rDirichlet} returns a matrix with \code{length(shape)} rows and \code{n}
+columns.
 }
 \description{
-The Dirichlet Distribution
+Density function and random generation for the Dirichlet distribution with
+parameter vector \code{shape}.
 }
 \examples{
 \dontrun{
@@ -33,9 +35,9 @@ set.seed(1)
 rDirichlet(10, shape = c(2, 3))
 
 # S4 Distribution Class
-d_dirichlet <- Dirichlet(shape = c(2, 3))
-d(d_dirichlet)(c(0.3, 0.7))
+D <- Dirichlet(shape = c(2, 3))
+d(D)(c(0.3, 0.7))
 set.seed(1)
-r(d_dirichlet)(10)
+r(D)(10)
 }
 }

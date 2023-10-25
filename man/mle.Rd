@@ -68,10 +68,7 @@ likelihood maximization algorithm.}
 \item{method, lower, upper}{arguments passed to optim.}
 }
 \value{
-numeric or list. The estimator produced by the sample. In case the
-distribution parameters hold specific structures (e.g. the Matrix Gamma
-parameters are a positive real number and a positive definite matrix), a
-list is returned instead.
+numeric. The estimator produced by the sample.
 }
 \description{
 Calculates the MLE of a sample under the assumption the observations are

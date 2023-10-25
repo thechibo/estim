@@ -16,16 +16,17 @@ rMGamma(n, shape, scale)
 
 \item{scale}{numeric. The scale parameter vector.}
 
-\item{log}{logical. If TRUE, probabilities p are given as log(p).}
+\item{log}{logical. If \code{TRUE}, probabilities \code{p} are given as \code{log(p)}.}
 
 \item{n}{numeric. The number of observations.}
 }
 \value{
-\code{dMGamma} returns the evaluated density function.
-\code{rMGamma} performs Monte-Carlo simulation.
+\code{dMGamma} returns a numeric vector (the evaluated density function).
+\code{rMGamma} returns a matrix with \code{length(shape)} rows and \code{n} columns.
 }
 \description{
-The Multivariate Gamma Distribution
+Density function and random generation for the Multivariate Gamma
+distribution with shape parameter vector \code{shape} and scale parameter \code{scale}.
 }
 \examples{
 \dontrun{
@@ -35,9 +36,9 @@ set.seed(1)
 rMGamma(10, shape = c(2, 3), scale = 2)
 
 # S4 Distribution Class
-d_MGamma <- MGamma(shape = c(2, 3), scale = 2)
-d(d_MGamma)(c(4, 6))
+D <- MGamma(shape = c(2, 3), scale = 2)
+d(D)(c(4, 6))
 set.seed(1)
-r(d_MGamma)(10)
+r(D)(10)
 }
 }

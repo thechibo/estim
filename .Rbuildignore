@@ -4,3 +4,7 @@
 ^codecov\.yml$
 ^README\.Rmd$
 ^docs$
+^LICENSE\.md$
+^cran-comments\.md$
+^_pkgdown\.yml$
+^pkgdown$

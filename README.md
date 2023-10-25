@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/estimators)](https://CRAN.R-project.org/package=estimators)
 [![R-CMD-check](https://github.com/thechibo/estimators/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thechibo/estimators/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/thechibo/estimators/branch/main/graph/badge.svg)](https://app.codecov.io/gh/thechibo/estimators?branch=main)

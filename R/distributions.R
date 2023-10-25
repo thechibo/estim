@@ -1,23 +1,24 @@
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Distributions
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# Generics ----
-
-setGeneric("shape", function(object) standardGeneric("shape"))
-setGeneric("shape<-", function(object, value) standardGeneric("shape<-"))
-
-# Dirichlet      ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dirichlet              ----
 
 #' @title The Dirichlet Distribution
 #'
+#' @description
+#' Density function and random generation for the Dirichlet distribution with
+#' parameter vector `shape`.
+#'
 #' @param x numeric. The quantile vector.
 #' @param shape numeric. The parameter vector.
-#' @param log logical. If TRUE, probabilities p are given as log(p).
+#' @param log logical. If `TRUE`, probabilities `p` are given as `log(p)`.
 #' @param n numeric. The number of observations.
 #'
-#' @return `dDirichlet` returns the evaluated density function.
-#'         `rDirichlet` performs Monte-Carlo simulation.
+#' @return `dDirichlet` returns a numeric vector (the evaluated density
+#' function). `rDirichlet` returns a matrix with `length(shape)` rows and `n`
+#' columns.
 #'
 #' @export
 #'
@@ -28,10 +29,10 @@ setGeneric("shape<-", function(object, value) standardGeneric("shape<-"))
 #' rDirichlet(10, shape = c(2, 3))
 #'
 #' # S4 Distribution Class
-#' d_dirichlet <- Dirichlet(shape = c(2, 3))
-#' d(d_dirichlet)(c(0.3, 0.7))
+#' D <- Dirichlet(shape = c(2, 3))
+#' d(D)(c(0.3, 0.7))
 #' set.seed(1)
-#' r(d_dirichlet)(10)
+#' r(D)(10)
 #' }
 dDirichlet <- function(x, shape, log = FALSE) {
 
@@ -94,10 +95,10 @@ Dirichlet <- setClass("Dirichlet",
  contains = "AbscontDistribution"
 )
 
-## Access methods
+# Access methods
 setMethod("shape", "DirichletParameter", function(object) object@shape)
 
-## Replace Methoden
+# Replace methods
 setReplaceMethod("shape", "DirichletParameter",
                  function(object, value){ object@shape <- value; object})
 
@@ -109,11 +110,11 @@ setValidity("DirichletParameter", function(object){
   }
 })
 
-## wrapped access methods
+# wrapped access methods
 setMethod("shape", "Dirichlet",
-          function(object) { shape(distr::param(object)) })
+          function(object) { distr::shape(distr::param(object)) })
 
-## wrapped replace methods
+# wrapped replace methods
 setMethod("shape<-", "Dirichlet",
           function(object, value) { new("Dirichlet", shape = value(object)) })
 
@@ -121,10 +122,8 @@ setMethod("initialize", "Dirichlet",
   function(.Object, shape = c(1, 1)) {
     .Object@img <- new("Reals")
     .Object@param <- new("DirichletParameter", shape = shape)
-    .Object@r <- function(n){}
-    .Object@d <- function(x, log = FALSE){}
-    .Object@p <- function(q, lower.tail = TRUE, log.p = FALSE){}
-    .Object@q <- function(p, lower.tail = TRUE, log.p = FALSE){}
+    .Object@r <- function(n) {}
+    .Object@d <- function(x, log = FALSE) {}
     body(.Object@r) <- substitute(
       { rDirichlet(n, shape = shapeSub) },
       list(shapeSub = shape)
@@ -133,33 +132,28 @@ setMethod("initialize", "Dirichlet",
       { dDirichlet(x, shape = shapeSub, log = log) },
       list(shapeSub = shape)
     )
-    body(.Object@p) <- substitute(
-      { pDirichlet(q, shape = shapeSub, lower.tail = lower.tail,
-                   log.p = log.p) },
-      list(shapeSub = shape)
-    )
-    body(.Object@q) <- substitute(
-      { qDirichlet(p, shape = shapeSub, lower.tail = lower.tail,
-                   log.p = log.p) },
-      list(shapeSub = shape)
-    )
     .Object@.withSim   <- FALSE
     .Object@.withArith <- FALSE
     .Object
 })
 
-# Multivariate Gamma ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Multivariate Gamma     ----
 
 #' @title The Multivariate Gamma Distribution
+#'
+#' @description
+#' Density function and random generation for the Multivariate Gamma
+#' distribution with shape parameter vector `shape` and scale parameter `scale`.
 #'
 #' @param x numeric. The quantile vector.
 #' @param shape numeric. The shape parameter vector.
 #' @param scale numeric. The scale parameter vector.
-#' @param log logical. If TRUE, probabilities p are given as log(p).
+#' @param log logical. If `TRUE`, probabilities `p` are given as `log(p)`.
 #' @param n numeric. The number of observations.
 #'
-#' @return `dMGamma` returns the evaluated density function.
-#'         `rMGamma` performs Monte-Carlo simulation.
+#' @return `dMGamma` returns a numeric vector (the evaluated density function).
+#' `rMGamma` returns a matrix with `length(shape)` rows and `n` columns.
 #'
 #' @export
 #'
@@ -170,10 +164,10 @@ setMethod("initialize", "Dirichlet",
 #' rMGamma(10, shape = c(2, 3), scale = 2)
 #'
 #' # S4 Distribution Class
-#' d_MGamma <- MGamma(shape = c(2, 3), scale = 2)
-#' d(d_MGamma)(c(4, 6))
+#' D <- MGamma(shape = c(2, 3), scale = 2)
+#' d(D)(c(4, 6))
 #' set.seed(1)
-#' r(d_MGamma)(10)
+#' r(D)(10)
 #' }
 dMGamma <- function(x, shape, scale, log = FALSE) {
 
@@ -240,14 +234,14 @@ MGamma <- setClass("MGamma",
   contains = "AbscontDistribution"
 )
 
-## Access methods
+# Access methods
 setMethod("shape", "MGammaParameter",
           function(object) object@shape)
 
 setMethod("scale", signature = c(x = "MGammaParameter"),
           function(x, center = TRUE, scale = TRUE) x@scale)
 
-## Replace Methods
+# Replace Methods
 setReplaceMethod("shape", "MGammaParameter",
                  function(object, value){ object@shape <- value; object})
 
@@ -264,32 +258,30 @@ setValidity("MGammaParameter", function(object){
   }
 })
 
-## wrapped access methods
+# wrapped access methods
 setMethod("shape", "MGamma",
-          function(object) { shape(distr::param(object)) })
+          function(object) { distr::shape(distr::param(object)) })
 
 setMethod("scale", signature = c(x = "MGamma"),
           function(x, center = TRUE, scale = TRUE) {
             distr::param(x)@scale
           })
 
-## wrapped replace methods
+# wrapped replace methods
 setMethod("shape<-", "MGamma",
           function(object, value) { new("MGamma", shape = value(object)) })
 
 setMethod("scale<-", "MGamma",
           function(object, value) {
-            new("MGamma", shape = shape(object), scale = value)
+            new("MGamma", shape = distr::shape(object), scale = value)
           })
 
 setMethod("initialize", "MGamma",
   function(.Object, shape = c(1, 1), scale = 1) {
     .Object@img <- new("Reals")
     .Object@param <- new("MGammaParameter", shape = shape, scale = scale)
-    .Object@r <- function(n){}
-    .Object@d <- function(x, log = FALSE){}
-    .Object@p <- function(q, lower.tail = TRUE, log.p = FALSE){}
-    .Object@q <- function(p, lower.tail = TRUE, log.p = FALSE){}
+    .Object@r <- function(n) {}
+    .Object@d <- function(x, log = FALSE) {}
     body(.Object@r) <- substitute(
       { rMGamma(n, shape = shapeSub, scale = scaleSub) },
       list(shapeSub = shape, scaleSub = scale)
@@ -298,17 +290,9 @@ setMethod("initialize", "MGamma",
       { dMGamma(x, shape = shapeSub, scale = scaleSub, log = log) },
       list(shapeSub = shape, scaleSub = scale)
     )
-    body(.Object@p) <- substitute(
-      { pMGamma(q, shape = shapeSub, scale = scaleSub, lower.tail = lower.tail,
-                   log.p = log.p) },
-      list(shapeSub = shape, scaleSub = scale)
-    )
-    body(.Object@q) <- substitute(
-      { qMGamma(p, shape = shapeSub, scale = scaleSub, lower.tail = lower.tail,
-                   log.p = log.p) },
-      list(shapeSub = shape, scaleSub = scale)
-    )
     .Object@.withSim   <- FALSE
     .Object@.withArith <- FALSE
     .Object
 })
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~

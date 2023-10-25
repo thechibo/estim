@@ -1,5 +1,21 @@
-# Tools ------------------------------------------------------------------------
-#_______________________________________________________________________________
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Tools
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# General
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+loading_bar <- function(total) {
+
+  frm <- "Processing [:bar] :percent | Remaining: :eta | Elapsed: :elapsedfull"
+  progress::progress_bar$new(format = frm, total = total, clear = FALSE)
+
+}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Structures
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Turn distribution name from character to an S4 class
 get_distr_class <- function(distr) {
@@ -17,7 +33,63 @@ get_distr_class <- function(distr) {
 
 }
 
-# Gamma Function ----
+s4_to_list <- function(object) {
+
+  # Get the slot names
+  names <- methods::slotNames(class(object))
+
+  # Initialize an empty list to store slot values
+  y <- list()
+
+  # Loop through the slot names and extract slot values
+  for (name in names) {
+    y[[name]] <- methods::slot(object, name)
+  }
+
+  y
+
+}
+
+update_params <- function(D0, prm, i) {
+
+  # Position of parameter (e.g. the third element of the shape parameter vector)
+  if (is.null(prm$pos)) {
+    prm$pos <- 1
+  }
+
+  params <- methods::slot(D0, "param")
+  slot(params, prm$name)[prm$pos] <- prm$val[i]
+
+  x <- c(s4_to_list(params), Class = class(D0))
+  x["name"] <- NULL
+
+  do.call("new", x)
+
+}
+
+array_to_df <- function(x) {
+
+  dn <- dimnames(x)
+  names(dn) <- names(dimnames(x))
+
+  df <- expand.grid(dn, KEEP.OUT.ATTRS = FALSE)
+  df$Value <- as.vector(x)
+
+  df
+
+}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Statistics
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+s2 <- function(x) {
+  ((length(x) - 1) / length(x)) * var(x)
+}
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Gamma Function
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 idigamma <- function(x) {
   distr::igamma(x)
@@ -51,7 +123,9 @@ lgammap <- function(x, p) {
   g
 }
 
-# Matrix Algebra ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Matrix Algebra
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Matrix <- function(...) {
   Matrix::Matrix(...)
@@ -72,17 +146,17 @@ vec_to_mat <- function(prm) {
 
 }
 
-mat_to_vec <- function(Sigma) {
-
-  x <- Matrix::Cholesky(Sigma, perm = FALSE)
-  D <- Matrix::expand1(x, "D")
-  L <- Matrix::expand1(x, "L1")
-  c(diag(D), L[lower.tri(L)])
-
-}
+# mat_to_vec <- function(Sigma) {
+#
+#   x <- Matrix::Cholesky(Sigma, perm = FALSE)
+#   D <- Matrix::expand1(x, "D")
+#   L <- Matrix::expand1(x, "L1")
+#   c(diag(D), L[lower.tri(L)])
+#
+# }
 
 is_symmetric <- function(x) {
-  sum(x == t(x)) == (nrow(x)^2)
+  sum(x == t(x)) == (nrow(x) ^ 2)
 }
 
 is_pd <- function(x) {
@@ -106,11 +180,13 @@ is_pd <- function(x) {
 
 }
 
-# Multivariate Gamma ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Multivariate Gamma
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 fd <- function(x) {
   if (is.matrix(x)) {
-    return(rbind(x[1,], diff(x)))
+    return(rbind(x[1, ], diff(x)))
   } else if (is.vector(x)) {
     return(c(x[1], diff(x)))
   } else {

@@ -1,6 +1,6 @@
-#-------------------------------------------------------------------------------
-# Score Equations
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Score Equations                                                           ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 setGeneric("lloptim", signature = c("par", "tx", "distr"),
            function(par, tx, distr, ...) { standardGeneric("lloptim") })
@@ -8,7 +8,8 @@ setGeneric("lloptim", signature = c("par", "tx", "distr"),
 setGeneric("dlloptim", signature = c("par", "tx", "distr"),
            function(par, tx, distr, ...) { standardGeneric("dlloptim") })
 
-# Dirichlet ---
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dirichlet              ----
 
 setMethod("lloptim",
           signature  = c(par = "numeric", tx = "numeric", distr = "Dirichlet"),
@@ -34,7 +35,8 @@ setMethod("dlloptim",
 
 })
 
-# Multivariate Gamma ---
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Multivariate Gamma     ----
 
 setMethod("lloptim",
           signature  = c(par = "numeric", tx = "numeric", distr = "MGamma"),

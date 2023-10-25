@@ -1,6 +1,6 @@
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Score-Adjusted Moment Estimator
-#-------------------------------------------------------------------------------
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title Score-Adjusted Moment Estimator
 #'
@@ -37,7 +37,9 @@ setMethod("same",
 
 })
 
-# Beta         ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Beta
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname same
 setMethod("same",
@@ -94,7 +96,9 @@ setMethod("acov_same",
 
 })
 
-# Gamma         ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Gamma
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname same
 setMethod("same",
@@ -141,7 +145,9 @@ setMethod("acov_same",
 
 })
 
-# Dirichlet    ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dirichlet
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname same
 setMethod("same",
@@ -165,7 +171,7 @@ setMethod("acov_same",
           definition = function(distr, comp = FALSE) {
 
   # Required variables
-  a <- shape(distr)
+  a <- distr::shape(distr)
   a0 <- sum(a)
   b <- a0 - a
   k <- length(a)
@@ -223,7 +229,9 @@ setMethod("acov_same",
 
 })
 
-# Multivariate Gamma ----
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Multivariate Gamma
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname same
 setMethod("same",
@@ -244,7 +252,7 @@ setMethod("acov_same",
           signature  = c(distr = "MGamma"),
           definition = function(distr) {
 
-  a <- shape(distr)
+  a <- distr::shape(distr)
   b <- distr::scale(distr)
   a0 <- sum(a)
 
