@@ -29,12 +29,13 @@ acov <- function(D0, prm, est = c("same", "me", "mle")) {
   y <- array(dim = lengths(d), dimnames = d)
 
   # Get the distribution
-  Di <- lapply(seq_along(prm$val), FUN = function(i) { update_params(D0, prm, i) })
+  Di <- lapply(seq_along(prm$val),
+               FUN = function(i) { update_params(D0, prm, i) })
 
   # For each estimator
   for (j in est) {
 
-    y[ , j] <- sapply(Di,
+    y[ , j] <- vapply(Di,
                       FUN = function(x) {
                         do.call(paste0("acov_", j), list(distr = x))[1, 1]
                       })

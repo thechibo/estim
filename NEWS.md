@@ -1,3 +1,9 @@
+# estimators 0.5.1
+
+* Fixed a bug in Description.
+* Enriched the documentation.
+* Complied by goodpractice::gp().
+
 # estimators 0.5.0
 
 * Added a logo.

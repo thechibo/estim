@@ -2,6 +2,10 @@
 # Maximum Likelihood Estimator                                              ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Generics
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #' @title Maximum Likelihood Estimator
 #'
 #' @description
@@ -24,11 +28,11 @@
 #'
 #' @examples \dontrun{
 #' # Distribution
-#' d_beta <- Beta(shape1 = 1, shape2 = 1.5)
+#' D <- Beta(shape1 = 1, shape2 = 1.5)
 #'
 #' # Simulation
 #' set.seed(2)
-#' x <- r(d_beta)(50)
+#' x <- r(D)(50)
 #'
 #' # Estimation
 #' me(x, "Beta")
@@ -36,9 +40,9 @@
 #' mle(x, "Beta")
 #'
 #' # Asymptotic Covariance Matrix
-#' acov_me(d_beta)
-#' acov_same(d_beta)
-#' acov_mle(d_beta)
+#' acov_me(D)
+#' acov_same(D)
+#' acov_mle(D)
 #' }
 setGeneric("mle", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("mle") })
@@ -65,9 +69,9 @@ setMethod("mle",
 
 })
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Beta                                                                     ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Beta
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname mle
 setMethod("mle",
@@ -92,10 +96,10 @@ setMethod("mle",
                                 lower = c(1e-5, 1e-5),
                                 upper = c(Inf, Inf)) {
 
-  dn <- list(prm = c("shape1", "shape2"), sam = 1:ncol(x))
+  dn <- list(prm = c("shape1", "shape2"), sam = seqcol(x))
   y  <- matrix(0, nrow = 2, ncol = ncol(x), dimnames = dn)
 
-  for (j in 1:ncol(x)) {
+  for (j in seqcol(x)) {
     y[, j] <- optim(par = do.call(par0, list(x = x[ , j], distr = distr)),
                     fn = ll,
                     x = x[ , j],
@@ -127,9 +131,9 @@ setMethod("acov_mle",
 
 })
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Gamma                                                                    ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Gamma
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname mle
 setMethod("mle",
@@ -154,10 +158,10 @@ setMethod("mle",
                                 lower = c(1e-5, 1e-5),
                                 upper = c(Inf, Inf)) {
 
-  dn <- list(prm = c("shape", "scale"), sam = 1:ncol(x))
+  dn <- list(prm = c("shape", "scale"), sam = seqcol(x))
   y  <- matrix(0, nrow = 2, ncol = ncol(x), dimnames = dn)
 
-  for (j in 1:ncol(x)) {
+  for (j in seqcol(x)) {
     y[, j] <- optim(par = do.call(par0, list(x = x[ , j], distr = distr)),
                     fn = ll,
                     x = x[ , j],
@@ -193,9 +197,9 @@ setMethod("acov_mle",
 
 })
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Dirichlet                                                                ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Dirichlet
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname mle
 setMethod("mle",
@@ -238,9 +242,9 @@ setMethod("acov_mle",
 
 })
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Multivariate Gamma                                                       ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Multivariate Gamma
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname mle
 setMethod("mle",

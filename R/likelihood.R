@@ -70,6 +70,9 @@ setMethod("ll",
           definition = function(prm, x, distr) {
 
   k <- length(prm)
-  sum(apply(x, MARGIN = 2, FUN = dMGamma, shape = prm[1:(k-1)], scale = prm[k], log = TRUE))
+  sum(apply(x,
+            MARGIN = 2,
+            FUN = dMGamma,
+            shape = prm[1:(k - 1)], scale = prm[k], log = TRUE))
 
 })

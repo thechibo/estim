@@ -2,6 +2,10 @@
 # Moment Estimator                                                          ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Generics
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #' @title Moment Estimator
 #'
 #' @description
@@ -38,7 +42,8 @@ setMethod("me",
 })
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Beta                   ----
+# Beta
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname me
 setMethod("me",
@@ -61,7 +66,7 @@ setMethod("me",
   d  <- (m - m2) / (m2 - m ^ 2)
   a  <- d * m
   b  <- d * (1 - m)
-  dn <- list(prm = c("shape1", "shape2"), sam = 1:ncol(x))
+  dn <- list(prm = c("shape1", "shape2"), sam = seqcol(x))
   matrix(c(a, b), nrow = 2, byrow = TRUE, dimnames = dn)
 
 })
@@ -80,7 +85,8 @@ setMethod("acov_me",
   s2  <- prd / (th2 * (th + 1))
   s4  <- s2 ^ 2
   m3  <- 2 * (b - a) * s2 / (th * (th + 2))
-  m4  <- 3 * prd * (prd * (th + 2) + 2 * (b - a) ^2) / ((th ^ 4) * (th + 1) * (th + 2) * (th + 3))
+  m4  <- 3 * prd * (prd * (th + 2) + 2 * (b - a) ^2) /
+            ((th ^ 4) * (th + 1) * (th + 2) * (th + 3))
   d   <- (th + 1) ^ 2 * (th + 2) ^ 2 * s2
   e   <- (th + 1) ^ 3 * (m4 - s4 - m3 ^ 2 / s2) / s2
 
@@ -92,7 +98,8 @@ setMethod("acov_me",
 })
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Gamma                  ----
+# Gamma
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname me
 setMethod("me",
@@ -115,7 +122,7 @@ setMethod("me",
   a  <- m ^ 2 / s2
   b  <- s2 / m
 
-  dn <- list(prm = c("shape", "scale"), sam = 1:ncol(x))
+  dn <- list(prm = c("shape", "scale"), sam = seqcol(x))
   matrix(c(a, b), nrow = 2, byrow = TRUE, dimnames = dn)
 
 })
@@ -136,7 +143,8 @@ setMethod("acov_me",
 })
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Dirichlet              ----
+# Dirichlet
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname me
 setMethod("me",
@@ -177,7 +185,9 @@ setMethod("acov_me",
 
   c22 <- - 2 * (2 * a0 + 3) / (a0 ^ 2 * (a0 + 1) ^ 2 * (a0 + 2) * (a0 + 3))
   B22 <- c22 * Matrix(a * (a + 1), k, 1) %*% Matrix(a * (a + 1), 1, k)
-  diag(B22) <- (a * (a + 1) * (a + 2) * (a + 3)) / (a0 * (a0 + 1) * (a0 + 2) * (a0 + 3)) - (a * (a + 1) / (a0 * (a0 + 1))) ^ 2
+  diag(B22) <- (a * (a + 1) * (a + 2) * (a + 3)) /
+                (a0 * (a0 + 1) * (a0 + 2) * (a0 + 3)) -
+                  (a * (a + 1) / (a0 * (a0 + 1))) ^ 2
   B22 <- nearPD(B22)
 
   B <- rbind(cbind(B11, B12),
@@ -194,7 +204,8 @@ setMethod("acov_me",
 })
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Multivariate Gamma     ----
+# Multivariate Gamma
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname me
 setMethod("me",

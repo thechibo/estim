@@ -4,7 +4,7 @@
 \name{estimators-package}
 \alias{estimators}
 \alias{estimators-package}
-\title{estimators: Distribution Parameter Estimation Methods}
+\title{estimators: Parameter Estimation Methods in Common Distribution Families}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
@@ -14,6 +14,7 @@ This package provides estimators for parameters of common distribution families.
 Useful links:
 \itemize{
   \item \url{https://thechibo.github.io/estimators/}
+  \item Report bugs at \url{https://github.com/thechibo/estimators/issues}
 }
 
 }

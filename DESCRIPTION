@@ -1,16 +1,19 @@
 Package: estimators
-Title: Distribution Parameter Estimation Methods
-Version: 0.4.0
+Title: Parameter Estimation Methods in Common Distribution Families
+Version: 0.5.0
 Authors@R: c(
-    person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr", role = c("aut", "cre"),
+    person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr",
+           role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8130-2104")),
-    person("Samis", "Trevezas", , "strevezas@math.uoa.gr", role = c("aut", "ths"),
+    person("Samis", "Trevezas", , "strevezas@math.uoa.gr",
+           role = c("aut", "ths"),
            comment = c(ORCID = "0000-0003-2262-8299"))
   )
 Description: This package provides estimators for parameters of common
     distribution families.
 License: GPL (>= 3)
 URL: https://thechibo.github.io/estimators/
+BugReports: https://github.com/thechibo/estimators/issues
 Depends: 
     distr,
     R (>= 4.0.0)

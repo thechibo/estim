@@ -14,12 +14,26 @@ coverage](https://codecov.io/gh/thechibo/estimators/branch/main/graph/badge.svg)
 
 ## Introduction
 
-The estimators R package performs parameter estimation in common
-distribution families.
+The `estimators` R package performs parameter estimation in common
+distribution families, making moment, maximum likelihood, and
+state-of-the-art estimators more accessible.
+
+## Key Features
+
+- Point Estimation: The package offers a comprehensive selection of
+  moment-type estimators, allowing users to quickly and easily estimate
+  distribution parameters from their data.
+- Asymptotic Variance Matrices: In addition to parameter estimates, the
+  package computes and provides asymptotic variance-covariance matrices.
+- Computational Efficiency: The `estimators` R package is designed with
+  computational efficiency in mind. All algorithms are optimized to
+  handle large datasets with minimal computation time, ensuring that
+  users can perform parameter estimation even with substantial data
+  volumes.
 
 ## Installation
 
-You can install the development version of estimators from github by
+You can install the development version of `estimators` from github by
 running the following line of code:
 
 ``` r
@@ -37,7 +51,7 @@ in the package vignette
 
 ## Team
 
-The estimators package is developed in the [Mathematics
+The `estimators` package is developed in the [Mathematics
 Department](https://en.math.uoa.gr/ "Mathematics Department Homepage")
 of the [University of
 Athens](https://en.uoa.gr/ "University of Athens Homepage"). The package

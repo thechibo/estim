@@ -67,6 +67,7 @@ setMethod("dlloptim",
   db <- - xk / par ^ 2
   da <- 1 / (par * trigamma(a))
 
-  - sum(da) * log(b) - sum(a) * db / b - sum(digamma(a) * da) + xk * db / b ^ 2 + sum(logz * da)
+  - sum(da) * log(b) - sum(a) * db / b - sum(digamma(a) * da) +
+      xk * db / b ^ 2 + sum(logz * da)
 
 })

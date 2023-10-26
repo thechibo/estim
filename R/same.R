@@ -2,6 +2,10 @@
 # Score-Adjusted Moment Estimator
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Generics
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 #' @title Score-Adjusted Moment Estimator
 #'
 #' @description
@@ -70,7 +74,7 @@ setMethod("same",
   a <- mx / (sx + sy)
   b <- my / (sx + sy)
 
-  dn <- list(prm = c("shape1", "shape2"), sam = 1:ncol(x))
+  dn <- list(prm = c("shape1", "shape2"), sam = seqcol(x))
   matrix(c(a, b), nrow = 2, byrow = TRUE, dimnames = dn)
 
 })
@@ -121,7 +125,7 @@ setMethod("same",
   b <- mxlx - mx * mlx
   a  <- mx / b
 
-  dn <- list(prm = c("shape", "scale"), sam = 1:ncol(x))
+  dn <- list(prm = c("shape", "scale"), sam = seqcol(x))
   matrix(c(a, b), nrow = 2, byrow = TRUE, dimnames = dn)
 
 })
@@ -202,7 +206,8 @@ setMethod("acov_same",
   B332 <- Matrix(c332, k, 1) %*% Matrix(c332, 1, k)
 
   B33 <- A2 * (B331 - trigamma(a0 + 2)) / (a0 * (a0 + 1)) - A2 * B332 / (a0 ^ 2)
-  diag(B33) <- (Ddigamma(a + 2, a0 + 2) ^ 2 + Dtrigamma(a + 2, a0 + 2))  * a * (a + 1) / (a0 * (a0 + 1)) - (Ddigamma(a + 1, a0 + 1) * a / a0) ^ 2
+  diag(B33) <- (Ddigamma(a + 2, a0 + 2) ^ 2 + Dtrigamma(a + 2, a0 + 2))  *
+        a * (a + 1) / (a0 * (a0 + 1)) - (Ddigamma(a + 1, a0 + 1) * a / a0) ^ 2
   B33 <- nearPD(B33)
 
   B12 <- Ik / a0 - Matrix(a, k, 1) %*% Matrix(1, 1, k) / a0 ^ 2

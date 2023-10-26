@@ -24,11 +24,11 @@ function of a single parameter, keeping the others constant. See Details.
 \examples{
 \dontrun{
 # Distribution
-d_beta <- Beta(shape1 = 1, shape2 = 1.5)
+D <- Beta(shape1 = 1, shape2 = 1.5)
 
 # Simulation
 set.seed(2)
-x <- r(d_beta)(50)
+x <- r(D)(50)
 
 # Estimation
 me(x, "Beta")
@@ -36,8 +36,8 @@ same(x, "Beta")
 mle(x, "Beta")
 
 # Asymptotic Covariance Matrix
-acov_me(d_beta)
-acov_same(d_beta)
-acov_mle(d_beta)
+acov_me(D)
+acov_same(D)
+acov_mle(D)
 }
 }

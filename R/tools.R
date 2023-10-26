@@ -13,6 +13,14 @@ loading_bar <- function(total) {
 
 }
 
+seqcol <- function(x) {
+  seq_along(x[1, ])
+}
+
+seqrow <- function(x) {
+  seq_along(x[ , 1])
+}
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Structures
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -91,36 +99,56 @@ s2 <- function(x) {
 # Gamma Function
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+#' @title Polygamma Functions
+#'
+#' @description
+#' This set of functions revolve around the polygamma functions.
+#'
+#' @param x,y numeric. The points to evaluate the function.
+#' @param p integer. The p-variate Gamma function.
+#' @param log logical. Should the logarithm of the result be returned?
+#'
+#' @describeIn idigamma inverse digamma function.
+#'
+#' @return numeric. The evaluated function.
+#'
+#' @importFrom distr igamma
+#' @export
+#'
+#' @seealso [distr::igamma()]
+#'
+#' @examples \dontrun{
+#' idigamma(2)
+#' Ddigamma(2, 3)
+#' Dtrigamma(2, 3)
+#' gammap(1:3, 3)
+#' }
 idigamma <- function(x) {
   distr::igamma(x)
 }
 
-# Digamma Difference
+#' @describeIn idigamma digamma difference function.
 Ddigamma <- function(x, y) {
   digamma(x) - digamma(y)
 }
 
-# Trigamma Difference
+#' @describeIn idigamma trigamma difference function.
 Dtrigamma <- function(x, y) {
   trigamma(x) - trigamma(y)
 }
 
-# p-variate Gamma function
-gammap <- function(x, p) {
-  g <- x
-  for (i in seq_along(x)) {
-    g[i] <- pi ^ (p * (p - 1) / 4) * prod(gamma(x[i] + (1 - 1:p) / 2))
-  }
-  g
-}
+#' @describeIn idigamma p-variate gamma function
+gammap <- function(x, p, log = FALSE) {
 
-# logarithm of p-variate Gamma function
-lgammap <- function(x, p) {
   g <- x
+
   for (i in seq_along(x)) {
   g[i] <- (p * (p - 1) / 4) * log(pi)  + sum(lgamma(x[i] + (1 - 1:p) / 2))
   }
+
+  if (!log) { g <- exp(g) }
   g
+
 }
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~

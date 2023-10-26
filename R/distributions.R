@@ -41,7 +41,7 @@ dDirichlet <- function(x, shape, log = FALSE) {
          length(shape), ") must be equal.")
   }
 
-  ld <- log(gamma(sum(shape))) - sum(log(gamma(shape))) + sum((shape - 1) * log(x))
+  ld <- lgamma(sum(shape)) - sum(lgamma(shape)) + sum((shape - 1) * log(x))
 
   if (!log) {
     ld <- exp(ld)
@@ -177,9 +177,10 @@ dMGamma <- function(x, shape, scale, log = FALSE) {
   }
 
   z <- fd(x)
+  xk <- x[length(x)]
   a0 <- sum(shape)
 
-  ld <- - a0 * log(scale) - sum(lgamma(shape)) - x[length(x)] / scale + sum(shape * log(z))
+  ld <- sum(shape * log(z)) - a0 * log(scale) - sum(lgamma(shape)) - xk / scale
 
   if (!log) {
     ld <- exp(ld)
