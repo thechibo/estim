@@ -124,8 +124,8 @@ metrics <- function(D0, prm,
 #'
 #' @return The plot is returned invisibly in the form of a `ggplot` object.
 #'
-#' @import ggplot2 ggplot geom_line aes labs facet_grid vars scale_color_manual
-#' @import ggplot2 theme_minimal theme element_text unit
+#' @importFrom ggplot2 ggplot geom_line aes labs facet_grid vars
+#' @importFrom ggplot2 scale_color_manual theme_minimal theme element_text unit
 #' @export
 #'
 #' @seealso [metrics()]

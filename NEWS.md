@@ -1,3 +1,7 @@
+# estimators 0.5.2
+
+* Fixed a bug in dependencies.
+
 # estimators 0.5.1
 
 * Fixed a bug in Description.
