@@ -1,6 +1,6 @@
 Package: estimators
 Title: Parameter Estimation Methods in Common Distribution Families
-Version: 0.5.2
+Version: 0.6.0
 Authors@R: c(
     person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr",
            role = c("aut", "cre"),
@@ -18,6 +18,7 @@ Depends:
     distr,
     R (>= 4.0.0)
 Imports:
+    ggh4x,
     ggplot2,
     grDevices,
     Matrix,

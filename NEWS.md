@@ -1,3 +1,8 @@
+# estimators 0.6.0
+
+* Added MGamma SAME estimator.
+* Upgraded acov, plot_acov to include covariances.
+
 # estimators 0.5.2
 
 * Fixed a bug in dependencies.

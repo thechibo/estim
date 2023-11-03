@@ -8,6 +8,7 @@
 #' @importFrom methods slot
 #' @importFrom methods slot<-
 #' @importFrom methods slotNames
+#' @importFrom stats cov
 #' @importFrom stats dbeta
 #' @importFrom stats dgamma
 #' @importFrom stats optim
