@@ -14,7 +14,7 @@ family of distributions."><meta property="og:image" content="/logo.png"><!-- mat
     
     <a class="navbar-brand me-2" href="../index.html">estimators</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -48,7 +48,7 @@ family of distributions."><meta property="og:image" content="/logo.png"><!-- mat
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Moment Estimator</h1>
-      <small class="dont-index">Source: <a href="https://github.com/thechibo/estimators/blob/HEAD/R/me.R" class="external-link"><code>R/me.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/thechibo/estimators/blob/HEAD/R/01_generics.R" class="external-link"><code>R/01_generics.R</code></a>, <a href="https://github.com/thechibo/estimators/blob/HEAD/R/02_Beta.R" class="external-link"><code>R/02_Beta.R</code></a>, <a href="https://github.com/thechibo/estimators/blob/HEAD/R/02_Dirichlet.R" class="external-link"><code>R/02_Dirichlet.R</code></a>, and 2 more</small>
       <div class="d-none name"><code>me.Rd</code></div>
     </div>
 
@@ -65,10 +65,18 @@ family of distributions.</p>
 <span><span class="co"># S4 method for ANY,character</span></span>
 <span><span class="fu">me</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
+<span><span class="fu">me2</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for ANY,character</span></span>
+<span><span class="fu">me2</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span>, <span class="va">...</span><span class="op">)</span></span>
+<span></span>
 <span><span class="co"># S4 method for numeric,Beta</span></span>
 <span><span class="fu">me</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for matrix,Beta</span></span>
+<span><span class="fu">me</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># S4 method for matrix,Dirichlet</span></span>
 <span><span class="fu">me</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for numeric,Gammad</span></span>
@@ -77,11 +85,11 @@ family of distributions.</p>
 <span><span class="co"># S4 method for matrix,Gammad</span></span>
 <span><span class="fu">me</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># S4 method for matrix,Dirichlet</span></span>
+<span><span class="co"># S4 method for matrix,MGamma</span></span>
 <span><span class="fu">me</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for matrix,MGamma</span></span>
-<span><span class="fu">me</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">me2</span><span class="op">(</span><span class="va">x</span>, <span class="va">distr</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
