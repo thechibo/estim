@@ -6,7 +6,7 @@
 \usage{
 plot_acov(
   x,
-  colors,
+  colors = NULL,
   save = FALSE,
   path = getwd(),
   name = "myplot.pdf",

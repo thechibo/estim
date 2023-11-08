@@ -225,7 +225,7 @@ setMethod("dlloptim",
 setMethod("mle",
           signature  = c(x = "matrix", distr = "MGamma"),
           definition = function(x, distr,
-                                par0 = same,
+                                par0 = "same",
                                 method = "L-BFGS-B",
                                 lower = 1e-5,
                                 upper = Inf) {
@@ -233,11 +233,12 @@ setMethod("mle",
   k <- nrow(x)
   logz <- rowMeans(log(fd(x)))
   xk <- mean(x[k, ])
+  tx <- c(logz, xk)
 
   par <- optim(par = sum(do.call(par0, list(x = x, distr = distr))[1:k]),
                fn = lloptim,
                gr = dlloptim,
-               tx = c(logz, xk),
+               tx = tx,
                distr = distr,
                method = method,
                lower = lower,
@@ -297,6 +298,34 @@ setMethod("me",
 setMethod("acov_me",
           signature  = c(distr = "MGamma"),
           definition = function(distr) {
+
+  # Preliminaries
+  a <- distr::shape(distr)
+  b <- distr::scale(distr)
+  k <- length(a)
+  a0 <- sum(a)
+
+  # Matrix A
+  A11 <- (Matrix(2 + 1 / a, k, 1) %*% Matrix(a, 1, k) /k + diag(1, k, k)) / b
+  A21 <- - Matrix(1 / a, k, 1) %*% Matrix(a, 1, k) / (k * b ^ 2)
+  A12 <- - (2 + 1 / a) / k
+  A22 <- 1 / (a * k * b)
+  A <- cbind(rbind(A11, A21), Matrix(c(A12, A22), 2 * k, 1))
+
+  # Matrix B
+  B11 <- a * b ^ 2
+  B22 <- 2 * a * (a + 1) * b ^ 4 * ( 2 * a + 3)
+  B12 <- 2 * a * (a + 1) * b ^ 3
+  B <- rbind(cbind(diag(B11), diag(B12)),
+             cbind(diag(B12), diag(B22)))
+  B <- nearPD(B)
+
+  # Matrix D
+  D <- nearPD(Matrix::t(A) %*% B %*% A)
+  D <- as.matrix(D)
+  rownames(D) <- c(paste0("shape", seq_along(a)), "scale")
+  colnames(D) <- c(paste0("shape", seq_along(a)), "scale")
+  D
 
 })
 

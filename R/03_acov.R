@@ -78,12 +78,18 @@ acov <- function(D0, prm, est = c("same", "me", "mle")) {
 #' @seealso [acov()]
 #' @inherit mle examples
 plot_acov <- function(x,
-                      colors,
+                      colors = NULL,
                       save = FALSE,
                       path = getwd(),
                       name = "myplot.pdf",
                       width = 15,
                       height = 8) {
+
+  # Colors
+  if (is.null(colors)) {
+    colors <- c("#0073C2", "#CD534C", "#EFC000", "#868686", "#003C67",
+                "#7AA6DC", "#A73030", "#8F7700", "#3B3B3B", "#4A6990")
+  }
 
   # Global variable binding
   Row <- Col <- Parameter <- Estimator <- Value <- NULL
@@ -109,7 +115,7 @@ plot_acov <- function(x,
                        cols = ggplot2::vars(Col),
                        scales = "free",
                        independent = "y") +
-    ggplot2::scale_color_manual(values = colors) +
+    ggplot2::scale_color_manual(values = colors[seq_along(unique(x$Estimator))]) +
     ggplot2::theme_minimal() +
     ggplot2::theme(text = ggplot2::element_text(size = 25),
                    legend.key.size = ggplot2::unit(2, 'cm'),
@@ -118,7 +124,9 @@ plot_acov <- function(x,
   plot(p)
 
   # Close the device
-  if (save) grDevices::dev.off()
+  if (save) {
+    grDevices::dev.off()
+  }
 
   # Return the plot
   invisible(p)

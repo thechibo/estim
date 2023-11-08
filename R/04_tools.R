@@ -21,6 +21,10 @@ seqrow <- function(x) {
   seq_along(x[ , 1])
 }
 
+is_pos <- function(x) {
+  all(is.finite(x)) && all(x > 0)
+}
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Structures             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~

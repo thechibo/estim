@@ -187,24 +187,24 @@ setMethod("dlloptim",
 setMethod("mle",
           signature  = c(x = "matrix", distr = "Dirichlet"),
           definition = function(x, distr,
-                                par0 = same,
+                                par0 = "same",
                                 method = "L-BFGS-B",
                                 lower = 1e-5,
                                 upper = Inf) {
 
   tx  <- rowMeans(log(x))
 
-  a0 <- optim(par = sum(do.call(par0, list(x = x, distr = distr))),
-              fn = lloptim,
-              gr = dlloptim,
-              tx = tx,
-              distr = distr,
-              method = method,
-              lower = lower,
-              upper = upper,
-              control = list(fnscale = -1))$par
+  par <- optim(par = sum(do.call(par0, list(x = x, distr = distr))),
+               fn = lloptim,
+               gr = dlloptim,
+               tx = tx,
+               distr = distr,
+               method = method,
+               lower = lower,
+               upper = upper,
+               control = list(fnscale = -1))$par
 
-  shape <- idigamma(digamma(a0) + tx)
+  shape <- idigamma(digamma(par) + tx)
 
   names(shape) <- paste0("shape", seq_along(shape))
   shape
