@@ -12,8 +12,184 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(distr)
 ```
+
+The `estimators` package offers a few convienient functions for parameter estimation in statistics. This guide provides an overview of the package's capabilities.
 
 ```{r setup}
 library(estimators)
 ```
+
+## Distributions
+
+There are two popular ways to work with distributions in R. The default `stats` package includes four functions for each distribution.
+
+```{r}
+shape1 <- 1
+shape2 <- 2
+
+dbeta(0.5, shape1, shape2)
+pbeta(0.5, shape1, shape2)
+qbeta(0.75, shape1, shape2)
+rbeta(2, shape1, shape2)
+```
+
+The `distr` package S4 system equivalent defines a `Distribution` object and implements the four functions generically.
+
+```{r eval = FALSE}
+library(distr)
+```
+
+```{r}
+D <- Beta(shape1 = shape1, shape2 = shape2)
+
+d(D)(0.5)
+p(D)(0.5)
+q(D)(0.75)
+r(D)(2)
+```
+
+### New Distributions
+
+The `estimators` package covers the Dirichlet and the Multivariate Gamma distributions. Since both are multivariate distributions, only the density (d) and the simulation (r) functions are implemented.
+
+```{r}
+shape <- 1:3
+scale <- 2
+
+set.seed(1)
+x1 <- rdirich(100, shape)
+x2 <- rmgamma(100, shape, scale)
+
+ddirich(x1[, 1], shape)
+dmgamma(x2[, 1], shape, scale)
+```
+
+The same utilities are offered in the S4 method style of the `distr` package.
+
+```{r}
+D1 <- Dirichlet(shape)
+D2 <- MGamma(shape, scale)
+
+set.seed(1)
+x1 <- r(D1)(100)
+x2 <- r(D2)(100)
+
+d(D1)(x1[, 1])
+d(D2)(x2[, 1])
+```
+
+## Parameter Estimation
+
+In order to illustrate the parameter estimation as implemented in the package, a random sample is generated from the Beta distribution.
+
+```{r}
+set.seed(1)
+x <- rbeta(100, shape1, shape2)
+D <- Beta(shape1, shape2)
+```
+
+### Likelihood - The `ll` Functions
+
+The package implements the `ll` functions that calculate the log-likelihood. They are offered in two versions, the distribution specific one (`llbeta`) and the S4 generic one (`ll`).
+
+```{r}
+llbeta(x, shape1, shape2)
+ll(x, c(shape1, shape2), D)
+```
+
+It is important to note that the S4 methods also accept a character for the distribution. The name should be the same as the S4 distribution generator, case ignored (i.e. "Dirichlet" or "dirichlet" but not "dirich").
+
+```{r}
+ll(x, c(shape1, shape2), "beta")
+```
+
+### Point Estimation
+
+Point estimation functions are also offered in two versions, the distribution specific one (`ebeta`) and the S4 generic one (`mle`, `me`, and `same`). In the first case, the `type` argument can be used to specify the estimator type.
+
+```{r}
+ebeta(x, type = "mle")
+ebeta(x, type = "me")
+ebeta(x, type = "same")
+
+mle(x, D)
+me(x, D)
+same(x, D)
+```
+
+A general function `estim` is implemented, covering all distributions and estimators. This is in fact the main function of the package.
+
+```{r}
+estim(x, D, type = "mle")
+```
+
+Again, the S4 methods also accept a character for the distribution, case ignored.
+
+```{r}
+mle(x, "beta")
+estim(x, "Beta", type = "mle")
+```
+
+## Asymptotic Variance
+
+The asymptotic variance (or variance - covariance matrix) of the estimators are also covered in the package. As with point estimation, the implementation is twofold, distribution specific (`vbeta`) and S4 generic (`avar_mle`, `avar_me`, and `avar_same`). In the first case, the `type` argument can be used to specify the estimator type.
+
+```{r}
+vbeta(shape1, shape2, type = "mle")
+vbeta(shape1, shape2, type = "me")
+vbeta(shape1, shape2, type = "same")
+
+avar_mle(D)
+avar_me(D)
+avar_same(D)
+```
+
+The general function `avar` covers all distributions and estimators.
+
+```{r}
+avar(D, type = "mle")
+```
+
+## Estimator Metrics
+
+The estimators can be compared based on both finite sample and asymptotic properties. The package includes the functions `small_metrics` and `large_metrics`, where small and large refers to the "small sample" and "large sample" terms that are often used for the two cases. The first one estimates the bias, variance and rmse of the estimator with Monte Carlo simulations, while the latter calculates the asymptotic variance - covariance matrix. The resulting data frames can be plotted with the functions `plot_small_metrics` and `plot_large_metrics`, respectively.
+
+The functions get a `distribution` object and a parameter list that specifies which parameter should change and how. The metric of interest is evaluated as a function of this parameter. Specifically, `prm` includes three elements named "name", "pos", and "val". The first two elements determine the exact parameter that changes, while the third one is a numeric vector holding the values it takes. For example, in the case of the Multivariate Gamma distribution,
+`D <- MGamma(shape = c(1, 2), scale = 3)` and `prm <- list(name = "shape", pos = 2, val = seq(1, 1.5, by = 0.1))` means that the evaluation will be performed for the MGamma distributions with
+shape parameters `(1, 1)`, `(1, 1.1)`, ..., `(1, 1.5)` and scale `3`. Notice that the initial shape parameter `2` in `D` is not utilized in the function.
+
+The following example concerns the small sample metrics for the Dirichlet distribution estimators.
+
+```{r, fig.width=15, fig.height=8, out.width="100%"}
+prm <- list(name = "shape",
+            pos = 1,
+            val = seq(1, 5, by = 0.5))
+
+x <- small_metrics(D1, prm,
+             obs = c(20, 50),
+             est = c("mle", "same", "me"),
+             sam = 5e3,
+             seed = 1)
+
+head(x)
+
+plot_small_metrics(x)
+```
+
+The following example concerns the large sample metrics for the Beta distribution estimators.
+
+```{r, fig.width=15, fig.height=8, out.width="100%"}
+prm <- list(name = "shape1",
+            pos = NULL,
+            val = seq(1, 5, by = 0.1))
+
+x <- large_metrics(D, prm,
+                   est = c("mle", "same", "me"))
+
+head(x)
+
+plot_large_metrics(x)
+```
+

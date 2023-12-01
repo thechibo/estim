@@ -45,6 +45,7 @@ get_distr_class <- function(distr) {
 
 }
 
+# Turn an S4 object to a list
 s4_to_list <- function(object) {
 
   # Get the slot names
@@ -62,25 +63,36 @@ s4_to_list <- function(object) {
 
 }
 
-get_params <- function(D0) {
-  params <- methods::slot(D0, "param")
+# Get the parameters of a distribution
+get_params <- function(D) {
+  params <- methods::slot(D, "param")
   params <- s4_to_list(params)
   params["name"] <- NULL
   params["ncp"] <- NULL
   unlist(params)
 }
 
-update_params <- function(D0, prm, i) {
+get_unknown_params <- function(D) {
+  prm <- get_params(D)
+  if (is(D, "Binom")) {
+    return(prm["prob"])
+  } else {
+    return(prm)
+  }
+}
+
+# Update the distribution parameters
+update_params <- function(D, prm, i) {
 
   # Position of parameter (e.g. the third element of the shape parameter vector)
   if (is.null(prm$pos)) {
     prm$pos <- 1
   }
 
-  params <- methods::slot(D0, "param")
+  params <- methods::slot(D, "param")
   slot(params, prm$name)[prm$pos] <- prm$val[i]
 
-  x <- c(s4_to_list(params), Class = class(D0))
+  x <- c(s4_to_list(params), Class = class(D))
   x["name"] <- NULL
 
   do.call("new", x)
@@ -99,12 +111,30 @@ array_to_df <- function(x) {
 
 }
 
+set1of1 <- function(x, i) {
+  x
+}
+
+set1of2 <- function(x, i) {
+  x[i, ]
+}
+
+set2of3 <- function(x, i) {
+  x[, i, ]
+}
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Statistics             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-s2 <- function(x) {
+# Biased variance
+bvar <- function(x) {
   ((length(x) - 1) / length(x)) * var(x)
+}
+
+# Biased standard deviation
+bsd <- function(x) {
+  sqrt(bvar(x))
 }
 
 rowVar <- function(x) {
@@ -222,6 +252,18 @@ is_pd <- function(x) {
 
   pd
 
+}
+
+inv2x2 <- function(x) {
+  det <- x[1, 1] * x[2, 2] - x[1, 2] * x[2, 1]
+
+  if (det == 0) {
+    return("The matrix is singular, its inverse does not exist.")
+  } else {
+    inv <- matrix(c(x[2, 2], -x[2, 1], -x[1, 2], x[1, 1]), nrow = 2)
+    inv <- inv / det
+    return(inv)
+  }
 }
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~

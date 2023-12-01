@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">estimators</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -59,27 +59,27 @@
 
       <dl><dt>
           
-          <code><a href="acov.html">acov()</a></code> 
+          <code><a href="avar.html">avar()</a></code> <code><a href="avar.html">vbeta()</a></code> <code><a href="avar.html">vbinom()</a></code> <code><a href="avar.html">vdirich()</a></code> <code><a href="avar.html">vexp()</a></code> <code><a href="avar.html">vgamma()</a></code> <code><a href="avar.html">vmgamma()</a></code> <code><a href="avar.html">vnorm()</a></code> <code><a href="avar.html">vpois()</a></code> 
         </dt>
-        <dd>Calculate the Asymptotic Variance</dd>
+        <dd>Asymptotic Variance</dd>
       </dl><dl><dt>
           
-          <code><a href="acov_me.html">acov_me()</a></code> <code><a href="acov_me.html">acov_me2()</a></code> 
+          <code><a href="avar_me.html">avar_me()</a></code> 
         </dt>
-        <dd>Asymptotic covariance matrix of estimator</dd>
+        <dd>ME Asymptotic Variance</dd>
       </dl><dl><dt>
           
-          <code><a href="acov_mle.html">acov_mle()</a></code> 
+          <code><a href="avar_mle.html">avar_mle()</a></code> 
         </dt>
-        <dd>Asymptotic covariance matrix of estimator</dd>
+        <dd>MLE Asymptotic Variance</dd>
       </dl><dl><dt>
           
-          <code><a href="acov_same.html">acov_same()</a></code> <code><a href="acov_same.html">acov_same2()</a></code> 
+          <code><a href="avar_same.html">avar_same()</a></code> 
         </dt>
-        <dd>Asymptotic covariance matrix of estimator</dd>
+        <dd>SAME Asymptotic Variance</dd>
       </dl><dl><dt>
           
-          <code><a href="dDirichlet.html">dDirichlet()</a></code> <code><a href="dDirichlet.html">rDirichlet()</a></code> 
+          <code><a href="ddirich.html">ddirich()</a></code> <code><a href="ddirich.html">rdirich()</a></code> 
         </dt>
         <dd>The Dirichlet Distribution</dd>
       </dl><dl><dt>
@@ -89,9 +89,14 @@
         <dd>Dirichlet Distribution S4 Class</dd>
       </dl><dl><dt>
           
-          <code><a href="dMGamma.html">dMGamma()</a></code> <code><a href="dMGamma.html">rMGamma()</a></code> 
+          <code><a href="dmgamma.html">dmgamma()</a></code> <code><a href="dmgamma.html">rmgamma()</a></code> 
         </dt>
         <dd>The Multivariate Gamma Distribution</dd>
+      </dl><dl><dt>
+          
+          <code><a href="estim.html">estim()</a></code> <code><a href="estim.html">ebeta()</a></code> <code><a href="estim.html">ebinom()</a></code> <code><a href="estim.html">edirich()</a></code> <code><a href="estim.html">eexp()</a></code> <code><a href="estim.html">egamma()</a></code> <code><a href="estim.html">emgamma()</a></code> <code><a href="estim.html">enorm()</a></code> <code><a href="estim.html">epois()</a></code> 
+        </dt>
+        <dd>Parameter Estimation</dd>
       </dl><dl><dt>
           
           <code><a href="idigamma.html">idigamma()</a></code> <code><a href="idigamma.html">Ddigamma()</a></code> <code><a href="idigamma.html">Dtrigamma()</a></code> <code><a href="idigamma.html">gammap()</a></code> 
@@ -99,19 +104,19 @@
         <dd>Polygamma Functions</dd>
       </dl><dl><dt>
           
-          <code><a href="ll.html">ll()</a></code> 
+          <code><a href="large_metrics.html">large_metrics()</a></code> 
+        </dt>
+        <dd>Large Sample Metrics</dd>
+      </dl><dl><dt>
+          
+          <code><a href="ll.html">ll()</a></code> <code><a href="ll.html">llbeta()</a></code> <code><a href="ll.html">llbinom()</a></code> <code><a href="ll.html">lldirich()</a></code> <code><a href="ll.html">llexp()</a></code> <code><a href="ll.html">llgamma()</a></code> <code><a href="ll.html">llmgamma()</a></code> <code><a href="ll.html">llnorm()</a></code> <code><a href="ll.html">llpois()</a></code> 
         </dt>
         <dd>Log-Likelihood</dd>
       </dl><dl><dt>
           
-          <code><a href="me.html">me()</a></code> <code><a href="me.html">me2()</a></code> 
+          <code><a href="me.html">me()</a></code> 
         </dt>
-        <dd>Moment Estimator</dd>
-      </dl><dl><dt>
-          
-          <code><a href="metrics.html">metrics()</a></code> 
-        </dt>
-        <dd>Calculate Metrics</dd>
+        <dd>Moment Estimation</dd>
       </dl><dl><dt>
           
           <code><a href="MGamma-class.html">MGamma-class</a></code> <code><a href="MGamma-class.html">MGamma</a></code> 
@@ -121,22 +126,27 @@
           
           <code><a href="mle.html">mle()</a></code> 
         </dt>
-        <dd>Maximum Likelihood Estimator</dd>
+        <dd>Maximum Likelihood Estimation</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_acov.html">plot_acov()</a></code> 
+          <code><a href="plot_large_metrics.html">plot_large_metrics()</a></code> 
         </dt>
-        <dd>Plot the Asymptotic Covariance</dd>
+        <dd>Plot Large Sample Metrics</dd>
       </dl><dl><dt>
           
-          <code><a href="plot_metrics.html">plot_metrics()</a></code> 
+          <code><a href="plot_small_metrics.html">plot_small_metrics()</a></code> 
         </dt>
-        <dd>Plot Metrics</dd>
+        <dd>Plot Small Sample Metrics</dd>
       </dl><dl><dt>
           
-          <code><a href="same.html">same()</a></code> <code><a href="same.html">same2()</a></code> 
+          <code><a href="same.html">same()</a></code> 
         </dt>
-        <dd>Score-Adjusted Moment Estimator</dd>
+        <dd>Score - Adjusted Moment Estimation</dd>
+      </dl><dl><dt>
+          
+          <code><a href="small_metrics.html">small_metrics()</a></code> 
+        </dt>
+        <dd>Small Sample Metrics</dd>
       </dl></div>
   </main></div>
 

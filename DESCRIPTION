@@ -1,6 +1,6 @@
 Package: estimators
 Title: Parameter Estimation Methods in Common Distribution Families
-Version: 0.6.0
+Version: 0.7.0
 Authors@R: c(
     person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr",
            role = c("aut", "cre"),
@@ -15,9 +15,9 @@ License: GPL (>= 3)
 URL: https://thechibo.github.io/estimators/
 BugReports: https://github.com/thechibo/estimators/issues
 Depends: 
-    distr,
     R (>= 4.0.0)
 Imports:
+    distr,
     ggh4x,
     ggplot2,
     grDevices,

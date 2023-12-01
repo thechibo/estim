@@ -1,19 +1,16 @@
-test_consistency <- function(est, D0, n = 1e4, seed = 1) {
+test_consistency <- function(est, D0, n = 1e4, seed = 1, ...) {
 
   # Random Sampling
   set.seed(seed)
   sam <- distr::r(D0)(n)
 
-  # Estimation
-  d <- max(abs(get_params(D0) - do.call(est, list(x = sam, distr = D0))))
-
-  # Report
-  cat("Maximum Absolute Distance: ", d, "\n")
-  invisible(d)
+  # Return
+  list(prm_true = get_params(D0),
+       prm_est = do.call(est, list(x = sam, distr = D0, ...)))
 
 }
 
-test_acov <- function(est, D0, n = 1e4, m = 1e3, seed = 1) {
+test_avar <- function(est, D0, n = 1e4, m = 1e3, seed = 1, bar = FALSE, ...) {
 
   # Preliminaries
   set.seed(seed)
@@ -21,24 +18,37 @@ test_acov <- function(est, D0, n = 1e4, m = 1e3, seed = 1) {
   y <- matrix(nrow = m, ncol = length(params))
 
   # Loading bar
-  pb <- loading_bar(total = m)
+  if (bar) {
+    pb <- loading_bar(total = m)
+  }
 
+  # Estimation
   for (i in 1:m) {
 
     # Progress Bar
-    pb$tick()
+    if (bar) {
+      pb$tick()
+    }
 
+    # CLT
     sam <- distr::r(D0)(n)
-    y[i, ] <- sqrt(n) * (params - do.call(est, list(x = sam, distr = D0)))
+    y[i, ] <- sqrt(n) * (params - do.call(est, list(x = sam, distr = D0, ...)))
 
   }
 
-  d <- list(acov_sample = var(y),
-            acov_theory = do.call(paste0("acov_", est), list(distr = D0)))
-  d$mad <- max(abs(d$acov_sample - d$acov_theory))
+  # Calculate avar
+  avar_est <- var(y)
+  prm_names <- names(get_params(D0))
 
-  # Report
-  cat("Maximum Absolute Distance: ", d$mad, "\n")
-  invisible(d)
+  if (nrow(avar_est) == 1) {
+    avar_est <- as.vector(avar_est)
+    names(avar_est) <- prm_names
+  } else {
+    dimnames(avar_est) <- list(prm_names, prm_names)
+  }
+
+  # Return
+  list(avar_true = do.call(paste0("avar_", est), list(distr = D0)),
+       avar_est = avar_est)
 
 }

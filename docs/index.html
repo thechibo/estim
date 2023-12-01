@@ -35,7 +35,7 @@
     
     <a class="navbar-brand me-2" href="index.html">estimators</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -83,21 +83,33 @@
 <h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
 <p>The <code>estimators</code> R package performs parameter estimation in common distribution families, making moment, maximum likelihood, and state-of-the-art estimators more accessible.</p>
-</div>
-<div class="section level2">
-<h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
-</h2>
+<div class="section level3">
+<h3 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
+</h3>
 <ul>
-<li>Point Estimation: The package offers a comprehensive selection of moment-type estimators, allowing users to quickly and easily estimate distribution parameters from their data.</li>
-<li>Asymptotic Variance Matrices: In addition to parameter estimates, the package computes and provides asymptotic variance-covariance matrices.</li>
-<li>Computational Efficiency: The <code>estimators</code> R package is designed with computational efficiency in mind. All algorithms are optimized to handle large datasets with minimal computation time, ensuring that users can perform parameter estimation even with substantial data volumes.</li>
+<li>The common d, p, q, r function family for each distribution (e.g. dnorm, pnorm, qnorm, rnorm) is enriched with
+<ul>
+<li>the ll counterpart (e.g. llnorm) that calculates the log-likelihood,</li>
+<li>the e counterpart (e.g. enorm) that performs parameter estimation,</li>
+<li>the v counterpart (e.g. vnorm) that calculates the asymptotic variance-covariance matrix of an estimators.</li>
 </ul>
+</li>
+<li>Distributions not included in base R are made available, such as the Dirichlet and the Multivariate Gamma.</li>
+<li>Parameter estimation is performed analytically instead of numerically for the estimators that can be expressed explicitly.</li>
+<li>Numerical optimization of the MLE (whenever required, e.g. the Beta and Gamma distributions) is performed with computational efficiency, taking advantage of the score equation system to reduce the dimensionality of the optimization.</li>
+<li>Functions to compute and plot common estimator metrics (bias, variance, and RMSE) are included in the package to allow the convenient study and comparison of the estimators.</li>
+<li>All functions can be used with the S4-Distribution system developed by the <code>distr</code> package family.</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of <code>estimators</code> from github by running the following line of code:</p>
+<p>You can install the release version of <code>estimators</code> from CRAN by running the following line of code:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"estimators"</span><span class="op">)</span></span></code></pre></div>
+<p>You can install the development version of <code>estimators</code> from github by running the following line of code:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span> <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"thechibo/estimators"</span><span class="op">)</span></span></code></pre></div>
 <p>More details can be found in the <a href="https://github.com/thechibo/estimators" title="estimators Github repository" class="external-link">estimators Github repository</a>.</p>
 </div>

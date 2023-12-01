@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">estimators</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,7 +22,7 @@
   <a class="nav-link" href="../articles/estimators.html">Get started</a>
 </li>
 <li class="active nav-item">
-  <a class="nav-link" href="../reference/index.html">Reference</a>
+  <a class="nav-link" href="index.html">Reference</a>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
@@ -56,8 +56,6 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">acov_same</span><span class="op">(</span><span class="va">distr</span>, <span class="va">...</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">acov_same2</span><span class="op">(</span><span class="va">distr</span>, <span class="va">...</span><span class="op">)</span></span>
-<span></span>
 <span><span class="co"># S4 method for Beta</span></span>
 <span><span class="fu">acov_same</span><span class="op">(</span><span class="va">distr</span><span class="op">)</span></span>
 <span></span>
@@ -68,10 +66,7 @@
 <span><span class="fu">acov_same</span><span class="op">(</span><span class="va">distr</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for MGamma</span></span>
-<span><span class="fu">acov_same</span><span class="op">(</span><span class="va">distr</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># S4 method for MGamma</span></span>
-<span><span class="fu">acov_same2</span><span class="op">(</span><span class="va">distr</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">acov_same</span><span class="op">(</span><span class="va">distr</span>, type <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -87,6 +82,11 @@
 <dt>comp</dt>
 <dd><p>logical. Should the components A, B of the delta method be
 returned instead of the final variance-covariance matrix?</p></dd>
+
+
+<dt>type</dt>
+<dd><p>character. Used for the MGamma distribution. If set to
+"Dir based", the Dirichlet-based estimator will be calculated instead.</p></dd>
 
 </dl></div>
     <div class="section level2">

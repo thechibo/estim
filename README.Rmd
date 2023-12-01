@@ -25,13 +25,25 @@ knitr::opts_chunk$set(
 
 The `estimators` R package performs parameter estimation in common distribution families, making moment, maximum likelihood, and state-of-the-art estimators more accessible.
 
-## Key Features
+### Key Features
 
-- Point Estimation: The package offers a comprehensive selection of moment-type estimators, allowing users to quickly and easily estimate distribution parameters from their data.
-- Asymptotic Variance Matrices: In addition to parameter estimates, the package computes and provides asymptotic variance-covariance matrices.
-- Computational Efficiency: The `estimators` R package is designed with computational efficiency in mind. All algorithms are optimized to handle large datasets with minimal computation time, ensuring that users can perform parameter estimation even with substantial data volumes.
+- The common d, p, q, r function family for each distribution (e.g. dnorm, pnorm, qnorm, rnorm) is enriched with 
+  - the ll counterpart (e.g. llnorm) that calculates the log-likelihood, 
+  - the e counterpart (e.g. enorm) that performs parameter estimation,
+  - the v counterpart (e.g. vnorm) that calculates the asymptotic variance-covariance matrix of an estimators.
+- Distributions not included in base R are made available, such as the Dirichlet and the Multivariate Gamma.
+- Parameter estimation is performed analytically instead of numerically for the estimators that can be expressed explicitly.
+- Numerical optimization of the MLE (whenever required, e.g. the Beta and Gamma distributions) is performed with computational efficiency, taking advantage of the score equation system to reduce the dimensionality of the optimization.
+- Functions to compute and plot common estimator metrics (bias, variance, and RMSE) are included in the package to allow the convenient study and comparison of the estimators.
+- All functions can be used with the S4-Distribution system developed by the `distr` package family.
 
 ## Installation
+
+You can install the release version of `estimators` from CRAN by running the following line of code:
+
+```{r, eval=FALSE}
+ install.packages("estimators")
+```
 
 You can install the development version of `estimators` from github by running the following line of code:
 

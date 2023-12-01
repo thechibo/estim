@@ -17,17 +17,17 @@
 #' @param log logical. If `TRUE`, probabilities `p` are given as `log(p)`.
 #' @param n numeric. The number of observations.
 #'
-#' @return `dDirichlet` returns a numeric vector (the evaluated density
-#' function). `rDirichlet` returns a matrix with `length(shape)` rows and `n`
+#' @return `ddirich` returns a numeric vector (the evaluated density
+#' function). `rdirich` returns a matrix with `length(shape)` rows and `n`
 #' columns.
 #'
 #' @export
 #'
 #' @examples \dontrun{
 #' # Classic R Stats Format
-#' dDirichlet(c(0.3, 0.7), shape = c(2, 3))
+#' ddirich(c(0.3, 0.7), shape = c(2, 3))
 #' set.seed(1)
-#' rDirichlet(10, shape = c(2, 3))
+#' rdirich(10, shape = c(2, 3))
 #'
 #' # S4 Distribution Class
 #' D <- Dirichlet(shape = c(2, 3))
@@ -35,7 +35,7 @@
 #' set.seed(1)
 #' r(D)(10)
 #' }
-dDirichlet <- function(x, shape, log = FALSE) {
+ddirich <- function(x, shape, log = FALSE) {
 
   if (length(x) != length(shape)) {
     stop("The lengths of x (", length(x), ") and shape (",
@@ -52,8 +52,9 @@ dDirichlet <- function(x, shape, log = FALSE) {
 
 }
 
-#' @rdname dDirichlet
-rDirichlet <- function(n, shape) {
+#' @rdname ddirich
+#' @export
+rdirich <- function(n, shape) {
 
   k <- length(shape)
   x <- matrix(nrow = n, ncol = k)
@@ -68,7 +69,8 @@ rDirichlet <- function(n, shape) {
 setClass("DirichletParameter",
          representation = representation(shape = "numeric"),
          prototype = prototype(shape = c(1, 1),
-                               name = gettext("Parameter of a Dirichlet distribution")),
+                               name = gettext("Parameter of a Dirichlet
+                                              distribution")),
          contains = "Parameter"
 )
 
@@ -77,17 +79,19 @@ setClass("DirichletParameter",
 #' @slot shape numeric. The parameter vector.
 #'
 #' @return An object of class `Dirichlet`.
+#'
+#' @importFrom distr shape shape<-
 #' @export
 #'
-#' @inherit dDirichlet examples
+#' @inherit ddirich examples
 Dirichlet <- setClass("Dirichlet",
                       slots = list(shape = "numeric"),
                       prototype = prototype(
                         r = function(n) {
-                          rDirichlet(n, shape = c(1, 1))
+                          rdirich(n, shape = c(1, 1))
                         },
                         d = function(x, log = FALSE) {
-                          dDirichlet(x, shape = c(1, 1), log = log)
+                          ddirich(x, shape = c(1, 1), log = log)
                         },
                         param = new("DirichletParameter"),
                         .logExact = TRUE,
@@ -104,7 +108,7 @@ setReplaceMethod("shape", "DirichletParameter",
                  function(object, value){ object@shape <- value; object})
 
 setValidity("DirichletParameter", function(object){
-  if (any(shape(object) <= 0)) {
+  if (any(distr::shape(object) <= 0)) {
     stop("shape has to be positive")
   } else {
     return(TRUE)
@@ -126,11 +130,11 @@ setMethod("initialize", "Dirichlet",
             .Object@r <- function(n) {}
             .Object@d <- function(x, log = FALSE) {}
             body(.Object@r) <- substitute(
-              { rDirichlet(n, shape = shapeSub) },
+              { rdirich(n, shape = shapeSub) },
               list(shapeSub = shape)
             )
             body(.Object@d) <- substitute(
-              { dDirichlet(x, shape = shapeSub, log = log) },
+              { ddirich(x, shape = shapeSub, log = log) },
               list(shapeSub = shape)
             )
             .Object@.withSim   <- FALSE
@@ -143,11 +147,17 @@ setMethod("initialize", "Dirichlet",
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname ll
-setMethod("ll",
-          signature  = c(prm = "numeric", x = "matrix", distr = "Dirichlet"),
-          definition = function(prm, x, distr) {
+#' @export
+lldirich <- function(x, shape, mar = 2) {
+  ll(x, prm = shape, distr = Dirichlet(), mar = mar)
+}
 
-  sum(apply(x, MARGIN = 2, FUN = dDirichlet, shape = prm, log = TRUE))
+#' @rdname ll
+setMethod("ll",
+          signature  = c(x = "matrix", prm = "numeric", distr = "Dirichlet"),
+          definition = function(x, prm, distr, mar = 2) {
+
+  sum(apply(x, MARGIN = mar, FUN = ddirich, shape = prm, log = TRUE))
 
 })
 
@@ -180,8 +190,16 @@ setMethod("dlloptim",
 })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## MLE                    ----
+## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname estim
+#' @export
+edirich <- function(x, type = "mle", ...) {
+
+  estim(x, Dirichlet(), type, ...)
+
+}
 
 #' @rdname mle
 setMethod("mle",
@@ -211,26 +229,6 @@ setMethod("mle",
 
 })
 
-#' @rdname acov_mle
-setMethod("acov_mle",
-          signature  = c(distr = "Dirichlet"),
-          definition = function(distr) {
-
-  a <- distr::shape(distr)
-  k <- length(a)
-
-  D <- solve(diag(trigamma(a)) - matrix(trigamma(sum(a)), k, k))
-  D <- as.matrix(nearPD(D))
-  rownames(D) <- paste0("shape", seq_along(a))
-  colnames(D) <- paste0("shape", seq_along(a))
-  D
-
-})
-
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## ME                     ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 #' @rdname me
 setMethod("me",
           signature  = c(x = "matrix", distr = "Dirichlet"),
@@ -245,8 +243,52 @@ setMethod("me",
 
 })
 
-#' @rdname acov_me
-setMethod("acov_me",
+#' @rdname same
+setMethod("same",
+          signature  = c(x = "matrix", distr = "Dirichlet"),
+          definition = function(x, distr) {
+
+  m  <- rowMeans(x)
+  logm  <- rowMeans(log(x))
+  mlogm <- rowMeans(x * log(x))
+
+  shape  <- (length(m) - 1) * m / sum(mlogm - m * logm)
+
+  names(shape) <- paste0("shape", seq_along(shape))
+  shape
+
+})
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Avar                   ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname avar
+#' @export
+vdirich <- function(shape, type = "mle") {
+
+  avar(Dirichlet(shape = shape), type = type)
+
+}
+
+#' @rdname avar_mle
+setMethod("avar_mle",
+          signature  = c(distr = "Dirichlet"),
+          definition = function(distr) {
+
+  a <- distr::shape(distr)
+  k <- length(a)
+
+  D <- solve(diag(trigamma(a)) - matrix(trigamma(sum(a)), k, k))
+  D <- as.matrix(nearPD(D))
+  rownames(D) <- paste0("shape", seq_along(a))
+  colnames(D) <- paste0("shape", seq_along(a))
+  D
+
+})
+
+#' @rdname avar_me
+setMethod("avar_me",
           signature  = c(distr = "Dirichlet"),
           definition = function(distr, comp = FALSE) {
 
@@ -257,7 +299,7 @@ setMethod("acov_me",
 
   A1 <- diag(a0 * (2 * a0 + 1) * (a + 1) / b)
   A2 <- diag(- a0 * (a0 + 1) ^ 2 / b)
-  A <- Matrix(rbind(A1, A2))
+  A <- Matrix(cbind(A1, A2))
 
   B11 <- - Matrix(a, k, 1) %*% Matrix(a, 1, k)
   diag(B11) <- a * b
@@ -280,7 +322,7 @@ setMethod("acov_me",
   B <- nearPD(B)
 
   if (!comp) {
-    D <- nearPD(Matrix::t(A) %*% B %*% A)
+    D <- nearPD(A %*% B %*% Matrix::t(A))
     D <- as.matrix(D)
     rownames(D) <- paste0("shape", seq_along(a))
     colnames(D) <- paste0("shape", seq_along(a))
@@ -291,28 +333,8 @@ setMethod("acov_me",
 
 })
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## SAME                   ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#' @rdname same
-setMethod("same",
-          signature  = c(x = "matrix", distr = "Dirichlet"),
-          definition = function(x, distr) {
-
-  m  <- rowMeans(x)
-  logm  <- rowMeans(log(x))
-  mlogm <- rowMeans(x * log(x))
-
-  shape  <- (length(m) - 1) * m / sum(mlogm - m * logm)
-
-  names(shape) <- paste0("shape", seq_along(shape))
-  shape
-
-})
-
-#' @rdname acov_same
-setMethod("acov_same",
+#' @rdname avar_same
+setMethod("avar_same",
           signature  = c(distr = "Dirichlet"),
           definition = function(distr, comp = FALSE) {
 
@@ -321,20 +343,20 @@ setMethod("acov_same",
   a0 <- sum(a)
   b <- a0 - a
   k <- length(a)
+  Ik <- diag(k)
+  Amat <- Matrix(a, k, 1) %*% Matrix(a, 1, k)
 
   # Matrix A
 
-  A1 <- Matrix(Ddigamma(a, a0), k, 1) %*% Matrix(a, 1, k)
-  A2 <- Matrix(a, k, 1) %*% Matrix(a, 1, k)
-  A3 <- - Matrix(1, k, 1) %*% Matrix(a, 1, k)
-  Ik <- diag(k)
-  Ok <- 0 * Ik
-
-  A <- a0 * (rbind(A1, A2 / a0, A3) / (k - 1) + rbind(Ik, Ok, Ok))
+  A1 <- (a0 / (k - 1)) * Matrix(a, k, 1) %*% Matrix(Ddigamma(a, a0), 1, k) +
+    a0 * diag(k)
+  A2 <- (1 / (k - 1)) * Matrix(a, k, 1) %*% Matrix(a, 1, k)
+  A3 <- - (a0 / (k - 1)) * Matrix(a, k, 1) %*% Matrix(1, 1, k)
+  A <- cbind(A1, A2, A3)
 
   # Matrix B
 
-  B11 <- - A2
+  B11 <- - Amat
   diag(B11) <- a * b
   B11 <- B11 / (a0 ^ 2 * (a0 + 1))
   B11 <- nearPD(B11)
@@ -347,7 +369,8 @@ setMethod("acov_same",
   c332 <- Ddigamma(a + 1, a0 + 1)
   B332 <- Matrix(c332, k, 1) %*% Matrix(c332, 1, k)
 
-  B33 <- A2 * (B331 - trigamma(a0 + 2)) / (a0 * (a0 + 1)) - A2 * B332 / (a0 ^ 2)
+  B33 <- Amat * (B331 - trigamma(a0 + 2)) / (a0 * (a0 + 1)) -
+    Amat * B332 / (a0 ^ 2)
   diag(B33) <- (Ddigamma(a + 2, a0 + 2) ^ 2 + Dtrigamma(a + 2, a0 + 2))  *
     a * (a + 1) / (a0 * (a0 + 1)) - (Ddigamma(a + 1, a0 + 1) * a / a0) ^ 2
   B33 <- nearPD(B33)
@@ -368,7 +391,7 @@ setMethod("acov_same",
   B <- nearPD(B)
 
   if (!comp) {
-    D <- nearPD(Matrix::t(A) %*% B %*% A)
+    D <- nearPD(A %*% B %*% Matrix::t(A))
     D <- as.matrix(D)
     rownames(D) <- paste0("shape", seq_along(a))
     colnames(D) <- paste0("shape", seq_along(a))

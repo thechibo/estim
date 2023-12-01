@@ -20,9 +20,9 @@ Dirichlet Distribution S4 Class
 \examples{
 \dontrun{
 # Classic R Stats Format
-dDirichlet(c(0.3, 0.7), shape = c(2, 3))
+ddirich(c(0.3, 0.7), shape = c(2, 3))
 set.seed(1)
-rDirichlet(10, shape = c(2, 3))
+rdirich(10, shape = c(2, 3))
 
 # S4 Distribution Class
 D <- Dirichlet(shape = c(2, 3))

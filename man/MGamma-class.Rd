@@ -22,9 +22,9 @@ Multivariate Gamma Distribution S4 Class
 \examples{
 \dontrun{
 # Classic R Stats Format
-dMGamma(c(4, 6), shape = c(2, 3), scale = 2)
+dmgamma(c(4, 6), shape = c(2, 3), scale = 2)
 set.seed(1)
-rMGamma(10, shape = c(2, 3), scale = 2)
+rmgamma(10, shape = c(2, 3), scale = 2)
 
 # S4 Distribution Class
 D <- MGamma(shape = c(2, 3), scale = 2)

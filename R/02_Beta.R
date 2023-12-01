@@ -7,9 +7,15 @@
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname ll
+#' @export
+llbeta <- function(x, shape1, shape2) {
+  ll(x, prm = c(shape1, shape2), distr = distr::Beta())
+}
+
+#' @rdname ll
 setMethod("ll",
-          signature  = c(prm = "numeric", x = "numeric", distr = "Beta"),
-          definition = function(prm, x, distr) {
+          signature  = c(x = "numeric", prm = "numeric", distr = "Beta"),
+          definition = function(x, prm, distr) {
 
   sum(dbeta(x = x, shape1 = prm[1], shape2 = prm[2], log = TRUE))
 
@@ -27,52 +33,117 @@ setMethod("ll",
 #}
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## MLE                    ----
+## Score                  ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+setMethod("lloptim",
+          signature  = c(par = "numeric", tx = "numeric", distr = "Beta"),
+          definition = function(par, tx, distr) {
+
+  a <- idigamma(digamma(par) + tx)
+  lgamma(sum(a)) - sum(lgamma(a)) + sum((a - 1) * tx)
+
+})
+
+setMethod("dlloptim",
+          signature  = c(par = "numeric", tx = "numeric", distr = "Beta"),
+          definition = function(par, tx, distr) {
+
+  # Shape parameters (a, b) as a function of a0
+  a <- idigamma(digamma(par) + tx)
+
+  # a_i derivative wrt a0
+  da <- trigamma(par) / trigamma(a)
+
+  # lloptim derivative wrt a0 (par)
+  digamma(sum(a)) * sum(da) - sum(digamma(a) * da) + sum(tx * da)
+
+})
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Estimation             ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname estim
+#' @export
+ebeta <- function(x, type = "mle", ...) {
+
+  estim(x, distr::Beta(), type, ...)
+
+}
 
 #' @rdname mle
 setMethod("mle",
           signature  = c(x = "numeric", distr = "Beta"),
           definition = function(x, distr,
-                                par0 = same,
+                                par0 = "same",
                                 method = "L-BFGS-B",
-                                lower = c(1e-5, 1e-5),
-                                upper = c(Inf, Inf)) {
+                                lower = 1e-5,
+                                upper = Inf) {
 
-  x  <- as.matrix(x)
-  mle(x, distr)[ , 1]
+  tx  <- c(mean(log(x)), mean(log(1 - x)))
+
+  par <- optim(par = sum(do.call(par0, list(x = x, distr = distr))),
+               fn = lloptim,
+               gr = dlloptim,
+               tx = tx,
+               distr = distr,
+               method = method,
+               lower = lower,
+               upper = upper,
+               control = list(fnscale = -1))$par
+
+  shape <- idigamma(digamma(par) + tx)
+
+  names(shape) <- paste0("shape", seq_along(shape))
+  shape
 
 })
 
-#' @rdname mle
-setMethod("mle",
-          signature  = c(x = "matrix", distr = "Beta"),
-          definition = function(x, distr,
-                                par0 = same,
-                                method = "L-BFGS-B",
-                                lower = c(1e-5, 1e-5),
-                                upper = c(Inf, Inf)) {
+#' @rdname me
+setMethod("me",
+          signature  = c(x = "numeric", distr = "Beta"),
+          definition = function(x, distr) {
 
-  dn <- list(prm = c("shape1", "shape2"), sam = seqcol(x))
-  y  <- matrix(0, nrow = 2, ncol = ncol(x), dimnames = dn)
+  m  <- mean(x)
+  m2 <- mean(x ^ 2)
+  d  <- (m - m2) / (m2 - m ^ 2)
 
-  for (j in seqcol(x)) {
-    y[, j] <- optim(par = do.call(par0, list(x = x[ , j], distr = distr)),
-                    fn = ll,
-                    x = x[ , j],
-                    distr = distr,
-                    method = method,
-                    lower = lower,
-                    upper = upper,
-                    control = list(fnscale = -1))$par
-  }
-
-  y
+  c(shape1 = d * m, shape2 = d * (1 - m))
 
 })
 
-#' @rdname acov_mle
-setMethod("acov_mle",
+#' @rdname same
+setMethod("same",
+          signature  = c(x = "numeric", distr = "Beta"),
+          definition = function(x, distr) {
+
+  mx <- mean(x)
+  mlx <- mean(log(x))
+  mxlx <- mean(x * log(x))
+  my <- 1 - mx
+  mly <- mean(log(1 - x))
+  myly <- mean((1 - x) * log(1 - x))
+  s <- mxlx - mx * mlx + myly - my * mly
+
+  c(shape1 = mx / s, shape2 = my / s)
+
+})
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Avar                   ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname avar
+#' @export
+vbeta <- function(shape1, shape2, type = "mle") {
+
+  avar(distr::Beta(shape1 = shape1, shape2 = shape2), type = type)
+
+}
+
+#' @rdname avar_mle
+setMethod("avar_mle",
           signature  = c(distr = "Beta"),
           definition = function(distr) {
 
@@ -93,38 +164,8 @@ setMethod("acov_mle",
 
 })
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## ME                     ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#' @rdname me
-setMethod("me",
-          signature  = c(x = "numeric", distr = "Beta"),
-          definition = function(x, distr) {
-
-  x  <- as.matrix(x)
-  me(x, distr)[ , 1]
-
-})
-
-#' @rdname me
-setMethod("me",
-          signature  = c(x = "matrix", distr = "Beta"),
-          definition = function(x, distr) {
-
-  x  <- as.matrix(x)
-  m  <- colMeans(x)
-  m2 <- colMeans(x ^ 2)
-  d  <- (m - m2) / (m2 - m ^ 2)
-  a  <- d * m
-  b  <- d * (1 - m)
-  dn <- list(prm = c("shape1", "shape2"), sam = seqcol(x))
-  matrix(c(a, b), nrow = 2, byrow = TRUE, dimnames = dn)
-
-})
-
-#' @rdname acov_me
-setMethod("acov_me",
+#' @rdname avar_me
+setMethod("avar_me",
           signature  = c(distr = "Beta"),
           definition = function(distr) {
 
@@ -154,46 +195,8 @@ setMethod("acov_me",
 
 })
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## SAME                   ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-#' @rdname same
-setMethod("same",
-          signature  = c(x = "numeric", distr = "Beta"),
-          definition = function(x, distr) {
-
-  x  <- as.matrix(x)
-  same(x, distr)[ , 1]
-
-})
-
-#' @rdname same
-setMethod("same",
-          signature  = c(x = "matrix", distr = "Beta"),
-          definition = function(x, distr) {
-
-  x <- as.matrix(x)
-  mx <- colMeans(x)
-  mlx <- colMeans(log(x))
-  mxlx <- colMeans(x * log(x))
-  my <- 1 - mx
-  mly <- colMeans(log(1 - x))
-  myly <- colMeans((1 - x) * log(1 - x))
-
-  sx <- mxlx - mx * mlx
-  sy <- myly - my * mly
-
-  a <- mx / (sx + sy)
-  b <- my / (sx + sy)
-
-  dn <- list(prm = c("shape1", "shape2"), sam = seqcol(x))
-  matrix(c(a, b), nrow = 2, byrow = TRUE, dimnames = dn)
-
-})
-
-#' @rdname acov_same
-setMethod("acov_same",
+#' @rdname avar_same
+setMethod("avar_same",
           signature  = c(distr = "Beta"),
           definition = function(distr) {
 
