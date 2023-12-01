@@ -37,22 +37,25 @@
     <loc>/reference/MGamma-class.html</loc>
   </url>
   <url>
-    <loc>/reference/acov.html</loc>
+    <loc>/reference/avar.html</loc>
   </url>
   <url>
-    <loc>/reference/acov_me.html</loc>
+    <loc>/reference/avar_me.html</loc>
   </url>
   <url>
-    <loc>/reference/acov_mle.html</loc>
+    <loc>/reference/avar_mle.html</loc>
   </url>
   <url>
-    <loc>/reference/acov_same.html</loc>
-  </url>
-  <url>
-    <loc>/reference/dDirichlet.html</loc>
+    <loc>/reference/avar_same.html</loc>
   </url>
   <url>
     <loc>/reference/dMGamma.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ddirich.html</loc>
+  </url>
+  <url>
+    <loc>/reference/estim.html</loc>
   </url>
   <url>
     <loc>/reference/estimators-package.html</loc>
@@ -64,24 +67,27 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/large_metrics.html</loc>
+  </url>
+  <url>
     <loc>/reference/ll.html</loc>
   </url>
   <url>
     <loc>/reference/me.html</loc>
   </url>
   <url>
-    <loc>/reference/metrics.html</loc>
-  </url>
-  <url>
     <loc>/reference/mle.html</loc>
   </url>
   <url>
-    <loc>/reference/plot_acov.html</loc>
+    <loc>/reference/plot_large_metrics.html</loc>
   </url>
   <url>
-    <loc>/reference/plot_metrics.html</loc>
+    <loc>/reference/plot_small_metrics.html</loc>
   </url>
   <url>
     <loc>/reference/same.html</loc>
+  </url>
+  <url>
+    <loc>/reference/small_metrics.html</loc>
   </url>
 </urlset>
