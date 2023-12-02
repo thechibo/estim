@@ -4,11 +4,11 @@
 \name{estimators-package}
 \alias{estimators}
 \alias{estimators-package}
-\title{estimators: Parameter Estimation Methods in Common Distribution Families}
+\title{estimators: Parameter Estimation}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-This package provides estimators for parameters of common distribution families.
+Estimation methods for parameters of common distribution families.
 }
 \seealso{
 Useful links:
