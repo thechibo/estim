@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 library(distr)
 ```
 
-The `estimators` package offers a few convienient functions for parameter estimation in statistics. This guide provides an overview of the package's capabilities.
+The `estimators` package offers a few convenient functions for parameter estimation in statistics. This guide provides an overview of the package's capabilities.
 
 ```{r setup}
 library(estimators)

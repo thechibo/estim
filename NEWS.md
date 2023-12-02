@@ -1,3 +1,8 @@
+# estimators 0.7.1
+
+* Updated DESCRIPTION.
+* Submitted to CRAN.
+
 # estimators 0.7.0
 
 * Created the estim and avar functions that cover all distributions and estimation methods.
