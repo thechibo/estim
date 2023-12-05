@@ -14,7 +14,7 @@ specified family of distributions."><meta property="og:image" content="/logo.png
     
     <a class="navbar-brand me-2" href="../index.html">estimators</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -120,53 +120,108 @@ likelihood maximization algorithm.</p></dd>
 <p>numeric. The estimator produced by the sample.</p>
     </div>
     <div class="section level2">
+    <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
+    <p>Ye, Z.-S. &amp; Chen, N. (2017), Closed-form estimators for the gamma
+distribution derived from likelihood equations, The American Statistician
+71(2), 177–181.</p>
+<p>Van der Vaart, A. W. (2000), Asymptotic statistics, Vol. 3,
+Cambridge university press.</p>
+<p>Tamae, H., Irie, K. &amp; Kubokawa, T. (2020), A score-adjusted approach to
+closed-form estimators for the gamma and beta distributions, Japanese Journal
+of Statistics and Data Science 3, 543–561.</p>
+<p>Mathal, A. &amp; Moschopoulos, P. (1992), A form of multivariate gamma
+distribution, Annals of the Institute of Statistical Mathematics 44, 97–106.</p>
+<p>Oikonomidis, I. &amp; Trevezas, S. (2023), Moment-Type Estimators for the
+Dirichlet and the Multivariate Gamma Distributions, arXiv,
+https://arxiv.org/abs/2311.15025</p>
+    </div>
+    <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><a href="estim.html">estim</a>, <a href="me.html">me</a>, <a href="same.html">same</a></p></div>
     </div>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="co"># -------------------------------------------</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># -------------------------------------------</span></span></span>
 <span class="r-in"><span><span class="co"># Beta Distribution Example</span></span></span>
 <span class="r-in"><span><span class="co"># -------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Simulation</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">shape1</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="va">shape2</span> <span class="op">&lt;-</span> <span class="fl">2</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">100</span>, <span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu">Beta</span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://distr.r-forge.r-project.org/" class="external-link">distr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/distr/man/Beta-class.html" class="external-link">Beta</a></span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Likelihood - The ll Functions</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="ll.html">llbeta</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 26.56269</span>
 <span class="r-in"><span><span class="fu"><a href="ll.html">ll</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span>, <span class="va">D</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 26.56269</span>
 <span class="r-in"><span><span class="fu"><a href="ll.html">ll</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span>, <span class="st">"beta"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] 26.56269</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Point Estimation - The e Functions</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="estim.html">ebeta</a></span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"mle"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape1   shape2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.066968 2.466715 </span>
 <span class="r-in"><span><span class="fu"><a href="estim.html">ebeta</a></span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"me"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape1   shape2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.074511 2.469756 </span>
 <span class="r-in"><span><span class="fu"><a href="estim.html">ebeta</a></span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"same"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape1   shape2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.067768 2.454257 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu">mle</span><span class="op">(</span><span class="va">x</span>, <span class="va">D</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape1   shape2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.066968 2.466715 </span>
 <span class="r-in"><span><span class="fu"><a href="me.html">me</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">D</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape1   shape2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.074511 2.469756 </span>
 <span class="r-in"><span><span class="fu"><a href="same.html">same</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">D</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape1   shape2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.067768 2.454257 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="estim.html">estim</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">D</span>, type <span class="op">=</span> <span class="st">"mle"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   shape1   shape2 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1.066968 2.466715 </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Asymptotic Variance - The v Functions</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="avar.html">vbeta</a></span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span>, type <span class="op">=</span> <span class="st">"mle"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          shape1   shape2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape1 1.597168 2.523104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape2 2.523104 7.985838</span>
 <span class="r-in"><span><span class="fu"><a href="avar.html">vbeta</a></span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span>, type <span class="op">=</span> <span class="st">"me"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        shape1 shape2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape1    2.1    3.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape2    3.3    9.3</span>
 <span class="r-in"><span><span class="fu"><a href="avar.html">vbeta</a></span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span>, type <span class="op">=</span> <span class="st">"same"</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          shape1   shape2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape1 1.644934 2.539868</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape2 2.539868 8.079736</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="avar_mle.html">avar_mle</a></span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          shape1   shape2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape1 1.597168 2.523104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape2 2.523104 7.985838</span>
 <span class="r-in"><span><span class="fu"><a href="avar_me.html">avar_me</a></span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        shape1 shape2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape1    2.1    3.3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape2    3.3    9.3</span>
 <span class="r-in"><span><span class="fu"><a href="avar_same.html">avar_same</a></span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          shape1   shape2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape1 1.644934 2.539868</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape2 2.539868 8.079736</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="avar.html">avar</a></span><span class="op">(</span><span class="va">D</span>, type <span class="op">=</span> <span class="st">"mle"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>          shape1   shape2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape1 1.597168 2.523104</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> shape2 2.523104 7.985838</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>

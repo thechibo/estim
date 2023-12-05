@@ -16,6 +16,9 @@
     <loc>/articles/index.html</loc>
   </url>
   <url>
+    <loc>/articles/introduction-Headquarters.html</loc>
+  </url>
+  <url>
     <loc>/articles/introduction.html</loc>
   </url>
   <url>
@@ -41,6 +44,12 @@
   </url>
   <url>
     <loc>/reference/acov.html</loc>
+  </url>
+  <url>
+    <loc>/reference/acov_me-Headquarters-2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/acov_me-Headquarters-Headquarters.html</loc>
   </url>
   <url>
     <loc>/reference/acov_me-Headquarters.html</loc>
@@ -73,13 +82,25 @@
     <loc>/reference/avar_same.html</loc>
   </url>
   <url>
+    <loc>/reference/ddirich-Headquarters.html</loc>
+  </url>
+  <url>
     <loc>/reference/ddirich.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dDirichlet-Headquarters.html</loc>
   </url>
   <url>
     <loc>/reference/dDirichlet.html</loc>
   </url>
   <url>
     <loc>/reference/Dirichlet-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dMGamma-Headquarters-2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/dMGamma-Headquarters-Headquarters.html</loc>
   </url>
   <url>
     <loc>/reference/dMGamma-Headquarters.html</loc>
@@ -91,10 +112,22 @@
     <loc>/reference/estim.html</loc>
   </url>
   <url>
+    <loc>/reference/estimators-package-Headquarters-2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/estimators-package-Headquarters-Headquarters.html</loc>
+  </url>
+  <url>
     <loc>/reference/estimators-package-Headquarters.html</loc>
   </url>
   <url>
     <loc>/reference/estimators-package.html</loc>
+  </url>
+  <url>
+    <loc>/reference/idigamma-Headquarters-2.html</loc>
+  </url>
+  <url>
+    <loc>/reference/idigamma-Headquarters-Headquarters.html</loc>
   </url>
   <url>
     <loc>/reference/idigamma-Headquarters.html</loc>
@@ -106,7 +139,13 @@
     <loc>/reference/index.html</loc>
   </url>
   <url>
+    <loc>/reference/large_metrics-Headquarters.html</loc>
+  </url>
+  <url>
     <loc>/reference/large_metrics.html</loc>
+  </url>
+  <url>
+    <loc>/reference/ll-Headquarters.html</loc>
   </url>
   <url>
     <loc>/reference/ll.html</loc>

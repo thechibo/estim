@@ -46,7 +46,7 @@
 #' @export
 #'
 #' @seealso [plot_small_metrics] [large_metrics], [plot_large_metrics]
-#' @examples \dontrun{
+#' @examples \donttest{
 #' D <- distr::Beta(shape1 = 1, shape2 = 2)
 #'
 #' prm <- list(name = "shape1",
@@ -167,7 +167,7 @@ small_metrics <- function(D,
 #' @export
 #'
 #' @seealso [small_metrics], [plot_small_metrics], [plot_large_metrics]
-#' @examples \dontrun{
+#' @examples \donttest{
 #' D <- distr::Beta(shape1 = 1, shape2 = 2)
 #'
 #' prm <- list(name = "shape1",

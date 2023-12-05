@@ -42,7 +42,7 @@ created for each metric and sample size. Each estimator is plotted with a
 different color and linetype. The plot can be saved in pdf format.
 }
 \examples{
-\dontrun{
+\donttest{
 D <- distr::Beta(shape1 = 1, shape2 = 2)
 
 prm <- list(name = "shape1",

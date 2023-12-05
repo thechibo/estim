@@ -53,15 +53,17 @@ multidimensional case) of the ME, given a specified family of
 distributions and the true parameter values.
 }
 \examples{
-\dontrun{
 # -------------------------------------------
 # Beta Distribution Example
 # -------------------------------------------
 
 # Simulation
-
 set.seed(1)
+shape1 <- 1
+shape2 <- 2
 x <- rbeta(100, shape1, shape2)
+
+library(distr)
 D <- Beta(shape1, shape2)
 
 # Likelihood - The ll Functions
@@ -94,6 +96,24 @@ avar_same(D)
 
 avar(D, type = "mle")
 }
+\references{
+Ye, Z.-S. & Chen, N. (2017), Closed-form estimators for the gamma
+distribution derived from likelihood equations, The American Statistician
+71(2), 177–181.
+
+Van der Vaart, A. W. (2000), Asymptotic statistics, Vol. 3,
+Cambridge university press.
+
+Tamae, H., Irie, K. & Kubokawa, T. (2020), A score-adjusted approach to
+closed-form estimators for the gamma and beta distributions, Japanese Journal
+of Statistics and Data Science 3, 543–561.
+
+Mathal, A. & Moschopoulos, P. (1992), A form of multivariate gamma
+distribution, Annals of the Institute of Statistical Mathematics 44, 97–106.
+
+Oikonomidis, I. & Trevezas, S. (2023), Moment-Type Estimators for the
+Dirichlet and the Multivariate Gamma Distributions, arXiv,
+https://arxiv.org/abs/2311.15025
 }
 \seealso{
 \link{avar}, \link{avar_mle}, \link{avar_same}

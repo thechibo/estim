@@ -46,15 +46,17 @@ multidimensional case) of the MLE, given a specified family of
 distributions and the true parameter values.
 }
 \examples{
-\dontrun{
 # -------------------------------------------
 # Beta Distribution Example
 # -------------------------------------------
 
 # Simulation
-
 set.seed(1)
+shape1 <- 1
+shape2 <- 2
 x <- rbeta(100, shape1, shape2)
+
+library(distr)
 D <- Beta(shape1, shape2)
 
 # Likelihood - The ll Functions
@@ -86,7 +88,6 @@ avar_me(D)
 avar_same(D)
 
 avar(D, type = "mle")
-}
 }
 \seealso{
 \link{avar}, \link{avar_me}, \link{avar_same}

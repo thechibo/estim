@@ -1,3 +1,10 @@
+# estimators 0.7.2
+
+* Updated DESCRIPTION.
+* Added references.
+* Removed dontrun from examples.
+* Resubmitted to CRAN.
+
 # estimators 0.7.1
 
 * Updated DESCRIPTION.

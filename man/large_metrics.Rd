@@ -42,7 +42,7 @@ shape parameters \verb{(1, 1)}, \verb{(1, 1.1)}, ..., \verb{(1, 1.5)} and scale 
 that the initial shape parameter \code{2} in \code{D} is not utilized in the function.
 }
 \examples{
-\dontrun{
+\donttest{
 D <- distr::Beta(shape1 = 1, shape2 = 2)
 
 prm <- list(name = "shape1",

@@ -1,6 +1,6 @@
 Package: estimators
 Title: Parameter Estimation
-Version: 0.7.1
+Version: 0.7.2
 Authors@R: c(
     person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr",
            role = c("aut", "cre"),
@@ -9,8 +9,13 @@ Authors@R: c(
            role = c("aut", "ths"),
            comment = c(ORCID = "0000-0003-2262-8299"))
   )
-Description: Estimation methods for parameters of common
-    distribution families.
+Description: Implements estimation methods for parameters of common
+    distribution families. The common d, p, q, r function family for each
+    distribution is enriched with the ll, e, and v counterparts, computing
+    the log-likelihood, performing estimation, and calculating the asymptotic
+    variance - covariance matrix, respectively. Parameter estimation is
+    performed analytically whenever possible. All functions can be used with the
+    S4-Distribution system developed by the distr package family.
 License: GPL (>= 3)
 URL: https://thechibo.github.io/estimators/
 BugReports: https://github.com/thechibo/estimators/issues

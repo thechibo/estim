@@ -73,17 +73,39 @@ setGeneric("dlloptim", signature = c("par", "tx", "distr"),
 #' @importFrom Matrix Matrix nearPD Cholesky
 #' @export
 #'
+#' @references
+#' Ye, Z.-S. & Chen, N. (2017), Closed-form estimators for the gamma
+#' distribution derived from likelihood equations, The American Statistician
+#' 71(2), 177–181.
+#'
+#' Van der Vaart, A. W. (2000), Asymptotic statistics, Vol. 3,
+#' Cambridge university press.
+#'
+#' Tamae, H., Irie, K. & Kubokawa, T. (2020), A score-adjusted approach to
+#' closed-form estimators for the gamma and beta distributions, Japanese Journal
+#' of Statistics and Data Science 3, 543–561.
+#'
+#' Mathal, A. & Moschopoulos, P. (1992), A form of multivariate gamma
+#' distribution, Annals of the Institute of Statistical Mathematics 44, 97–106.
+#'
+#' Oikonomidis, I. & Trevezas, S. (2023), Moment-Type Estimators for the
+#' Dirichlet and the Multivariate Gamma Distributions, arXiv,
+#' https://arxiv.org/abs/2311.15025
+#'
 #' @seealso [mle], [me], [same]
 #'
-#' @examples \dontrun{
+#' @examples
 #' # -------------------------------------------
 #' # Beta Distribution Example
 #' # -------------------------------------------
 #'
 #' # Simulation
-#'
 #' set.seed(1)
+#' shape1 <- 1
+#' shape2 <- 2
 #' x <- rbeta(100, shape1, shape2)
+#'
+#' library(distr)
 #' D <- Beta(shape1, shape2)
 #'
 #' # Likelihood - The ll Functions
@@ -115,7 +137,6 @@ setGeneric("dlloptim", signature = c("par", "tx", "distr"),
 #' avar_same(D)
 #'
 #' avar(D, type = "mle")
-#' }
 estim <- function(x, distr, type = "mle", ...) {
   type <- tolower(type)
   if (type %in% c("mle", "me", "same")) {
@@ -145,7 +166,7 @@ estim <- function(x, distr, type = "mle", ...) {
 #'
 #' @seealso [estim], [me], [same]
 #'
-#' @inherit estim examples
+#' @inherit estim references examples
 setGeneric("mle", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("mle") })
 
@@ -176,7 +197,7 @@ setMethod("mle",
 #'
 #' @seealso [estim], [mle], [same]
 #'
-#' @inherit estim examples
+#' @inherit estim references examples
 setGeneric("me", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("me") })
 
@@ -207,7 +228,7 @@ setMethod("me",
 #'
 #' @seealso [estim], [mle], [me]
 #'
-#' @inherit estim examples
+#' @inherit estim references examples
 setGeneric("same", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("same") })
 
@@ -243,7 +264,7 @@ setMethod("same",
 #'
 #' @seealso [avar_mle], [avar_me], [avar_same]
 #'
-#' @inherit estim examples
+#' @inherit estim references examples
 avar <- function(distr, type, ...) {
   type <- tolower(type)
   if (type %in% c("mle", "me", "same")) {
@@ -286,7 +307,7 @@ setGeneric("avar_mle", signature = c("distr"),
 #'
 #' @seealso [avar], [avar_mle], [avar_same]
 #'
-#' @inherit avar params return examples
+#' @inherit avar params return references examples
 setGeneric("avar_me", signature = c("distr"),
            function(distr, ...) { standardGeneric("avar_me") })
 
@@ -307,6 +328,6 @@ setGeneric("avar_me", signature = c("distr"),
 #'
 #' @seealso [avar], [avar_mle], [avar_me]
 #'
-#' @inherit avar params return examples
+#' @inherit avar params return references examples
 setGeneric("avar_same", signature = c("distr"),
            function(distr, ...) { standardGeneric("avar_same") })
