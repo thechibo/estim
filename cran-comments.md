@@ -1,9 +1,9 @@
-── estimators 0.7.1: NOTE
+── estimators 0.7.2: NOTE
 
-  Build ID:   estimators_0.7.1.tar.gz-03caabe9153f429fb0af1f628bd9a6c0
+  Build ID:   estimators_0.7.2.tar.gz-6807c737ea4d4aaca2e3a05a735074d6
   Platform:   Windows Server 2022, R-devel, 64 bit
-  Submitted:  51m 29s ago
-  Build time: 14m 30.1s
+  Submitted:  1h 5m 50.8s ago
+  Build time: 14m 31s
 
 ❯ checking CRAN incoming feasibility ... NOTE
   Maintainer: 'Ioannis Oikonomidis <goikon@math.uoa.gr>'
@@ -11,22 +11,23 @@
   New submission
 
 ❯ checking for non-standard things in the check directory ... NOTE
-  
+  Found the following files/directories:
+    ''NULL''
 
 ❯ checking for detritus in the temp directory ... NOTE
-    'lastMiKTeXException'
   Found the following files/directories:
+    'lastMiKTeXException'
 
 0 errors ✔ | 0 warnings ✔ | 3 notes ✖
 
-── estimators 0.7.1: NOTE
+── estimators 0.7.2: NOTE
 
-  Build ID:   estimators_0.7.1.tar.gz-7e406d7d9116409a9008adca2f45f1df
+  Build ID:   estimators_0.7.2.tar.gz-4046e8fd039a4e78b1698ee8221bf774
   Platform:   Ubuntu Linux 20.04.1 LTS, R-release, GCC
-  Submitted:  51m 29s ago
-  Build time: 33m 27.7s
+  Submitted:  1h 5m 50.8s ago
+  Build time: 54m 38.6s
 
-❯ checking CRAN incoming feasibility ... [6s/15s] NOTE
+❯ checking CRAN incoming feasibility ... [6s/16s] NOTE
   Maintainer: ‘Ioannis Oikonomidis <goikon@math.uoa.gr>’
   
   New submission
@@ -36,14 +37,14 @@
 
 0 errors ✔ | 0 warnings ✔ | 2 notes ✖
 
-── estimators 0.7.1: NOTE
+── estimators 0.7.2: NOTE
 
-  Build ID:   estimators_0.7.1.tar.gz-5942cc5654664176b852355d91894571
+  Build ID:   estimators_0.7.2.tar.gz-f1a1d2e2924d437ea65cdd0ed8474412
   Platform:   Fedora Linux, R-devel, clang, gfortran
-  Submitted:  51m 29.1s ago
-  Build time: 32m 40.1s
+  Submitted:  1h 5m 50.9s ago
+  Build time: 53m 56.1s
 
-❯ checking CRAN incoming feasibility ... [7s/17s] NOTE
+❯ checking CRAN incoming feasibility ... [7s/23s] NOTE
   Maintainer: ‘Ioannis Oikonomidis <goikon@math.uoa.gr>’
   
   New submission
