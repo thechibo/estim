@@ -8,7 +8,7 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Implements estimation methods for parameters of common distribution families. The common d, p, q, r function family for each distribution is enriched with the ll, e, and v counterparts, computing the log-likelihood, performing estimation, and calculating the asymptotic variance - covariance matrix, respectively. Parameter estimation is performed analytically whenever possible. All functions can be used with the S4-Distribution system developed by the distr package family.
+Implements estimation methods for parameters of common distribution families. The common d, p, q, r function family for each distribution is enriched with the ll, e, and v counterparts, computing the log-likelihood, performing estimation, and calculating the asymptotic variance - covariance matrix, respectively. Parameter estimation is performed analytically whenever possible.
 }
 \seealso{
 Useful links:
