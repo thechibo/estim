@@ -1,11 +1,11 @@
-── estimators 0.7.2: NOTE
+── estimators 0.7.3: NOTE
 
-  Build ID:   estimators_0.7.2.tar.gz-6807c737ea4d4aaca2e3a05a735074d6
+  Build ID:   estimators_0.7.3.tar.gz-056d7b174242414a9ae89a215c63b36c
   Platform:   Windows Server 2022, R-devel, 64 bit
-  Submitted:  1h 5m 50.8s ago
-  Build time: 14m 31s
+  Submitted:  4h 18m 54.6s ago
+  Build time: 12m 43.4s
 
-❯ checking CRAN incoming feasibility ... NOTE
+❯ checking CRAN incoming feasibility ... [12s] NOTE
   Maintainer: 'Ioannis Oikonomidis <goikon@math.uoa.gr>'
   
   New submission
@@ -20,14 +20,14 @@
 
 0 errors ✔ | 0 warnings ✔ | 3 notes ✖
 
-── estimators 0.7.2: NOTE
+── estimators 0.7.3: NOTE
 
-  Build ID:   estimators_0.7.2.tar.gz-4046e8fd039a4e78b1698ee8221bf774
+  Build ID:   estimators_0.7.3.tar.gz-2517c057932543109836130d01852728
   Platform:   Ubuntu Linux 20.04.1 LTS, R-release, GCC
-  Submitted:  1h 5m 50.8s ago
-  Build time: 54m 38.6s
+  Submitted:  4h 18m 54.7s ago
+  Build time: 1h 19m 55.9s
 
-❯ checking CRAN incoming feasibility ... [6s/16s] NOTE
+❯ checking CRAN incoming feasibility ... [6s/21s] NOTE
   Maintainer: ‘Ioannis Oikonomidis <goikon@math.uoa.gr>’
   
   New submission
@@ -37,14 +37,14 @@
 
 0 errors ✔ | 0 warnings ✔ | 2 notes ✖
 
-── estimators 0.7.2: NOTE
+── estimators 0.7.3: NOTE
 
-  Build ID:   estimators_0.7.2.tar.gz-f1a1d2e2924d437ea65cdd0ed8474412
+  Build ID:   estimators_0.7.3.tar.gz-9ba45738341e47538c8461ac49ddff91
   Platform:   Fedora Linux, R-devel, clang, gfortran
-  Submitted:  1h 5m 50.9s ago
-  Build time: 53m 56.1s
+  Submitted:  4h 18m 54.8s ago
+  Build time: 1h 18m 32.2s
 
-❯ checking CRAN incoming feasibility ... [7s/23s] NOTE
+❯ checking CRAN incoming feasibility ... [7s/28s] NOTE
   Maintainer: ‘Ioannis Oikonomidis <goikon@math.uoa.gr>’
   
   New submission
