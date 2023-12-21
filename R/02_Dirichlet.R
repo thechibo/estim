@@ -23,18 +23,18 @@
 #'
 #' @export
 #'
-#' @examples \dontrun{
+#' @examples
 #' # Classic R Stats Format
 #' ddirich(c(0.3, 0.7), shape = c(2, 3))
 #' set.seed(1)
 #' rdirich(10, shape = c(2, 3))
 #'
 #' # S4 Distribution Class
+#' library(distr)
 #' D <- Dirichlet(shape = c(2, 3))
 #' d(D)(c(0.3, 0.7))
 #' set.seed(1)
 #' r(D)(10)
-#' }
 ddirich <- function(x, shape, log = FALSE) {
 
   if (length(x) != length(shape)) {

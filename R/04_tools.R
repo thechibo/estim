@@ -163,27 +163,29 @@ rowVar <- function(x) {
 #'
 #' @seealso [distr::igamma()]
 #'
-#' @examples \dontrun{
+#' @examples
 #' idigamma(2)
 #' Ddigamma(2, 3)
 #' Dtrigamma(2, 3)
 #' gammap(1:3, 3)
-#' }
 idigamma <- function(x) {
   distr::igamma(x)
 }
 
 #' @describeIn idigamma digamma difference function.
+#' @export
 Ddigamma <- function(x, y) {
   digamma(x) - digamma(y)
 }
 
 #' @describeIn idigamma trigamma difference function.
+#' @export
 Dtrigamma <- function(x, y) {
   trigamma(x) - trigamma(y)
 }
 
 #' @describeIn idigamma p-variate gamma function
+#' @export
 gammap <- function(x, p, log = FALSE) {
 
   g <- x
@@ -289,4 +291,21 @@ gendir <- function(x) {
   } else {
     stop("x must be an atomic vector or a matrix.")
   }
+}
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Generalized Gamma      ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+stacy_to_prentice <- function(a, b, k) {
+  c("mu" = log(a) + digamma(k) / b,
+    "sigma" = 1 / (b * sqrt(k)),
+    "Q" = 1 / sqrt(k))
+}
+
+prentice_to_stacy <- function(mu, sigma, q) {
+  k <- 1 / q ^ 2
+  b <- q / sigma
+  a <- exp(mu - digamma(k) / b)
+  c("a" = a, "b" = b, "k" = k)
 }

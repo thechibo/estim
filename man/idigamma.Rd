@@ -40,12 +40,10 @@ This set of functions revolve around the polygamma functions.
 
 }}
 \examples{
-\dontrun{
 idigamma(2)
 Ddigamma(2, 3)
 Dtrigamma(2, 3)
 gammap(1:3, 3)
-}
 }
 \seealso{
 \code{\link[distr:igamma]{distr::igamma()}}

@@ -29,16 +29,15 @@ Density function and random generation for the Multivariate Gamma
 distribution with shape parameter vector \code{shape} and scale parameter \code{scale}.
 }
 \examples{
-\dontrun{
 # Classic R Stats Format
 dmgamma(c(4, 6), shape = c(2, 3), scale = 2)
 set.seed(1)
 rmgamma(10, shape = c(2, 3), scale = 2)
 
 # S4 Distribution Class
+library(distr)
 D <- MGamma(shape = c(2, 3), scale = 2)
 d(D)(c(4, 6))
 set.seed(1)
 r(D)(10)
-}
 }
