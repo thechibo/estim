@@ -31,10 +31,67 @@
     <loc>/news/index.html</loc>
   </url>
   <url>
-    <loc>/reference/Dirichlet-class.html</loc>
+    <loc>/reference/Bern.html</loc>
   </url>
   <url>
-    <loc>/reference/MGamma-class.html</loc>
+    <loc>/reference/Beta.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Binom.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Cat.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Cauchy.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Chisq.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Dir.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Distribution-class.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Exp.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Fisher.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Gam.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Geom.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Laplace.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Lnorm.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Multinom.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Nbinom.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Norm.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Pois.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Stud.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Unif.html</loc>
+  </url>
+  <url>
+    <loc>/reference/Weib.html</loc>
   </url>
   <url>
     <loc>/reference/avar.html</loc>
@@ -49,10 +106,10 @@
     <loc>/reference/avar_same.html</loc>
   </url>
   <url>
-    <loc>/reference/dMGamma.html</loc>
+    <loc>/reference/calculus.html</loc>
   </url>
   <url>
-    <loc>/reference/ddirich.html</loc>
+    <loc>/reference/d.html</loc>
   </url>
   <url>
     <loc>/reference/estim.html</loc>
@@ -77,6 +134,9 @@
   </url>
   <url>
     <loc>/reference/mle.html</loc>
+  </url>
+  <url>
+    <loc>/reference/moments.html</loc>
   </url>
   <url>
     <loc>/reference/plot_large_metrics.html</loc>
