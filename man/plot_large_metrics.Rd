@@ -44,7 +44,7 @@ be saved in pdf format.
 }
 \examples{
 \donttest{
-D <- distr::Beta(shape1 = 1, shape2 = 2)
+D <- Beta(shape1 = 1, shape2 = 2)
 
 prm <- list(name = "shape1",
             pos = NULL,

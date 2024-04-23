@@ -1,6 +1,6 @@
 Package: estimators
 Title: Parameter Estimation
-Version: 0.7.3
+Version: 0.8.1
 Authors@R: c(
     person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr",
            role = c("aut", "cre"),
@@ -21,14 +21,15 @@ BugReports: https://github.com/thechibo/estimators/issues
 Depends: 
     R (>= 4.0.0)
 Imports:
-    distr,
+    extraDistr,
     ggh4x,
     ggplot2,
     grDevices,
     Matrix,
     methods,
     progress,
-    stats
+    stats,
+    utils
 Suggests:
     covr,
     knitr,

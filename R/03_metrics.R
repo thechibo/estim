@@ -47,7 +47,7 @@
 #'
 #' @seealso [plot_small_metrics] [large_metrics], [plot_large_metrics]
 #' @examples \donttest{
-#' D <- distr::Beta(shape1 = 1, shape2 = 2)
+#' D <- Beta(shape1 = 1, shape2 = 2)
 #'
 #' prm <- list(name = "shape1",
 #'             pos = NULL,
@@ -76,7 +76,10 @@ small_metrics <- function(D,
   prm_name <- paste0(prm$name, prm$pos)
 
   # Univariate of Multivariate
-  if (distr %in% c("Dirichlet", "MGamma")) {
+  if (distr %in% c("Dir")) {
+    setk <- set1of3
+    mar <- 3
+  } else if (distr %in% c("MGamma")) {
     setk <- set2of3
     mar <- 3
   } else {
@@ -101,7 +104,7 @@ small_metrics <- function(D,
   # For each value of prm
   for (i in seq_along(prm$val)) {
 
-    rDi <- distr::r(update_params(D, prm, i))
+    rDi <- r(update_params(D, prm, i))
     x <- replicate(sam, { rDi(nmax) })
 
     # For each sample size
@@ -168,7 +171,7 @@ small_metrics <- function(D,
 #'
 #' @seealso [small_metrics], [plot_small_metrics], [plot_large_metrics]
 #' @examples \donttest{
-#' D <- distr::Beta(shape1 = 1, shape2 = 2)
+#' D <- Beta(shape1 = 1, shape2 = 2)
 #'
 #' prm <- list(name = "shape1",
 #'             pos = NULL,

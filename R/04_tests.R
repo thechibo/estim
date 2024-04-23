@@ -2,7 +2,7 @@ test_consistency <- function(est, D0, n = 1e4, seed = 1, ...) {
 
   # Random Sampling
   set.seed(seed)
-  sam <- distr::r(D0)(n)
+  sam <- r(D0)(n)
 
   # Return
   list(prm_true = get_params(D0),
@@ -31,7 +31,7 @@ test_avar <- function(est, D0, n = 1e4, m = 1e3, seed = 1, bar = FALSE, ...) {
     }
 
     # CLT
-    sam <- distr::r(D0)(n)
+    sam <- r(D0)(n)
     y[i, ] <- sqrt(n) * (params - do.call(est, list(x = sam, distr = D0, ...)))
 
   }

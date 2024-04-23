@@ -1,146 +1,131 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Dirichlet Distribution                                                    ----
+# Dir Distribution                                                          ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Distribution           ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @title The Dirichlet Distribution
+setClass("Dir",
+         contains = "Distribution",
+         slots = c(alpha = "numeric"),
+         prototype = list(alpha = c(1, 1)))
+
+#' @title Dirichlet Distribution
+#' @name Dir
 #'
-#' @description
-#' Density function and random generation for the Dirichlet distribution with
-#' parameter vector `shape`.
+#' @param x an object of class `Dir`. If the function also has a `distr`
+#' argument, `x` is a numeric vector, a sample of observations.
+#' @param distr an object of class `Dir`.
+#' @param alpha numeric. The distribution parameters.
+#' @param prm numeric. A vector including the distribution parameters.
+#' @param par0,method,lower,upper arguments passed to optim.
 #'
-#' @param x numeric. The quantile vector.
-#' @param shape numeric. The parameter vector.
-#' @param log logical. If `TRUE`, probabilities `p` are given as `log(p)`.
-#' @param n numeric. The number of observations.
-#'
-#' @return `ddirich` returns a numeric vector (the evaluated density
-#' function). `rdirich` returns a matrix with `length(shape)` rows and `n`
-#' columns.
-#'
+#' @importFrom extraDistr ddirichlet rdirichlet
 #' @export
-#'
-#' @examples
-#' # Classic R Stats Format
-#' ddirich(c(0.3, 0.7), shape = c(2, 3))
-#' set.seed(1)
-#' rdirich(10, shape = c(2, 3))
-#'
-#' # S4 Distribution Class
-#' library(distr)
-#' D <- Dirichlet(shape = c(2, 3))
-#' d(D)(c(0.3, 0.7))
-#' set.seed(1)
-#' r(D)(10)
-ddirich <- function(x, shape, log = FALSE) {
-
-  if (length(x) != length(shape)) {
-    stop("The lengths of x (", length(x), ") and shape (",
-         length(shape), ") must be equal.")
-  }
-
-  ld <- lgamma(sum(shape)) - sum(lgamma(shape)) + sum((shape - 1) * log(x))
-
-  if (!log) {
-    ld <- exp(ld)
-  }
-
-  ld
-
+Dir <- function(alpha = c(1, 1)) {
+  new("Dir", alpha = alpha)
 }
 
-#' @rdname ddirich
-#' @export
-rdirich <- function(n, shape) {
-
-  k <- length(shape)
-  x <- matrix(nrow = n, ncol = k)
-  for (j in 1:k) {
-    x[, j] <- stats::rgamma(n, shape[j], 1)
+setValidity("Dir", function(object) {
+  if(length(object@alpha) <= 1) {
+    stop("alpha has to be a numeric of length 2 or more")
   }
-
-  t(x / rowSums(x))
-
-}
-
-setClass("DirichletParameter",
-         representation = representation(shape = "numeric"),
-         prototype = prototype(shape = c(1, 1),
-                               name = gettext("Parameter of a Dirichlet
-                                              distribution")),
-         contains = "Parameter"
-)
-
-#' @title Dirichlet Distribution S4 Class
-#'
-#' @slot shape numeric. The parameter vector.
-#'
-#' @return An object of class `Dirichlet`.
-#'
-#' @importFrom distr shape shape<-
-#' @export
-#'
-#' @inherit ddirich examples
-Dirichlet <- setClass("Dirichlet",
-                      slots = list(shape = "numeric"),
-                      prototype = prototype(
-                        r = function(n) {
-                          rdirich(n, shape = c(1, 1))
-                        },
-                        d = function(x, log = FALSE) {
-                          ddirich(x, shape = c(1, 1), log = log)
-                        },
-                        param = new("DirichletParameter"),
-                        .logExact = TRUE,
-                        .lowerExact = TRUE
-                      ),
-                      contains = "AbscontDistribution"
-)
-
-# Access methods
-setMethod("shape", "DirichletParameter", function(object) object@shape)
-
-# Replace methods
-setReplaceMethod("shape", "DirichletParameter",
-                 function(object, value){ object@shape <- value; object})
-
-setValidity("DirichletParameter", function(object){
-  if (any(distr::shape(object) <= 0)) {
-    stop("shape has to be positive")
-  } else {
-    return(TRUE)
+  if(any(object@alpha <= 0)) {
+    stop("alpha has to be positive")
   }
+  TRUE
 })
 
-# wrapped access methods
-setMethod("shape", "Dirichlet",
-          function(object) { distr::shape(distr::param(object)) })
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## d, p, q, r             ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# wrapped replace methods
-setMethod("shape<-", "Dirichlet",
-          function(object, value) { new("Dirichlet", shape = value(object)) })
-
-setMethod("initialize", "Dirichlet",
-          function(.Object, shape = c(1, 1)) {
-            .Object@img <- new("Reals")
-            .Object@param <- new("DirichletParameter", shape = shape)
-            .Object@r <- function(n) {}
-            .Object@d <- function(x, log = FALSE) {}
-            body(.Object@r) <- substitute(
-              { rdirich(n, shape = shapeSub) },
-              list(shapeSub = shape)
-            )
-            body(.Object@d) <- substitute(
-              { ddirich(x, shape = shapeSub, log = log) },
-              list(shapeSub = shape)
-            )
-            .Object@.withSim   <- FALSE
-            .Object@.withArith <- FALSE
-            .Object
+#' @rdname Dir
+setMethod("d", signature = c(x = "Dir"),
+          function(x) {
+            function(y, log = FALSE) {
+              extraDistr::ddirichlet(y, alpha = x@alpha, log = log)
+            }
           })
+
+#' @rdname Dir
+setMethod("r", signature = c(x = "Dir"),
+          function(x) {
+            function(n) {
+              extraDistr::rdirichlet(n, alpha = x@alpha)
+            }
+          })
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Moments                ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname Dir
+setMethod("mean",
+          signature  = c(x = "Dir"),
+          definition = function(x) {
+
+  x@alpha / sum(x@alpha)
+
+})
+
+#' @rdname Dir
+setMethod("mode",
+          signature  = c(x = "Dir"),
+          definition = function(x) {
+
+  (x@alpha - 1) / (sum(x@alpha) - length(x@alpha))
+
+})
+
+#' @rdname Dir
+setMethod("var",
+          signature  = c(x = "Dir"),
+          definition = function(x) {
+
+  # Required variables
+  a <- x@alpha
+  a0 <- sum(a)
+  b <- a0 - a
+  k <- length(a)
+  Ik <- diag(k)
+
+  y <- - Matrix(a, k, 1) %*% Matrix(a, 1, k)
+  diag(y) <- a * b
+  y <- y / (a0 ^ 2 * (a0 + 1))
+  nearPD(y)
+
+})
+
+#' @rdname Dir
+setMethod("entro",
+          signature  = c(x = "Dir"),
+          definition = function(x) {
+
+  a <- x@alpha
+  a0 <- sum(a)
+  ba <- sum(lgamma(a)) - lgamma(a0)
+
+  ba + (a0 - length(a)) * digamma(a0) - sum((a - 1) * digamma(a))
+
+})
+
+#' @rdname Dir
+setMethod("finf",
+          signature  = c(x = "Dir"),
+          definition = function(x) {
+
+  a <- x@alpha
+  k <- length(a)
+
+  D <- diag(trigamma(a)) - matrix(trigamma(sum(a)), k, k)
+
+  rownames(D) <- paste0("alpha", seq_along(a))
+  colnames(D) <- paste0("alpha", seq_along(a))
+  D
+
+})
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Likelihood             ----
@@ -148,16 +133,16 @@ setMethod("initialize", "Dirichlet",
 
 #' @rdname ll
 #' @export
-lldirich <- function(x, shape, mar = 2) {
-  ll(x, prm = shape, distr = Dirichlet(), mar = mar)
+lldirichlet <- function(x, alpha) {
+  ll(x, prm = alpha, distr = Dir())
 }
 
-#' @rdname ll
+#' @rdname Dir
 setMethod("ll",
-          signature  = c(x = "matrix", prm = "numeric", distr = "Dirichlet"),
-          definition = function(x, prm, distr, mar = 2) {
+          signature  = c(x = "matrix", prm = "numeric", distr = "Dir"),
+          definition = function(x, prm, distr) {
 
-  sum(apply(x, MARGIN = mar, FUN = ddirich, shape = prm, log = TRUE))
+  nrow(x) * (lgamma(sum(prm)) - sum(lgamma(prm))) + sum(log(x) %*% diag(prm - 1))
 
 })
 
@@ -166,7 +151,7 @@ setMethod("ll",
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 setMethod("lloptim",
-          signature  = c(par = "numeric", tx = "numeric", distr = "Dirichlet"),
+          signature  = c(par = "numeric", tx = "numeric", distr = "Dir"),
           definition = function(par, tx, distr) {
 
   a <- idigamma(digamma(par) + tx)
@@ -175,7 +160,7 @@ setMethod("lloptim",
 })
 
 setMethod("dlloptim",
-          signature  = c(par = "numeric", tx = "numeric", distr = "Dirichlet"),
+          signature  = c(par = "numeric", tx = "numeric", distr = "Dir"),
           definition = function(par, tx, distr) {
 
   # Shape parameters (a_i) as a function of a0
@@ -195,22 +180,22 @@ setMethod("dlloptim",
 
 #' @rdname estim
 #' @export
-edirich <- function(x, type = "mle", ...) {
+edirichlet <- function(x, type = "mle", ...) {
 
-  estim(x, Dirichlet(), type, ...)
+  estim(x, Dir(), type, ...)
 
 }
 
-#' @rdname mle
+#' @rdname Dir
 setMethod("mle",
-          signature  = c(x = "matrix", distr = "Dirichlet"),
+          signature  = c(x = "matrix", distr = "Dir"),
           definition = function(x, distr,
                                 par0 = "same",
                                 method = "L-BFGS-B",
                                 lower = 1e-5,
                                 upper = Inf) {
 
-  tx  <- rowMeans(log(x))
+  tx  <- colMeans(log(x))
 
   par <- optim(par = sum(do.call(par0, list(x = x, distr = distr))),
                fn = lloptim,
@@ -222,40 +207,40 @@ setMethod("mle",
                upper = upper,
                control = list(fnscale = -1))$par
 
-  shape <- idigamma(digamma(par) + tx)
+  alpha <- idigamma(digamma(par) + tx)
 
-  names(shape) <- paste0("shape", seq_along(shape))
-  shape
+  names(alpha) <- paste0("alpha", seq_along(alpha))
+  alpha
 
 })
 
-#' @rdname me
+#' @rdname Dir
 setMethod("me",
-          signature  = c(x = "matrix", distr = "Dirichlet"),
+          signature  = c(x = "matrix", distr = "Dir"),
           definition = function(x, distr) {
 
-  m  <- rowMeans(x)
-  m2 <- rowMeans(x ^ 2)
-  shape  <- m * (m - m2) / (m2 - m ^ 2)
+  m  <- colMeans(x)
+  m2 <- colMeans(x ^ 2)
+  alpha  <- m * (m - m2) / (m2 - m ^ 2)
 
-  names(shape) <- paste0("shape", seq_along(shape))
-  shape
+  names(alpha) <- paste0("alpha", seq_along(alpha))
+  alpha
 
 })
 
-#' @rdname same
+#' @rdname Dir
 setMethod("same",
-          signature  = c(x = "matrix", distr = "Dirichlet"),
+          signature  = c(x = "matrix", distr = "Dir"),
           definition = function(x, distr) {
 
-  m  <- rowMeans(x)
-  logm  <- rowMeans(log(x))
-  mlogm <- rowMeans(x * log(x))
+  m  <- colMeans(x)
+  logm  <- colMeans(log(x))
+  mlogm <- colMeans(x * log(x))
 
-  shape  <- (length(m) - 1) * m / sum(mlogm - m * logm)
+  alpha  <- (length(m) - 1) * m / sum(mlogm - m * logm)
 
-  names(shape) <- paste0("shape", seq_along(shape))
-  shape
+  names(alpha) <- paste0("alpha", seq_along(alpha))
+  alpha
 
 })
 
@@ -265,34 +250,34 @@ setMethod("same",
 
 #' @rdname avar
 #' @export
-vdirich <- function(shape, type = "mle") {
+vdirichlet <- function(alpha, type = "mle") {
 
-  avar(Dirichlet(shape = shape), type = type)
+  avar(Dir(alpha = alpha), type = type)
 
 }
 
-#' @rdname avar_mle
+#' @rdname Dir
 setMethod("avar_mle",
-          signature  = c(distr = "Dirichlet"),
+          signature  = c(distr = "Dir"),
           definition = function(distr) {
 
-  a <- distr::shape(distr)
+  a <- distr@alpha
   k <- length(a)
 
   D <- solve(diag(trigamma(a)) - matrix(trigamma(sum(a)), k, k))
   D <- as.matrix(nearPD(D))
-  rownames(D) <- paste0("shape", seq_along(a))
-  colnames(D) <- paste0("shape", seq_along(a))
+  rownames(D) <- paste0("alpha", seq_along(a))
+  colnames(D) <- paste0("alpha", seq_along(a))
   D
 
 })
 
-#' @rdname avar_me
+#' @rdname Dir
 setMethod("avar_me",
-          signature  = c(distr = "Dirichlet"),
-          definition = function(distr, comp = FALSE) {
+          signature  = c(distr = "Dir"),
+          definition = function(distr) {
 
-  a <- distr::shape(distr)
+  a <- distr@alpha
   a0 <- sum(a)
   b <- a0 - a
   k <- length(a)
@@ -321,25 +306,21 @@ setMethod("avar_me",
              cbind(Matrix::t(B12), B22))
   B <- nearPD(B)
 
-  if (!comp) {
-    D <- nearPD(A %*% B %*% Matrix::t(A))
-    D <- as.matrix(D)
-    rownames(D) <- paste0("shape", seq_along(a))
-    colnames(D) <- paste0("shape", seq_along(a))
-    return(D)
-  } else {
-    return(list(A = as.matrix(A), B = as.matrix(B)))
-  }
+  D <- nearPD(A %*% B %*% Matrix::t(A))
+  D <- as.matrix(D)
+  rownames(D) <- paste0("alpha", seq_along(a))
+  colnames(D) <- paste0("alpha", seq_along(a))
+  D
 
 })
 
-#' @rdname avar_same
+#' @rdname Dir
 setMethod("avar_same",
-          signature  = c(distr = "Dirichlet"),
-          definition = function(distr, comp = FALSE) {
+          signature  = c(distr = "Dir"),
+          definition = function(distr) {
 
   # Required variables
-  a <- distr::shape(distr)
+  a <- distr@alpha
   a0 <- sum(a)
   b <- a0 - a
   k <- length(a)
@@ -390,14 +371,10 @@ setMethod("avar_same",
              cbind(Matrix::t(B13), Matrix::t(B23), B33))
   B <- nearPD(B)
 
-  if (!comp) {
-    D <- nearPD(A %*% B %*% Matrix::t(A))
-    D <- as.matrix(D)
-    rownames(D) <- paste0("shape", seq_along(a))
-    colnames(D) <- paste0("shape", seq_along(a))
-    return(D)
-  } else {
-    return(list(A = as.matrix(A), B = as.matrix(B)))
-  }
+  D <- nearPD(A %*% B %*% Matrix::t(A))
+  D <- as.matrix(D)
+  rownames(D) <- paste0("alpha", seq_along(a))
+  colnames(D) <- paste0("alpha", seq_along(a))
+  D
 
 })

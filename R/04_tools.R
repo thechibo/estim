@@ -29,6 +29,21 @@ is_pos <- function(x) {
 ## Structures             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# Get the available moment methods for a distribution
+get_moment_methods <- function(x) {
+
+  # All available moments
+  mom <- c("mean", "median", "mode", "var", "sd", "skew", "kurt",
+           "entro", "finf")
+
+  # Get class methods
+  df_meth <- attr(methods(class = class(x)), "info")
+  meth <- df_meth[df_meth$from == "estimators", ]$generic
+
+  mom[mom %in% meth]
+
+}
+
 # Turn distribution name from character to an S4 class
 get_distr_class <- function(distr) {
 
@@ -36,7 +51,7 @@ get_distr_class <- function(distr) {
                  substr(tolower(distr), 2, nchar(distr)), sep = "")
 
   if (distr == "Gamma") {
-    distr <- "Gammad"
+    distr <- "Gam"
   } else if (distr == "Mgamma") {
     distr <- "MGamma"
   }
@@ -65,8 +80,7 @@ s4_to_list <- function(object) {
 
 # Get the parameters of a distribution
 get_params <- function(D) {
-  params <- methods::slot(D, "param")
-  params <- s4_to_list(params)
+  params <- s4_to_list(D)
   params["name"] <- NULL
   params["ncp"] <- NULL
   unlist(params)
@@ -89,13 +103,10 @@ update_params <- function(D, prm, i) {
     prm$pos <- 1
   }
 
-  params <- methods::slot(D, "param")
-  slot(params, prm$name)[prm$pos] <- prm$val[i]
+  params <- s4_to_list(D)
+  params[[prm$name]][prm$pos] <- prm$val[i]
 
-  x <- c(s4_to_list(params), Class = class(D))
-  x["name"] <- NULL
-
-  do.call("new", x)
+  do.call("new", c(params, Class = class(D)))
 
 }
 
@@ -117,6 +128,10 @@ set1of1 <- function(x, i) {
 
 set1of2 <- function(x, i) {
   x[i, ]
+}
+
+set1of3 <- function(x, i) {
+  x[i, , ]
 }
 
 set2of3 <- function(x, i) {
@@ -145,6 +160,17 @@ rowVar <- function(x) {
 ## Gamma Function         ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+# .x <- seq(1e-70, exp(25), length = 1e7)
+# .y <- digamma(.x)
+# idigamma_approx <- approxfun(.y, .x)
+# rm(.x, .y)
+
+## an extensive grid of x-values
+.xg <- sort(c(10^(-70:-1),qexp(unique(pmin(seq(0,1,length=5e3)+1e-10,1-1e-10))),qcauchy(seq(0.999,1-1e-10,length=5e3))))
+.dxg <- digamma(.xg)
+igamma <- approxfun(.dxg,.xg)
+rm(.xg,.dxg)
+
 #' @title Polygamma Functions
 #'
 #' @description
@@ -158,10 +184,7 @@ rowVar <- function(x) {
 #'
 #' @return numeric. The evaluated function.
 #'
-#' @importFrom distr igamma
 #' @export
-#'
-#' @seealso [distr::igamma()]
 #'
 #' @examples
 #' idigamma(2)
@@ -169,7 +192,7 @@ rowVar <- function(x) {
 #' Dtrigamma(2, 3)
 #' gammap(1:3, 3)
 idigamma <- function(x) {
-  distr::igamma(x)
+  igamma(x)#idigamma_approx(x)
 }
 
 #' @describeIn idigamma digamma difference function.
@@ -256,6 +279,10 @@ is_pd <- function(x) {
 
 }
 
+is_natural <- function(x) {
+  identical(x, round(x))
+}
+
 inv2x2 <- function(x) {
   det <- x[1, 1] * x[2, 2] - x[1, 2] * x[2, 1]
 
@@ -264,6 +291,7 @@ inv2x2 <- function(x) {
   } else {
     inv <- matrix(c(x[2, 2], -x[2, 1], -x[1, 2], x[1, 1]), nrow = 2)
     inv <- inv / det
+    dimnames(inv) <- dimnames(x)
     return(inv)
   }
 }

@@ -1,3 +1,9 @@
+# estimators 0.8.1
+
+* Added support for S4 Distribution classes, therefore the distr package is no longer a dependency (nor is it imported).
+* Added moment functions for all distributions.
+* Added new distributions.
+
 # estimators 0.7.3
 
 * Removed dontrun from all examples.

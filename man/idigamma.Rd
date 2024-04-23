@@ -45,6 +45,3 @@ Ddigamma(2, 3)
 Dtrigamma(2, 3)
 gammap(1:3, 3)
 }
-\seealso{
-\code{\link[distr:igamma]{distr::igamma()}}
-}

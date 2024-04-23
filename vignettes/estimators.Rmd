@@ -12,7 +12,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(distr)
 ```
 
 The `estimators` package offers a few convenient functions for parameter estimation in statistics. This guide provides an overview of the package's capabilities.
@@ -23,7 +22,7 @@ library(estimators)
 
 ## Distributions
 
-There are two popular ways to work with distributions in R. The default `stats` package includes four functions for each distribution.
+The default `stats` package includes four functions for each distribution.
 
 ```{r}
 shape1 <- 1
@@ -35,49 +34,15 @@ qbeta(0.75, shape1, shape2)
 rbeta(2, shape1, shape2)
 ```
 
-The `distr` package S4 system equivalent defines a `Distribution` object and implements the four functions generically.
-
-```{r eval = FALSE}
-library(distr)
-```
+This package provides an equivalent system that works by defining a `Distribution` object and implementing the four functions generically.
 
 ```{r}
 D <- Beta(shape1 = shape1, shape2 = shape2)
 
 d(D)(0.5)
 p(D)(0.5)
-q(D)(0.75)
+q2(D)(0.75)
 r(D)(2)
-```
-
-### New Distributions
-
-The `estimators` package covers the Dirichlet and the Multivariate Gamma distributions. Since both are multivariate distributions, only the density (d) and the simulation (r) functions are implemented.
-
-```{r}
-shape <- 1:3
-scale <- 2
-
-set.seed(1)
-x1 <- rdirich(100, shape)
-x2 <- rmgamma(100, shape, scale)
-
-ddirich(x1[, 1], shape)
-dmgamma(x2[, 1], shape, scale)
-```
-
-The same utilities are offered in the S4 method style of the `distr` package.
-
-```{r}
-D1 <- Dirichlet(shape)
-D2 <- MGamma(shape, scale)
-
-set.seed(1)
-x1 <- r(D1)(100)
-x2 <- r(D2)(100)
-
-d(D1)(x1[, 1])
-d(D2)(x2[, 1])
 ```
 
 ## Parameter Estimation
@@ -87,7 +52,7 @@ In order to illustrate the parameter estimation as implemented in the package, a
 ```{r}
 set.seed(1)
 x <- rbeta(100, shape1, shape2)
-D <- Beta(shape1, shape2)
+D <- Beta(shape1 = shape1, shape2 = shape2)
 ```
 
 ### Likelihood - The `ll` Functions
@@ -99,7 +64,7 @@ llbeta(x, shape1, shape2)
 ll(x, c(shape1, shape2), D)
 ```
 
-It is important to note that the S4 methods also accept a character for the distribution. The name should be the same as the S4 distribution generator, case ignored (i.e. "Dirichlet" or "dirichlet" but not "dirich").
+It is important to note that the S4 methods also accept a character for the distribution. The name should be the same as the S4 distribution generator, case ignored (i.e. "Beta" or "beta").
 
 ```{r}
 ll(x, c(shape1, shape2), "beta")
@@ -119,7 +84,7 @@ me(x, D)
 same(x, D)
 ```
 
-A general function `estim` is implemented, covering all distributions and estimators. This is in fact the main function of the package.
+A general function `estim` is implemented, covering all distributions and estimators.
 
 ```{r}
 estim(x, D, type = "mle")
@@ -163,7 +128,9 @@ shape parameters `(1, 1)`, `(1, 1.1)`, ..., `(1, 1.5)` and scale `3`. Notice tha
 The following example concerns the small sample metrics for the Dirichlet distribution estimators.
 
 ```{r, fig.width=15, fig.height=8, out.width="100%"}
-prm <- list(name = "shape",
+D1 <- Dir(alpha = 1:4)
+
+prm <- list(name = "alpha",
             pos = 1,
             val = seq(1, 5, by = 0.5))
 

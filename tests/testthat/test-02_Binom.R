@@ -1,9 +1,10 @@
 test_that("Log-Likelihood works", {
 
+  set.seed(1203)
   size <- 10
   prob <- 0.7
   prm <- c(size, prob)
-  D <- distr::Binom(size, prob)
+  D <- Binom(size = size, prob = prob)
   x <- rbinom(100, size, prob)
 
   expect_identical(llbinom(x, size, prob), ll(x, prm, D))
@@ -12,10 +13,11 @@ test_that("Log-Likelihood works", {
 
 test_that("e functions work", {
 
+  set.seed(1203)
   size <- 10
   prob <- 0.7
   prm <- c(size, prob)
-  D <- distr::Binom(size, prob)
+  D <- Binom(size = size, prob = prob)
   x <- rbinom(100, size, prob)
 
   expect_identical(ebinom(x, "mle"), mle(x, D))
@@ -28,7 +30,7 @@ test_that("v functions work", {
   size <- 10
   prob <- 0.7
   prm <- c(size, prob)
-  D <- distr::Binom(size, prob)
+  D <- Binom(size = size, prob = prob)
 
   expect_identical(vbinom(size, prob, "mle"), avar_mle(D))
   expect_identical(vbinom(size, prob, "me"), avar_me(D))
@@ -37,8 +39,9 @@ test_that("v functions work", {
 
 test_that("ME is consistent", {
 
+  set.seed(1203)
   est <- "me"
-  D0 <- distr::Binom()
+  D0 <- Binom()
   d <- test_consistency(est, D0)
   expect_equal(d$prm_true["prob"]["prob"], d$prm_est, tolerance = 0.5)
 
@@ -46,8 +49,9 @@ test_that("ME is consistent", {
 
 test_that("MLE is consistent", {
 
+  set.seed(1203)
   est <- "mle"
-  D0 <- distr::Binom()
+  D0 <- Binom()
   d <- test_consistency(est, D0)
   expect_equal(d$prm_true["prob"], d$prm_est, tolerance = 0.5)
 
@@ -55,8 +59,9 @@ test_that("MLE is consistent", {
 
 test_that("ME avar is correct", {
 
+  set.seed(1203)
   est <- "me"
-  D0 <- distr::Binom()
+  D0 <- Binom()
   d <- test_avar(est, D0)
   expect_equal(unname(d$avar_true), d$avar_est["prob", "prob"], tolerance = 1)
 
@@ -64,8 +69,9 @@ test_that("ME avar is correct", {
 
 test_that("MLE avar is correct", {
 
+  set.seed(1203)
   est <- "mle"
-  D0 <- distr::Binom()
+  D0 <- Binom()
   d <- test_avar(est, D0)
   expect_equal(unname(d$avar_true), d$avar_est["prob", "prob"], tolerance = 1)
 
@@ -73,7 +79,8 @@ test_that("MLE avar is correct", {
 
 test_that("small_metrics works", {
 
-  D <- distr::Binom()
+  set.seed(1203)
+  D <- Binom()
 
   prm <- list(name = "prob",
               pos = NULL,
@@ -98,7 +105,8 @@ test_that("small_metrics works", {
 
 test_that("large_metrics works", {
 
-  D <- distr::Binom()
+  set.seed(1203)
+  D <- Binom()
 
   prm <- list(name = "prob",
               pos = NULL,

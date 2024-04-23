@@ -3,21 +3,247 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Distribution           ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+setClass("Beta",
+  contains = "Distribution",
+  slots = c(shape1 = "numeric", shape2 = "numeric", ncp = "numeric"),
+  prototype = list(shape1 = 1, shape2 = 1, ncp = 0))
+
+#' @title Beta Distribution
+#' @name Beta
+#'
+#' @param x an object of class `Beta`. If the function also has a `distr`
+#' argument, `x` is a numeric vector, a sample of observations.
+#' @param distr an object of class `Beta`.
+#' @param shape1,shape2,ncp numeric. The distribution parameters.
+#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param par0,method,lower,upper arguments passed to optim.
+#'
+#' @export
+Beta <- function(shape1 = 1, shape2 = 1, ncp = 0) {
+  new("Beta", shape1 = shape1, shape2 = shape2, ncp = ncp)
+}
+
+setValidity("Beta", function(object) {
+  if(length(object@shape1) != 1) {
+    stop("shape1 has to be a numeric of length 1")
+  }
+  if(object@shape1 <= 0) {
+    stop("shape1 has to be positive")
+  }
+  if(length(object@shape2) != 1) {
+    stop("shape2 has to be a numeric of length 1")
+  }
+  if(object@shape2 <= 0) {
+    stop("shape2 has to be positive")
+  }
+  if(length(object@ncp) != 1) {
+    stop("ncp has to be a numeric of length 1")
+  }
+  TRUE
+})
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## d, p, q, r             ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname Beta
+#' @export
+setMethod("d", signature = c(x = "Beta"),
+          function(x) {
+            function(y, log = FALSE) {
+              dbeta(y, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp,
+                    log = log)
+            }
+          })
+
+#' @rdname Beta
+#' @export
+setMethod("p", signature = c(x = "Beta"),
+          function(x) {
+            function(q, lower.tail = TRUE, log.p = FALSE) {
+              pbeta(q, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp,
+                    lower.tail = lower.tail, log.p = log.p)
+            }
+          })
+
+#' @rdname Beta
+#' @export
+setMethod("q2", signature = c(x = "Beta"),
+          function(x) {
+            function(p, lower.tail = TRUE, log.p = FALSE) {
+              qbeta(p, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp,
+                    lower.tail = lower.tail, log.p = log.p)
+            }
+          })
+
+#' @rdname Beta
+#' @export
+setMethod("r", signature = c(x = "Beta"),
+          function(x) {
+            function(n) {
+              rbeta(n, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp)
+            }
+          })
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Moments                ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname Beta
+#' @export
+setMethod("mean",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  x@shape1 / (x@shape1 + x@shape2)
+
+})
+
+#' @rdname Beta
+#' @export
+setMethod("median",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  qbeta(0.5, shape1 = x@shape1, shape2 = x@shape2)
+
+})
+
+#' @rdname Beta
+#' @export
+setMethod("mode",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  a <- x@shape1
+  b <- x@shape2
+
+  if (a > 1 && b > 1) {
+    return((a - 1) / (a + b - 2))
+  } else if (a == 1 && b == 1) {
+    warning("In Beta(1, 1), all elements in the [0, 1] interval are modes.
+             0.5 is returned by default.")
+    return(0.5)
+  } else if (a < 1 && b < 1) {
+    warning("In Beta(a, b) with a < 1 and b < 1, both 0 and 1 are modes.
+             1 is returned by default.")
+    return(1)
+  } else if (a <= 1) {
+    return(0)
+  } else {
+    return(1)
+  }
+
+})
+
+#' @rdname Beta
+#' @export
+setMethod("var",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  a <- x@shape1
+  b <- x@shape2
+
+  (a * b) / ((a + b) ^ 2 * (a + b + 1))
+
+})
+
+#' @rdname Beta
+#' @export
+setMethod("sd",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  sqrt(var(x))
+
+})
+
+#' @rdname Beta
+#' @export
+setMethod("skew",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  a <- x@shape1
+  b <- x@shape2
+
+  (2 * (b - a) * sqrt(a + b + 1)) / ((a + b + 2) * sqrt(a * b))
+
+})
+
+#' @rdname Beta
+#' @export
+setMethod("kurt",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  a <- x@shape1
+  b <- x@shape2
+
+  (6 * (a - b) ^ 2 * (a + b + 1) - a * b * (a + b + 2)) /
+    (a * b * (a + b + 2) * (a + b + 3))
+
+})
+
+#' @rdname Beta
+#' @export
+setMethod("entro",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  a <- x@shape1
+  b <- x@shape2
+
+  lbeta(a, b) - (a - 1) * digamma(a) - (b - 1) * digamma(b) +
+  (a + b - 2) * digamma(a + b)
+
+})
+
+#' @rdname Beta
+#' @export
+setMethod("finf",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  a <- x@shape1
+  b <- x@shape2
+
+  p1a  <- trigamma(a)
+  p1b  <- trigamma(b)
+  p1   <- trigamma(a + b)
+
+  D <- matrix(c(p1a - p1, - p1, - p1, p1b - p1), nrow = 2, ncol = 2)
+
+  rownames(D) <- c("shape1", "shape2")
+  colnames(D) <- c("shape1", "shape2")
+
+  D
+
+})
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Beta
 #' @export
 llbeta <- function(x, shape1, shape2) {
-  ll(x, prm = c(shape1, shape2), distr = distr::Beta())
+  ll(x, prm = c(shape1, shape2), distr = Beta())
 }
 
-#' @rdname ll
+#' @rdname Beta
+#' @export
 setMethod("ll",
           signature  = c(x = "numeric", prm = "numeric", distr = "Beta"),
           definition = function(x, prm, distr) {
 
-  sum(dbeta(x = x, shape1 = prm[1], shape2 = prm[2], log = TRUE))
+  length(x) * (lgamma(sum(prm)) - lgamma(prm[1]) - lgamma(prm[2])) +
+   (prm[1] - 1) * sum(log(x)) + (prm[2] - 1) * sum(log(1 - x))
 
 })
 
@@ -68,11 +294,12 @@ setMethod("dlloptim",
 #' @export
 ebeta <- function(x, type = "mle", ...) {
 
-  estim(x, distr::Beta(), type, ...)
+  estim(x, Beta(), type, ...)
 
 }
 
-#' @rdname mle
+#' @rdname Beta
+#' @export
 setMethod("mle",
           signature  = c(x = "numeric", distr = "Beta"),
           definition = function(x, distr,
@@ -100,7 +327,8 @@ setMethod("mle",
 
 })
 
-#' @rdname me
+#' @rdname Beta
+#' @export
 setMethod("me",
           signature  = c(x = "numeric", distr = "Beta"),
           definition = function(x, distr) {
@@ -113,7 +341,8 @@ setMethod("me",
 
 })
 
-#' @rdname same
+#' @rdname Beta
+#' @export
 setMethod("same",
           signature  = c(x = "numeric", distr = "Beta"),
           definition = function(x, distr) {
@@ -134,43 +363,32 @@ setMethod("same",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Beta
 #' @export
 vbeta <- function(shape1, shape2, type = "mle") {
 
-  avar(distr::Beta(shape1 = shape1, shape2 = shape2), type = type)
+  avar(Beta(shape1 = shape1, shape2 = shape2), type = type)
 
 }
 
-#' @rdname avar_mle
+#' @rdname Beta
+#' @export
 setMethod("avar_mle",
           signature  = c(distr = "Beta"),
           definition = function(distr) {
 
-  a <- distr::shape1(distr)
-  b <- distr::shape2(distr)
-
-  p1a  <- trigamma(a)
-  p1b  <- trigamma(b)
-  p1   <- trigamma(a + b)
-  D    <- 1 / (p1a * p1b - (p1a + p1b) * p1)
-
-  D <- matrix(D * c(p1b - p1, p1, p1, p1a - p1), nrow = 2, ncol = 2)
-
-  rownames(D) <- c("shape1", "shape2")
-  colnames(D) <- c("shape1", "shape2")
-
-  D
+  inv2x2(finf(distr))
 
 })
 
-#' @rdname avar_me
+#' @rdname Beta
+#' @export
 setMethod("avar_me",
           signature  = c(distr = "Beta"),
           definition = function(distr) {
 
-  a <- distr::shape1(distr)
-  b <- distr::shape2(distr)
+  a <- distr@shape1
+  b <- distr@shape2
 
   prd <- a * b
   th  <- a + b
@@ -195,13 +413,14 @@ setMethod("avar_me",
 
 })
 
-#' @rdname avar_same
+#' @rdname Beta
+#' @export
 setMethod("avar_same",
           signature  = c(distr = "Beta"),
           definition = function(distr) {
 
-  a <- distr::shape1(distr)
-  b <- distr::shape2(distr)
+  a <- distr@shape1
+  b <- distr@shape2
 
   prd <- a * b
   th  <- a + b

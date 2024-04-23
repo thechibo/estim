@@ -1,9 +1,10 @@
 test_that("Log-Likelihood works", {
 
+  set.seed(1203)
   shape <- 1
   scale <- 2
   prm <- c(shape, scale)
-  D <- distr::Gammad(shape, scale)
+  D <- Gam(shape = shape, scale = scale)
   x <- rgamma(100, shape, scale)
 
   expect_identical(llgamma(x, shape, scale), ll(x, prm, D))
@@ -12,10 +13,11 @@ test_that("Log-Likelihood works", {
 
 test_that("e functions work", {
 
+  set.seed(1203)
   shape <- 1
   scale <- 2
   prm <- c(shape, scale)
-  D <- distr::Gammad(shape, scale)
+  D <- Gam(shape = shape, scale = scale)
   x <- rgamma(100, shape, scale)
 
   expect_identical(egamma(x, "mle"), mle(x, D))
@@ -29,7 +31,7 @@ test_that("v functions work", {
   shape <- 1
   scale <- 2
   prm <- c(shape, scale)
-  D <- distr::Gammad(shape, scale)
+  D <- Gam(shape = shape, scale = scale)
 
   expect_identical(vgamma(shape, scale, "mle"), avar_mle(D))
   expect_identical(vgamma(shape, scale, "me"), avar_me(D))
@@ -39,8 +41,9 @@ test_that("v functions work", {
 
 test_that("ME is consistent", {
 
+  set.seed(1203)
   est <- "me"
-  D0 <- distr::Gammad()
+  D0 <- Gam()
   d <- test_consistency(est, D0)
   expect_equal(d$prm_true, d$prm_est, tolerance = 0.5)
 
@@ -48,8 +51,9 @@ test_that("ME is consistent", {
 
 test_that("SAME is consistent", {
 
+  set.seed(1203)
   est <- "same"
-  D0 <- distr::Gammad()
+  D0 <- Gam()
   d <- test_consistency(est, D0)
   expect_equal(d$prm_true, d$prm_est, tolerance = 0.5)
 
@@ -57,8 +61,9 @@ test_that("SAME is consistent", {
 
 test_that("MLE is consistent", {
 
+  set.seed(1203)
   est <- "mle"
-  D0 <- distr::Gammad()
+  D0 <- Gam()
   d <- test_consistency(est, D0)
   expect_equal(d$prm_true, d$prm_est, tolerance = 0.5)
 
@@ -66,8 +71,9 @@ test_that("MLE is consistent", {
 
 test_that("ME avar is correct", {
 
+  set.seed(1203)
   est <- "me"
-  D0 <- distr::Gammad()
+  D0 <- Gam()
   d <- test_avar(est, D0)
   expect_equal(d$avar_true, d$avar_est, tolerance = 1)
 
@@ -75,8 +81,9 @@ test_that("ME avar is correct", {
 
 test_that("SAME avar is correct", {
 
+  set.seed(1203)
   est <- "same"
-  D0 <- distr::Gammad()
+  D0 <- Gam()
   d <- test_avar(est, D0)
   expect_equal(d$avar_true, d$avar_est, tolerance = 1)
 
@@ -84,8 +91,9 @@ test_that("SAME avar is correct", {
 
 test_that("MLE avar is correct", {
 
+  set.seed(1203)
   est <- "mle"
-  D0 <- distr::Gammad()
+  D0 <- Gam()
   d <- test_avar(est, D0)
   expect_equal(d$avar_true, d$avar_est, tolerance = 1)
 
@@ -93,7 +101,8 @@ test_that("MLE avar is correct", {
 
 test_that("small_metrics works", {
 
-  D <- distr::Gammad(shape = 1, scale = 2)
+  set.seed(1203)
+  D <- Gam(shape = 1, scale = 2)
 
   prm <- list(name = "shape",
               pos = NULL,
@@ -118,7 +127,8 @@ test_that("small_metrics works", {
 
 test_that("large_metrics works", {
 
-  D <- distr::Gammad(shape = 1, scale = 2)
+  set.seed(1203)
+  D <- Gam(shape = 1, scale = 2)
 
   prm <- list(name = "shape",
               pos = NULL,

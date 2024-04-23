@@ -43,7 +43,7 @@ that the initial shape parameter \code{2} in \code{D} is not utilized in the fun
 }
 \examples{
 \donttest{
-D <- distr::Beta(shape1 = 1, shape2 = 2)
+D <- Beta(shape1 = 1, shape2 = 2)
 
 prm <- list(name = "shape1",
             pos = NULL,
