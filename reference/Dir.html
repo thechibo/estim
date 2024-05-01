@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">estimators</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.8.2</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -57,10 +57,10 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">Dir</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Dir</span></span>
-<span><span class="fu"><a href="d.html">d</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="fu"><a href="dpqr.html">d</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Dir</span></span>
-<span><span class="fu"><a href="d.html">r</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="fu"><a href="dpqr.html">r</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># S4 method for Dir</span></span>
 <span><span class="fu"><a href="moments.html">mean</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
@@ -122,6 +122,24 @@ argument, <code>x</code> is a numeric vector, a sample of observations.</p></dd>
 <dd><p>arguments passed to optim.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
+    
+
+<p>The dpqr family of functions return the evaluated density, cumulative
+probability, quantile, and random sample, respectively.
+The moments family of functions return the appropriate theoretical moment,
+as calculated by the distribution true parameters.
+The ll function returns the evaluated log-likelihood, given a sample and the
+theoretical parameters.
+The estim family of functions return the estimated parameters of the
+distribution, given a sample.
+The avar family of functions return the asymptotic variance or variance -
+covariance matrix (if there are two or more parameters) of the corresponding
+estimation method.
+Calculus performed on Distribution objects returns a Distribution object of
+the appropriate class and with the appropriate parameters.</p>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
