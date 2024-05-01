@@ -20,6 +20,8 @@ setClass("Cauchy",
 #' @param location,scale numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Cauchy <- function(location = 1, scale = 1) {
   new("Cauchy", location = location, scale = scale)

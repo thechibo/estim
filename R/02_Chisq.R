@@ -18,6 +18,8 @@ setClass("Chisq",
 #' argument, `x` is a numeric vector, a sample of observations.
 #' @param df,ncp numeric. The distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Chisq <- function(df = 1, ncp = 0) {
   new("Chisq", df = df, ncp = ncp)

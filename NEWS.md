@@ -1,3 +1,7 @@
+# estimators 0.8.2
+
+* Updated missing return values in documentation.
+
 # estimators 0.8.1
 
 * Added support for S4 Distribution classes, therefore the distr package is no longer a dependency (nor is it imported).

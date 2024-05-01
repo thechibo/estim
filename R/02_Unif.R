@@ -20,6 +20,8 @@ setClass("Unif",
 #' @param min,max numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Unif <- function(min = 0, max = 1) {
   new("Unif", min = min, max = max)

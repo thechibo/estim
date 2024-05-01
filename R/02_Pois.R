@@ -20,6 +20,8 @@ setClass("Pois",
 #' @param lambda numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Pois <- function(lambda = 1) {
   new("Pois", lambda = lambda)

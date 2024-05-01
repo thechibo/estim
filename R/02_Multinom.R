@@ -20,6 +20,8 @@ setClass("Multinom",
 #' @param size,prob numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Multinom <- function(size = 1, prob = c(0.5, 0.5)) {
   new("Multinom", size = size, prob = prob)

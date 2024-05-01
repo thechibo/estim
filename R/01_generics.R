@@ -7,28 +7,27 @@
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title Distribution S4 Classes
-#' @name Distribution-class
+#' @name Distributions
 #'
 #' @description
 #' A collection of classes that provide a flexible and structured way to work
 #' with probability distributions.
 #'
-#' @return An object of the respective class (`Bern`, `Norm`, etc.). All classes
-#' are subclasses of the virtual class `Distribution`.
+#' @return
+#' The dpqr family of functions return the evaluated density, cumulative
+#' probability, quantile, and random sample, respectively.
+#' The moments family of functions return the appropriate theoretical moment,
+#' as calculated by the distribution true parameters.
+#' The ll function returns the evaluated log-likelihood, given a sample and the
+#' theoretical parameters.
+#' The estim family of functions return the estimated parameters of the
+#' distribution, given a sample.
+#' The avar family of functions return the asymptotic variance or variance -
+#' covariance matrix (if there are two or more parameters) of the corresponding
+#' estimation method.
+#' Calculus performed on Distribution objects returns a Distribution object of
+#' the appropriate class and with the appropriate parameters.
 #'
-#' @examples
-#' # -----------------------------------------------------
-#' # Distribution Calculus Example
-#' # -----------------------------------------------------
-#'
-#' # Normal location - scale transformation
-#' x <- Norm(mean = 2, sd = 3)
-#' y <- 3 * x + 1 # Norm(mean = 7, sd = 9)
-#'
-#' # Addition of two independent Normal random variables
-#' x1 <- Norm(mean = 1, sd = 3)
-#' x2 <- Norm(mean = 2, sd = 4)
-#' x3 <- x1 + x2 # Norm(mean = 3, sd = 5)
 NULL
 
 setClass("Distribution")
@@ -37,32 +36,64 @@ setClass("Distribution")
 ## d, p, q, r             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @title d, p, q, r
+#' @title The d p q r Functions
+#' @name dpqr
+#' @aliases d p q r
+#'
+#' @description
+#' Four generic functions that take a distribution object (e.g. `Bern`) and
+#' return the density, cumulative probability, quantile, and random generator
+#' functions, respectively.
 #'
 #' @param x an object of subclass `Distribution`.
 #' @param ... extra arguments.
 #'
-#' @return function.
+#' @return The d p q r functions return the density, cumulative probability,
+#' quantile, and random generator functions, respectively.
+#'
 #' @export
 #'
 #' @examples
-#' 1 + 1
+#' # -----------------------------------------------------
+#' # Beta Distribution Example
+#' # -----------------------------------------------------
+#'
+#' library(estimators)
+#'
+#' # Create the distribution
+#' x <- Beta(3, 5)
+#'
+#' # Density function
+#' df <- d(x)
+#' df(c(0.3, 0.8, 0.5))
+#'
+#' # Probability function
+#' pf <- p(x)
+#' pf(c(0.3, 0.8, 0.5))
+#'
+#' # Density function
+#' qf <- q2(x)
+#' qf(c(0.3, 0.8, 0.5))
+#'
+#' # Random Generator function
+#' rf <- r(x)
+#' rf(5)
 setGeneric("d", function(x, ...) {
   standardGeneric("d")
 })
 
-#' @rdname d
+#' @rdname dpqr
 #' @export
 setGeneric("p", function(x, ...) {
   standardGeneric("p")
 })
 
-#' @rdname d
+#' @rdname dpqr
 #' @export
 setGeneric("q2", function(x, ...)
   standardGeneric("q2"))
 
-#' @rdname d
+#' @rdname dpqr
 #' @export
 setGeneric("r", function(x, ...) {
   standardGeneric("r")
@@ -73,6 +104,7 @@ setGeneric("r", function(x, ...) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title Moments - Parametric Quantities of Interest
+#' @name moments
 #'
 #' @description A set of functions that calculate the theoretical moments
 #' (expectation, variance, skewness, excess kurtosis) and other important

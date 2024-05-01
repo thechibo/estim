@@ -19,8 +19,12 @@ setClass("Bern",
 #' @param distr an object of class `Bern`.
 #' @param prm,prob numeric. The distribution parameter.
 #'
+#' @inherit Distributions return
+#'
 #' @importFrom extraDistr dbern pbern qbern rbern
 #' @export
+#'
+#' @seealso [dpqr], [moments]
 Bern <- function(prob = 0.5) {
   new("Bern", prob = prob)
 }

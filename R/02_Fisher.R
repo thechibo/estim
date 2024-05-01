@@ -18,6 +18,8 @@ setClass("Fisher",
 #' argument, `x` is a numeric vector, a sample of observations.
 #' @param df1,df2,ncp numeric. The distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Fisher <- function(df1 = 1, df2 = 1, ncp = 0) {
   new("Fisher", df1 = df1, df2 = df2, ncp = ncp)

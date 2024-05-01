@@ -18,6 +18,8 @@ setClass("Stud",
 #' argument, `x` is a numeric vector, a sample of observations.
 #' @param df,ncp numeric. The distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Stud <- function(df = 1, ncp = 0) {
   new("Stud", df = df, ncp = ncp)

@@ -20,6 +20,8 @@ setClass("Binom",
 #' @param size,prob numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Binom <- function(size = 1, prob = 0.5) {
   new("Binom", size = size, prob = prob)

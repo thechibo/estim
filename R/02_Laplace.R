@@ -20,6 +20,8 @@ setClass("Laplace",
 #' @param mu,sigma numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @importFrom extraDistr dlaplace plaplace qlaplace rlaplace
 #' @export
 Laplace <- function(mu = 0, sigma = 1) {

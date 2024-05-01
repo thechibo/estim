@@ -26,6 +26,8 @@ setClass("Weib",
 #' @param prm numeric. A vector including the distribution parameters.
 #' @param par0,method,lower,upper arguments passed to optim.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Weib <- function(shape = 1, scale = 1) {
   new("Weib", shape = shape, scale = scale)

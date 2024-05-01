@@ -20,6 +20,8 @@ setClass("Geom",
 #' @param prob numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Geom <- function(prob = 0.5) {
   new("Geom", prob = prob)

@@ -47,3 +47,17 @@
 \description{
 Distribution Calculus
 }
+\examples{
+# -----------------------------------------------------
+# Distribution Calculus Example
+# -----------------------------------------------------
+
+# Normal location - scale transformation
+x <- Norm(mean = 2, sd = 3)
+y <- 3 * x + 1 # Norm(mean = 7, sd = 9)
+
+# Addition of two independent Normal random variables
+x1 <- Norm(mean = 1, sd = 3)
+x2 <- Norm(mean = 2, sd = 4)
+x3 <- x1 + x2 # Norm(mean = 3, sd = 5)
+}

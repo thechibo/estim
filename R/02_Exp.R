@@ -20,6 +20,8 @@ setClass("Exp",
 #' @param rate numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Exp <- function(rate = 1) {
   new("Exp", rate = rate)

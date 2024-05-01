@@ -20,6 +20,8 @@ setClass("Cat",
 #' @param prob numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @importFrom extraDistr dcat rcat
 #' @export
 Cat <- function(prob = c(0.5, 0.5)) {

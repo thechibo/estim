@@ -20,6 +20,8 @@ setClass("Norm",
 #' @param mean,sd numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Norm <- function(mean = 0, sd = 1) {
   new("Norm", mean = mean, sd = sd)

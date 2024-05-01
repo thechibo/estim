@@ -86,6 +86,21 @@ argument, \code{x} is a numeric vector, a sample of observations.}
 
 \item{type}{character, case ignored. The estimator type (mle, me, or same).}
 }
+\value{
+The dpqr family of functions return the evaluated density, cumulative
+probability, quantile, and random sample, respectively.
+The moments family of functions return the appropriate theoretical moment,
+as calculated by the distribution true parameters.
+The ll function returns the evaluated log-likelihood, given a sample and the
+theoretical parameters.
+The estim family of functions return the estimated parameters of the
+distribution, given a sample.
+The avar family of functions return the asymptotic variance or variance -
+covariance matrix (if there are two or more parameters) of the corresponding
+estimation method.
+Calculus performed on Distribution objects returns a Distribution object of
+the appropriate class and with the appropriate parameters.
+}
 \description{
 Beta Distribution
 }

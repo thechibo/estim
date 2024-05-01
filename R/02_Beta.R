@@ -22,6 +22,8 @@ setClass("Beta",
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param par0,method,lower,upper arguments passed to optim.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Beta <- function(shape1 = 1, shape2 = 1, ncp = 0) {
   new("Beta", shape1 = shape1, shape2 = shape2, ncp = ncp)

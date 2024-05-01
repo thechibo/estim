@@ -20,6 +20,8 @@ setClass("Lnorm",
 #' @param meanlog,sdlog numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @inherit Distributions return
+#'
 #' @export
 Lnorm <- function(meanlog = 0, sdlog = 1) {
   new("Lnorm", meanlog = meanlog, sdlog = sdlog)

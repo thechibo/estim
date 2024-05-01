@@ -21,6 +21,8 @@ setClass("Dir",
 #' @param prm numeric. A vector including the distribution parameters.
 #' @param par0,method,lower,upper arguments passed to optim.
 #'
+#' @inherit Distributions return
+#'
 #' @importFrom extraDistr ddirichlet rdirichlet
 #' @export
 Dir <- function(alpha = c(1, 1)) {
