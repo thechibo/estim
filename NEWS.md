@@ -1,3 +1,7 @@
+# estimators 0.8.3
+
+* Updated missing return values in documentation.
+
 # estimators 0.8.2
 
 * Updated missing return values in documentation.

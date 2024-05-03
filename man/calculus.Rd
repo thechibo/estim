@@ -44,6 +44,11 @@
 
 \item{na.rm}{logical. Should missing values be removed?}
 }
+\value{
+All calculations return Distribution objects (specifically, objects
+of a class that is a subclass of \code{Distribution}), accordingly to the property
+at hand.
+}
 \description{
 Distribution Calculus
 }
@@ -51,6 +56,8 @@ Distribution Calculus
 # -----------------------------------------------------
 # Distribution Calculus Example
 # -----------------------------------------------------
+
+library(estimators)
 
 # Normal location - scale transformation
 x <- Norm(mean = 2, sd = 3)

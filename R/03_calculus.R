@@ -13,10 +13,16 @@
 #' @param na.rm logical. Should missing values be removed?
 #' @param ... extra arguments.
 #'
+#' @return All calculations return Distribution objects (specifically, objects
+#' of a class that is a subclass of `Distribution`), accordingly to the property
+#' at hand.
+#'
 #' @examples
 #' # -----------------------------------------------------
 #' # Distribution Calculus Example
 #' # -----------------------------------------------------
+#'
+#' library(estimators)
 #'
 #' # Normal location - scale transformation
 #' x <- Norm(mean = 2, sd = 3)
