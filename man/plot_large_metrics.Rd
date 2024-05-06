@@ -9,7 +9,7 @@ plot_large_metrics(
   colors = NULL,
   title = NULL,
   save = FALSE,
-  path = getwd(),
+  path = NULL,
   name = "myplot.pdf",
   width = 15,
   height = 8

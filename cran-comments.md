@@ -17,7 +17,7 @@ very small but positive probability of failure in the test. It is now solved.
 
 ── Rhub Check ────────────────────────────────────────────────────────────────── 
 
-The following Rhub checks have been executed successfully: 
+The following checks have been executed successfully with `rhub::rhub_check()`: 
 
 1 [VM] linux          R-* (any version)             ubuntu-latest on GitHub
 2 [VM] macos          R-* (any version)             macos-13 on GitHub
