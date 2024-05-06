@@ -4,7 +4,7 @@
 \alias{Gam}
 \alias{d,Gam-method}
 \alias{p,Gam-method}
-\alias{q2,Gam-method}
+\alias{qn,Gam-method}
 \alias{r,Gam-method}
 \alias{mean,Gam-method}
 \alias{var,Gam-method}
@@ -28,7 +28,7 @@ Gam(shape = 1, scale = 1)
 
 \S4method{p}{Gam}(x)
 
-\S4method{q2}{Gam}(x)
+\S4method{qn}{Gam}(x)
 
 \S4method{r}{Gam}(x)
 

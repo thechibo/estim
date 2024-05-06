@@ -4,7 +4,7 @@
 \alias{Fisher}
 \alias{d,Fisher-method}
 \alias{p,Fisher-method}
-\alias{q2,Fisher-method}
+\alias{qn,Fisher-method}
 \alias{r,Fisher-method}
 \alias{mean,Fisher-method}
 \alias{mode,Fisher-method}
@@ -19,7 +19,7 @@ Fisher(df1 = 1, df2 = 1, ncp = 0)
 
 \S4method{p}{Fisher}(x)
 
-\S4method{q2}{Fisher}(x)
+\S4method{qn}{Fisher}(x)
 
 \S4method{r}{Fisher}(x)
 

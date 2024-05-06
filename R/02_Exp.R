@@ -58,7 +58,7 @@ setMethod("p", signature = c(x = "Exp"),
           })
 
 #' @rdname Exp
-setMethod("q2", signature = c(x = "Exp"),
+setMethod("qn", signature = c(x = "Exp"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qexp(p, rate = x@rate, lower.tail = lower.tail, log.p = log.p)

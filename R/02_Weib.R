@@ -71,7 +71,7 @@ setMethod("p", signature = c(x = "Weib"),
           })
 
 #' @rdname Weib
-setMethod("q2", signature = c(x = "Weib"),
+setMethod("qn", signature = c(x = "Weib"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qweibull(p, shape = x@shape, scale = x@scale,

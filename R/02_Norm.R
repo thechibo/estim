@@ -62,7 +62,7 @@ setMethod("p", signature = c(x = "Norm"),
           })
 
 #' @rdname Norm
-setMethod("q2", signature = c(x = "Norm"),
+setMethod("qn", signature = c(x = "Norm"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qnorm(p, mean = x@mean, sd = x@sd,

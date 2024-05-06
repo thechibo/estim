@@ -4,7 +4,7 @@
 \alias{Nbinom}
 \alias{d,Nbinom-method}
 \alias{p,Nbinom-method}
-\alias{q2,Nbinom-method}
+\alias{qn,Nbinom-method}
 \alias{r,Nbinom-method}
 \alias{mean,Nbinom-method}
 \alias{mode,Nbinom-method}
@@ -26,7 +26,7 @@ Nbinom(size = 1, prob = 0.5)
 
 \S4method{p}{Nbinom}(x)
 
-\S4method{q2}{Nbinom}(x)
+\S4method{qn}{Nbinom}(x)
 
 \S4method{r}{Nbinom}(x)
 

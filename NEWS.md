@@ -1,6 +1,8 @@
 # estimators 0.8.3
 
-* Updated missing return values in documentation.
+* Updated missing return value in calculus.Rd documentation.
+* Changed default plot save path to `NULL`.
+* Changed `q2` function to `qn`.
 
 # estimators 0.8.2
 

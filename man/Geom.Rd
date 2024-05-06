@@ -4,7 +4,7 @@
 \alias{Geom}
 \alias{d,Geom-method}
 \alias{p,Geom-method}
-\alias{q2,Geom-method}
+\alias{qn,Geom-method}
 \alias{r,Geom-method}
 \alias{mean,Geom-method}
 \alias{mode,Geom-method}
@@ -27,7 +27,7 @@ Geom(prob = 0.5)
 
 \S4method{p}{Geom}(x)
 
-\S4method{q2}{Geom}(x)
+\S4method{qn}{Geom}(x)
 
 \S4method{r}{Geom}(x)
 

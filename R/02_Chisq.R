@@ -60,7 +60,7 @@ setMethod("p", signature = c(x = "Chisq"),
           })
 
 #' @rdname Chisq
-setMethod("q2", signature = c(x = "Chisq"),
+setMethod("qn", signature = c(x = "Chisq"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qchisq(p, df = x@df, ncp = x@ncp,

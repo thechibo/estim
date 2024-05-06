@@ -4,7 +4,7 @@
 \alias{Unif}
 \alias{d,Unif-method}
 \alias{p,Unif-method}
-\alias{q2,Unif-method}
+\alias{qn,Unif-method}
 \alias{r,Unif-method}
 \alias{mean,Unif-method}
 \alias{var,Unif-method}
@@ -23,7 +23,7 @@ Unif(min = 0, max = 1)
 
 \S4method{p}{Unif}(x)
 
-\S4method{q2}{Unif}(x)
+\S4method{qn}{Unif}(x)
 
 \S4method{r}{Unif}(x)
 

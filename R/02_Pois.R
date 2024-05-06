@@ -59,7 +59,7 @@ setMethod("p", signature = c(x = "Pois"),
           })
 
 #' @rdname Pois
-setMethod("q2", signature = c(x = "Pois"),
+setMethod("qn", signature = c(x = "Pois"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qpois(p, lambda = x@lambda,

@@ -4,7 +4,7 @@
 \alias{Beta}
 \alias{d,Beta-method}
 \alias{p,Beta-method}
-\alias{q2,Beta-method}
+\alias{qn,Beta-method}
 \alias{r,Beta-method}
 \alias{mean,Beta-method}
 \alias{median,Beta-method}
@@ -32,7 +32,7 @@ Beta(shape1 = 1, shape2 = 1, ncp = 0)
 
 \S4method{p}{Beta}(x)
 
-\S4method{q2}{Beta}(x)
+\S4method{qn}{Beta}(x)
 
 \S4method{r}{Beta}(x)
 

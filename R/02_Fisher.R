@@ -66,7 +66,7 @@ setMethod("p", signature = c(x = "Fisher"),
           })
 
 #' @rdname Fisher
-setMethod("q2", signature = c(x = "Fisher"),
+setMethod("qn", signature = c(x = "Fisher"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qf(p, df1 = x@df1, df2 = x@df2, ncp = x@ncp,

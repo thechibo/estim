@@ -61,7 +61,7 @@ setMethod("p", signature = c(x = "Bern"),
           })
 
 #' @rdname Bern
-setMethod("q2", signature = c(x = "Bern"),
+setMethod("qn", signature = c(x = "Bern"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               extraDistr::qbern(p, prob = x@prob,

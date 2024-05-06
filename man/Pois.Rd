@@ -4,7 +4,7 @@
 \alias{Pois}
 \alias{d,Pois-method}
 \alias{p,Pois-method}
-\alias{q2,Pois-method}
+\alias{qn,Pois-method}
 \alias{r,Pois-method}
 \alias{mean,Pois-method}
 \alias{var,Pois-method}
@@ -25,7 +25,7 @@ Pois(lambda = 1)
 
 \S4method{p}{Pois}(x)
 
-\S4method{q2}{Pois}(x)
+\S4method{qn}{Pois}(x)
 
 \S4method{r}{Pois}(x)
 

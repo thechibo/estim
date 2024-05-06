@@ -4,7 +4,7 @@
 \alias{Binom}
 \alias{d,Binom-method}
 \alias{p,Binom-method}
-\alias{q2,Binom-method}
+\alias{qn,Binom-method}
 \alias{r,Binom-method}
 \alias{mean,Binom-method}
 \alias{var,Binom-method}
@@ -25,7 +25,7 @@ Binom(size = 1, prob = 0.5)
 
 \S4method{p}{Binom}(x)
 
-\S4method{q2}{Binom}(x)
+\S4method{qn}{Binom}(x)
 
 \S4method{r}{Binom}(x)
 

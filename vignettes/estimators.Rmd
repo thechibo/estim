@@ -41,7 +41,7 @@ D <- Beta(shape1 = shape1, shape2 = shape2)
 
 d(D)(0.5)
 p(D)(0.5)
-q2(D)(0.75)
+qn(D)(0.75)
 r(D)(2)
 ```
 

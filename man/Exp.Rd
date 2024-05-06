@@ -4,7 +4,7 @@
 \alias{Exp}
 \alias{d,Exp-method}
 \alias{p,Exp-method}
-\alias{q2,Exp-method}
+\alias{qn,Exp-method}
 \alias{r,Exp-method}
 \alias{mean,Exp-method}
 \alias{median,Exp-method}
@@ -28,7 +28,7 @@ Exp(rate = 1)
 
 \S4method{p}{Exp}(x)
 
-\S4method{q2}{Exp}(x)
+\S4method{qn}{Exp}(x)
 
 \S4method{r}{Exp}(x)
 

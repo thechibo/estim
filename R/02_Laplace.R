@@ -63,7 +63,7 @@ setMethod("p", signature = c(x = "Laplace"),
           })
 
 #' @rdname Laplace
-setMethod("q2", signature = c(x = "Laplace"),
+setMethod("qn", signature = c(x = "Laplace"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               extraDistr::qlaplace(p, mu = x@mu, sigma = x@sigma,

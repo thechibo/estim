@@ -4,7 +4,7 @@
 \alias{Bern}
 \alias{d,Bern-method}
 \alias{p,Bern-method}
-\alias{q2,Bern-method}
+\alias{qn,Bern-method}
 \alias{r,Bern-method}
 \alias{mean,Bern-method}
 \alias{median,Bern-method}
@@ -28,7 +28,7 @@ Bern(prob = 0.5)
 
 \S4method{p}{Bern}(x)
 
-\S4method{q2}{Bern}(x)
+\S4method{qn}{Bern}(x)
 
 \S4method{r}{Bern}(x)
 

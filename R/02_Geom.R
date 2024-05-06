@@ -59,7 +59,7 @@ setMethod("p", signature = c(x = "Geom"),
           })
 
 #' @rdname Geom
-setMethod("q2", signature = c(x = "Geom"),
+setMethod("qn", signature = c(x = "Geom"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qgeom(p, prob = x@prob,

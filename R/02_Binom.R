@@ -65,7 +65,7 @@ setMethod("p", signature = c(x = "Binom"),
           })
 
 #' @rdname Binom
-setMethod("q2", signature = c(x = "Binom"),
+setMethod("qn", signature = c(x = "Binom"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qbinom(p, size = x@size, prob = x@prob,

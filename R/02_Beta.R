@@ -74,7 +74,7 @@ setMethod("p", signature = c(x = "Beta"),
 
 #' @rdname Beta
 #' @export
-setMethod("q2", signature = c(x = "Beta"),
+setMethod("qn", signature = c(x = "Beta"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qbeta(p, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp,

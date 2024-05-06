@@ -4,7 +4,7 @@
 \alias{Stud}
 \alias{d,Stud-method}
 \alias{p,Stud-method}
-\alias{q2,Stud-method}
+\alias{qn,Stud-method}
 \alias{r,Stud-method}
 \alias{mean,Stud-method}
 \alias{median,Stud-method}
@@ -21,7 +21,7 @@ Stud(df = 1, ncp = 0)
 
 \S4method{p}{Stud}(x)
 
-\S4method{q2}{Stud}(x)
+\S4method{qn}{Stud}(x)
 
 \S4method{r}{Stud}(x)
 

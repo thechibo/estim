@@ -72,7 +72,7 @@ setClass("Distribution")
 #' pf(c(0.3, 0.8, 0.5))
 #'
 #' # Density function
-#' qf <- q2(x)
+#' qf <- qn(x)
 #' qf(c(0.3, 0.8, 0.5))
 #'
 #' # Random Generator function
@@ -90,8 +90,8 @@ setGeneric("p", function(x, ...) {
 
 #' @rdname dpqr
 #' @export
-setGeneric("q2", function(x, ...)
-  standardGeneric("q2"))
+setGeneric("qn", function(x, ...)
+  standardGeneric("qn"))
 
 #' @rdname dpqr
 #' @export

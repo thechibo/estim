@@ -4,7 +4,7 @@
 \alias{Laplace}
 \alias{d,Laplace-method}
 \alias{p,Laplace-method}
-\alias{q2,Laplace-method}
+\alias{qn,Laplace-method}
 \alias{r,Laplace-method}
 \alias{mean,Laplace-method}
 \alias{median,Laplace-method}
@@ -28,7 +28,7 @@ Laplace(mu = 0, sigma = 1)
 
 \S4method{p}{Laplace}(x)
 
-\S4method{q2}{Laplace}(x)
+\S4method{qn}{Laplace}(x)
 
 \S4method{r}{Laplace}(x)
 

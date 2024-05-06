@@ -4,7 +4,7 @@
 \alias{Norm}
 \alias{d,Norm-method}
 \alias{p,Norm-method}
-\alias{q2,Norm-method}
+\alias{qn,Norm-method}
 \alias{r,Norm-method}
 \alias{mean,Norm-method}
 \alias{median,Norm-method}
@@ -28,7 +28,7 @@ Norm(mean = 0, sd = 1)
 
 \S4method{p}{Norm}(x)
 
-\S4method{q2}{Norm}(x)
+\S4method{qn}{Norm}(x)
 
 \S4method{r}{Norm}(x)
 

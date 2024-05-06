@@ -66,7 +66,7 @@ setMethod("p", signature = c(x = "Gam"),
           })
 
 #' @rdname Gam
-setMethod("q2", signature = c(x = "Gam"),
+setMethod("qn", signature = c(x = "Gam"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qgamma(p, shape = x@shape, scale = x@scale,

@@ -6,14 +6,14 @@
 \alias{p}
 \alias{q}
 \alias{r}
-\alias{q2}
+\alias{qn}
 \title{The d p q r Functions}
 \usage{
 d(x, ...)
 
 p(x, ...)
 
-q2(x, ...)
+qn(x, ...)
 
 r(x, ...)
 }
@@ -50,7 +50,7 @@ pf <- p(x)
 pf(c(0.3, 0.8, 0.5))
 
 # Density function
-qf <- q2(x)
+qf <- qn(x)
 qf(c(0.3, 0.8, 0.5))
 
 # Random Generator function

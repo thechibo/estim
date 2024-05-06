@@ -62,7 +62,7 @@ setMethod("p", signature = c(x = "Cauchy"),
           })
 
 #' @rdname Cauchy
-setMethod("q2", signature = c(x = "Cauchy"),
+setMethod("qn", signature = c(x = "Cauchy"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qcauchy(p, location = x@location, scale = x@scale,

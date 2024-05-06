@@ -4,7 +4,7 @@
 \alias{Chisq}
 \alias{d,Chisq-method}
 \alias{p,Chisq-method}
-\alias{q2,Chisq-method}
+\alias{qn,Chisq-method}
 \alias{r,Chisq-method}
 \alias{mean,Chisq-method}
 \alias{var,Chisq-method}
@@ -19,7 +19,7 @@ Chisq(df = 1, ncp = 0)
 
 \S4method{p}{Chisq}(x)
 
-\S4method{q2}{Chisq}(x)
+\S4method{qn}{Chisq}(x)
 
 \S4method{r}{Chisq}(x)
 

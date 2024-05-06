@@ -4,7 +4,7 @@
 \alias{Lnorm}
 \alias{d,Lnorm-method}
 \alias{p,Lnorm-method}
-\alias{q2,Lnorm-method}
+\alias{qn,Lnorm-method}
 \alias{r,Lnorm-method}
 \alias{mean,Lnorm-method}
 \alias{median,Lnorm-method}
@@ -28,7 +28,7 @@ Lnorm(meanlog = 0, sdlog = 1)
 
 \S4method{p}{Lnorm}(x)
 
-\S4method{q2}{Lnorm}(x)
+\S4method{qn}{Lnorm}(x)
 
 \S4method{r}{Lnorm}(x)
 

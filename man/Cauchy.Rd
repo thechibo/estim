@@ -4,7 +4,7 @@
 \alias{Cauchy}
 \alias{d,Cauchy-method}
 \alias{p,Cauchy-method}
-\alias{q2,Cauchy-method}
+\alias{qn,Cauchy-method}
 \alias{r,Cauchy-method}
 \alias{median,Cauchy-method}
 \alias{mode,Cauchy-method}
@@ -19,7 +19,7 @@ Cauchy(location = 1, scale = 1)
 
 \S4method{p}{Cauchy}(x)
 
-\S4method{q2}{Cauchy}(x)
+\S4method{qn}{Cauchy}(x)
 
 \S4method{r}{Cauchy}(x)
 

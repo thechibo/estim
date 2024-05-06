@@ -4,7 +4,7 @@
 \alias{Weib}
 \alias{d,Weib-method}
 \alias{p,Weib-method}
-\alias{q2,Weib-method}
+\alias{qn,Weib-method}
 \alias{r,Weib-method}
 \alias{mean,Weib-method}
 \alias{median,Weib-method}
@@ -27,7 +27,7 @@ Weib(shape = 1, scale = 1)
 
 \S4method{p}{Weib}(x)
 
-\S4method{q2}{Weib}(x)
+\S4method{qn}{Weib}(x)
 
 \S4method{r}{Weib}(x)
 

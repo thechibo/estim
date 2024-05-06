@@ -62,7 +62,7 @@ setMethod("p", signature = c(x = "Unif"),
           })
 
 #' @rdname Unif
-setMethod("q2", signature = c(x = "Unif"),
+setMethod("qn", signature = c(x = "Unif"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
               qunif(p, min = x@min, max = x@max,
