@@ -14,7 +14,6 @@ test_that("e functions work", {
 
   set.seed(1203)
   shape <- 1:4
-  prm <- shape
   D <- Dir(alpha = shape)
   x <- rdirichlet(100, shape)
 
@@ -27,7 +26,6 @@ test_that("e functions work", {
 test_that("v functions work", {
 
   shape <- 1:4
-  prm <- shape
   D <- Dir(alpha = shape)
 
   expect_identical(vdirichlet(shape, "mle"), avar_mle(D))
