@@ -1,5 +1,5 @@
-── R CMD check results ─────────────────────────────────── estimators 0.8.4 ────
-Duration: 2m 30.9s
+── R CMD check results ─────────────────────────────────── estimators 0.8.5 ────
+Duration: 2m 37s
 
 0 errors ✔ | 0 warnings ✔ | 0 notes ✔
 

@@ -1,3 +1,7 @@
+# estimators 0.8.5
+
+* Removed the "v function works" Dirichlet test that failed on MKL until the reason of failure becomes clear.
+
 # estimators 0.8.3
 
 * Updated missing return value in calculus.Rd documentation.
