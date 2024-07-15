@@ -1,3 +1,9 @@
+# estimators 0.9.1
+
+* Changed package name to estim.
+* Fixed Fisher df bug.
+* Added NcFisher.
+
 # estimators 0.8.5
 
 * Removed the "v function works" Dirichlet test that failed on MKL until the reason of failure becomes clear.

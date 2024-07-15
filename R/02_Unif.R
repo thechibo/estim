@@ -163,7 +163,7 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 eunif <- function(x, type = "mle", ...) {
 

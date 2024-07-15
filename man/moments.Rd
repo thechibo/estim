@@ -63,7 +63,7 @@ is available only for univariate distributions.
 # Beta Distribution Example
 # -----------------------------------------------------
 
-library(estimators)
+library(estim)
 
 # Create the distribution
 x <- Beta(3, 5)

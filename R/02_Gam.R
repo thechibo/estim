@@ -203,7 +203,7 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 egamma <- function(x, type = "mle", ...) {
 

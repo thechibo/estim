@@ -180,7 +180,7 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 edirichlet <- function(x, type = "mle", ...) {
 

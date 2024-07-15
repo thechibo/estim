@@ -180,7 +180,7 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 enbinom <- function(x, type = "mle", ...) {
 

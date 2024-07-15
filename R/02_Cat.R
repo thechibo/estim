@@ -116,7 +116,7 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 ecat <- function(x, type = "mle", ...) {
 

@@ -2,11 +2,6 @@
 # Weib Distribution                                                         ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# to do
-# - likelihood
-# - lloptim
-# - mle, me, same and respective avars
-
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Distribution           ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -216,7 +211,7 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 eweib <- function(x, type = "mle", ...) {
 

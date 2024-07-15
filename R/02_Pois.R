@@ -156,7 +156,7 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 epois <- function(x, type = "mle", ...) {
 

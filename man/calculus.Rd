@@ -57,7 +57,7 @@ Distribution Calculus
 # Distribution Calculus Example
 # -----------------------------------------------------
 
-library(estimators)
+library(estim)
 
 # Normal location - scale transformation
 x <- Norm(mean = 2, sd = 3)

@@ -175,7 +175,7 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 egeom <- function(x, type = "mle", ...) {
 

@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(estimators)
+library(estim)
 
-test_check("estimators")
+test_check("estim")

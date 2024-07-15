@@ -26,7 +26,7 @@
 \alias{avar_same,Beta-method}
 \title{Beta Distribution}
 \usage{
-Beta(shape1 = 1, shape2 = 1, ncp = 0)
+Beta(shape1 = 1, shape2 = 1)
 
 \S4method{d}{Beta}(x)
 
@@ -73,7 +73,7 @@ vbeta(shape1, shape2, type = "mle")
 \S4method{avar_same}{Beta}(distr)
 }
 \arguments{
-\item{shape1, shape2, ncp}{numeric. The distribution parameters.}
+\item{shape1, shape2}{numeric. The distribution parameters.}
 
 \item{x}{an object of class \code{Beta}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}

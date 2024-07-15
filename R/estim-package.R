@@ -1,4 +1,5 @@
 #' @keywords internal
+#' @aliases estim-package
 "_PACKAGE"
 
 ## usethis namespace: start

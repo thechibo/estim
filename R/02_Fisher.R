@@ -8,21 +8,21 @@
 
 setClass("Fisher",
          contains = "Distribution",
-         slots = c(df = "numeric", ncp = "numeric"),
-         prototype = list(df = 1, ncp = 0))
+         slots = c(df1 = "numeric", df2 = "numeric"),
+         prototype = list(df1 = 1, df2 = 1))
 
 #' @title Fisher Distribution
 #' @name Fisher
 #'
 #' @param x an object of class `Fisher`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
-#' @param df1,df2,ncp numeric. The distribution parameters.
+#' @param df1,df2 numeric. The distribution parameters.
 #'
 #' @inherit Distributions return
 #'
 #' @export
-Fisher <- function(df1 = 1, df2 = 1, ncp = 0) {
-  new("Fisher", df1 = df1, df2 = df2, ncp = ncp)
+Fisher <- function(df1 = 1, df2 = 1) {
+  new("Fisher", df1 = df1, df2 = df2)
 }
 
 setValidity("Fisher", function(object) {
@@ -31,9 +31,6 @@ setValidity("Fisher", function(object) {
   }
   if(length(object@df2) != 1) {
     stop("df2 has to be a numeric of length 1")
-  }
-  if(length(object@ncp) != 1) {
-    stop("ncp has to be a numeric of length 1")
   }
   if(object@df1 <= 0) {
     stop("df1 has to be positive")
@@ -52,7 +49,7 @@ setValidity("Fisher", function(object) {
 setMethod("d", signature = c(x = "Fisher"),
           function(x) {
             function(y, log = FALSE) {
-              df(y, df1 = x@df1, df2 = x@df2, ncp = x@ncp, log = log)
+              df(y, df1 = x@df1, df2 = x@df2, ncp = 0, log = log)
             }
           })
 
@@ -60,7 +57,7 @@ setMethod("d", signature = c(x = "Fisher"),
 setMethod("p", signature = c(x = "Fisher"),
           function(x) {
             function(q, lower.tail = TRUE, log.p = FALSE) {
-              pf(q, df1 = x@df1, df2 = x@df2, ncp = x@ncp,
+              pf(q, df1 = x@df1, df2 = x@df2, ncp = 0,
                  lower.tail = lower.tail, log.p = log.p)
             }
           })
@@ -69,7 +66,7 @@ setMethod("p", signature = c(x = "Fisher"),
 setMethod("qn", signature = c(x = "Fisher"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
-              qf(p, df1 = x@df1, df2 = x@df2, ncp = x@ncp,
+              qf(p, df1 = x@df1, df2 = x@df2, ncp = 0,
                  lower.tail = lower.tail, log.p = log.p)
             }
           })
@@ -78,7 +75,7 @@ setMethod("qn", signature = c(x = "Fisher"),
 setMethod("r", signature = c(x = "Fisher"),
           function(x) {
             function(n) {
-              rf(n, df1 = x@df1, df2 = x@df2, ncp = x@ncp)
+              rf(n, df1 = x@df1, df2 = x@df2, ncp = 0)
             }
           })
 
@@ -92,7 +89,7 @@ setMethod("mean",
           definition = function(x) {
 
   if (x@df2 > 2) {
-    return(x@df2 * (x@df1 + x@ncp) / (x@df1 * (x@df2 - 2)))
+    return(x@df2 * x@df1 / (x@df1 * (x@df2 - 2)))
   } else {
     stop("Expectation is undefined for F distribution with df2 <= 2.")
   }
@@ -104,15 +101,10 @@ setMethod("mode",
           signature  = c(x = "Fisher"),
           definition = function(x) {
 
-  if (x@ncp == 0) {
-    if (x@df1 > 2) {
-      return(x@df1 - 2) * x@df2 / (x@df1 * (x@df2 + 2))
-    } else {
-      stop("Expectation is undefined for F distribution with df1 <= 2.")
-    }
-
+  if (x@df1 > 2) {
+    return(x@df1 - 2) * x@df2 / (x@df1 * (x@df2 + 2))
   } else {
-    stop("Skewness not available for non-central F.")
+    stop("Expectation is undefined for F distribution with df1 <= 2.")
   }
 
 })
@@ -126,7 +118,7 @@ setMethod("var",
   n2 <- x@df2
 
   if (x@df2 > 4) {
-    return(2 * ((n1 + x@ncp) ^ 2 + (n1 + 2 * x@ncp) * (n2 - 2)) *
+    return(2 * (n1 ^ 2 + n1 * (n2 - 2)) *
              (n2 / n1) ^ 2 / ((n2 - 2) ^ 2 * (n2 - 4)))
   } else {
     stop("Variance is undefined for Fdistribution with df2 <= 4.")
@@ -151,15 +143,11 @@ setMethod("skew",
   n1 <- x@df1
   n2 <- x@df2
 
-  if (x@ncp == 0) {
-    if (n2 > 6) {
-      ((2 * n1 + n2 - 2) * sqrt(8 * (n2 - 4))) /
-        ((n2 - 6) * sqrt(n1 * (n1 + n2 - 2)))
-    }  else {
-      stop("Skewness is undefined for F distribution with df2 <= 6.")
-    }
-  } else {
-    stop("Skewness not available for non-central F.")
+  if (n2 > 6) {
+    ((2 * n1 + n2 - 2) * sqrt(8 * (n2 - 4))) /
+      ((n2 - 6) * sqrt(n1 * (n1 + n2 - 2)))
+  }  else {
+    stop("Skewness is undefined for F distribution with df2 <= 6.")
   }
 
 })

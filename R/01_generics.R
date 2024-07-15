@@ -58,7 +58,7 @@ setClass("Distribution")
 #' # Beta Distribution Example
 #' # -----------------------------------------------------
 #'
-#' library(estimators)
+#' library(estim)
 #'
 #' # Create the distribution
 #' x <- Beta(3, 5)
@@ -132,7 +132,7 @@ setGeneric("r", function(x, ...) {
 #' # Beta Distribution Example
 #' # -----------------------------------------------------
 #'
-#' library(estimators)
+#' library(estim)
 #'
 #' # Create the distribution
 #' x <- Beta(3, 5)
@@ -252,6 +252,7 @@ setGeneric("dlloptim", signature = c("par", "tx", "distr"),
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title Parameter Estimation
+#' @name estimation
 #'
 #' @description
 #' Estimates the parameters of a random sample according to a
@@ -355,7 +356,7 @@ estim <- function(x, distr, type = "mle", ...) {
 #'
 #' @seealso [estim], [me], [same]
 #'
-#' @inherit estim references examples
+#' @inherit estimation references examples
 setGeneric("mle", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("mle") })
 
@@ -384,7 +385,7 @@ setMethod("mle",
 #'
 #' @seealso [estim], [mle], [same]
 #'
-#' @inherit estim references examples
+#' @inherit estimation references examples
 setGeneric("me", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("me") })
 
@@ -413,7 +414,7 @@ setMethod("me",
 #'
 #' @seealso [estim], [mle], [me]
 #'
-#' @inherit estim references examples
+#' @inherit estimation references examples
 setGeneric("same", signature = c("x", "distr"),
            function(x, distr, ...) { standardGeneric("same") })
 
@@ -449,7 +450,7 @@ setMethod("same",
 #'
 #' @seealso [avar_mle], [avar_me], [avar_same]
 #'
-#' @inherit estim references examples
+#' @inherit estimation references examples
 avar <- function(distr, type, ...) {
   type <- tolower(type)
   if (type %in% c("mle", "me", "same")) {

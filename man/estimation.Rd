@@ -3,7 +3,8 @@
 %   R/02_Binom.R, R/02_Cat.R, R/02_Dirichlet.R, R/02_Exp.R, R/02_Gam.R,
 %   R/02_Geom.R, R/02_Laplace.R, R/02_Lnorm.R, R/02_Multinom.R, R/02_Nbinom.R,
 %   R/02_Norm.R, R/02_Pois.R, R/02_Unif.R, R/02_Weib.R
-\name{estim}
+\name{estimation}
+\alias{estimation}
 \alias{estim}
 \alias{ebern}
 \alias{ebeta}

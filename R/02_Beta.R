@@ -8,8 +8,8 @@
 
 setClass("Beta",
   contains = "Distribution",
-  slots = c(shape1 = "numeric", shape2 = "numeric", ncp = "numeric"),
-  prototype = list(shape1 = 1, shape2 = 1, ncp = 0))
+  slots = c(shape1 = "numeric", shape2 = "numeric"),
+  prototype = list(shape1 = 1, shape2 = 1))
 
 #' @title Beta Distribution
 #' @name Beta
@@ -17,7 +17,7 @@ setClass("Beta",
 #' @param x an object of class `Beta`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
 #' @param distr an object of class `Beta`.
-#' @param shape1,shape2,ncp numeric. The distribution parameters.
+#' @param shape1,shape2 numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param par0,method,lower,upper arguments passed to optim.
@@ -25,8 +25,8 @@ setClass("Beta",
 #' @inherit Distributions return
 #'
 #' @export
-Beta <- function(shape1 = 1, shape2 = 1, ncp = 0) {
-  new("Beta", shape1 = shape1, shape2 = shape2, ncp = ncp)
+Beta <- function(shape1 = 1, shape2 = 1) {
+  new("Beta", shape1 = shape1, shape2 = shape2)
 }
 
 setValidity("Beta", function(object) {
@@ -42,9 +42,6 @@ setValidity("Beta", function(object) {
   if(object@shape2 <= 0) {
     stop("shape2 has to be positive")
   }
-  if(length(object@ncp) != 1) {
-    stop("ncp has to be a numeric of length 1")
-  }
   TRUE
 })
 
@@ -57,7 +54,7 @@ setValidity("Beta", function(object) {
 setMethod("d", signature = c(x = "Beta"),
           function(x) {
             function(y, log = FALSE) {
-              dbeta(y, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp,
+              dbeta(y, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
                     log = log)
             }
           })
@@ -67,7 +64,7 @@ setMethod("d", signature = c(x = "Beta"),
 setMethod("p", signature = c(x = "Beta"),
           function(x) {
             function(q, lower.tail = TRUE, log.p = FALSE) {
-              pbeta(q, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp,
+              pbeta(q, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
                     lower.tail = lower.tail, log.p = log.p)
             }
           })
@@ -77,7 +74,7 @@ setMethod("p", signature = c(x = "Beta"),
 setMethod("qn", signature = c(x = "Beta"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
-              qbeta(p, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp,
+              qbeta(p, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
                     lower.tail = lower.tail, log.p = log.p)
             }
           })
@@ -87,7 +84,7 @@ setMethod("qn", signature = c(x = "Beta"),
 setMethod("r", signature = c(x = "Beta"),
           function(x) {
             function(n) {
-              rbeta(n, shape1 = x@shape1, shape2 = x@shape2, ncp = x@ncp)
+              rbeta(n, shape1 = x@shape1, shape2 = x@shape2, ncp = 0)
             }
           })
 
@@ -292,7 +289,7 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estim
+#' @rdname estimation
 #' @export
 ebeta <- function(x, type = "mle", ...) {
 
