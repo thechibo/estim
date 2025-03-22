@@ -89,6 +89,29 @@ setMethod("mean",
 })
 
 #' @rdname Pois
+setMethod("median",
+          signature  = c(x = "Pois"),
+          definition = function(x) {
+
+            warning("The median of a Pois(l) distribution is given by the
+                    inequality: l - ln2 <= median < l + 1/3. The lower bound is
+                    returned.")
+
+            x@lambda - log(2)
+
+          })
+
+
+#' @rdname Pois
+setMethod("mode",
+          signature  = c(x = "Pois"),
+          definition = function(x) {
+
+            floor(x@lambda)
+
+          })
+
+#' @rdname Pois
 setMethod("var",
           signature  = c(x = "Pois"),
           definition = function(x) {
@@ -121,6 +144,18 @@ setMethod("kurt",
           definition = function(x) {
 
   1 / x@lambda
+
+})
+
+#' @rdname Pois
+setMethod("entro",
+          signature  = c(x = "Pois"),
+          definition = function(x) {
+
+  warning("The entropy given is an approximation in the O(1 / l ^ 4) order.")
+  l <- x@lambda
+  0.5 * log(2 * pi  * exp(1) * l) - 1 / (12 * l) - 1 / (24 * l ^ 2) -
+    19 / (360 * l ^ 3)
 
 })
 

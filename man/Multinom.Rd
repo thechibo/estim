@@ -5,7 +5,9 @@
 \alias{d,Multinom-method}
 \alias{r,Multinom-method}
 \alias{mean,Multinom-method}
+\alias{mode,Multinom-method}
 \alias{var,Multinom-method}
+\alias{entro,Multinom-method}
 \alias{finf,Multinom-method}
 \alias{ll,matrix,numeric,Multinom-method}
 \alias{mle,matrix,Multinom-method}
@@ -22,7 +24,11 @@ Multinom(size = 1, prob = c(0.5, 0.5))
 
 \S4method{mean}{Multinom}(x)
 
+\S4method{mode}{Multinom}(x)
+
 \S4method{var}{Multinom}(x)
+
+\S4method{entro}{Multinom}(x)
 
 \S4method{finf}{Multinom}(x)
 

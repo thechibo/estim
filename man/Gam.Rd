@@ -7,6 +7,8 @@
 \alias{qn,Gam-method}
 \alias{r,Gam-method}
 \alias{mean,Gam-method}
+\alias{median,Gam-method}
+\alias{mode,Gam-method}
 \alias{var,Gam-method}
 \alias{sd,Gam-method}
 \alias{skew,Gam-method}
@@ -33,6 +35,10 @@ Gam(shape = 1, scale = 1)
 \S4method{r}{Gam}(x)
 
 \S4method{mean}{Gam}(x)
+
+\S4method{median}{Gam}(x)
+
+\S4method{mode}{Gam}(x)
 
 \S4method{var}{Gam}(x)
 

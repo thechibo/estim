@@ -1,7 +1,6 @@
-pandoc: 3.1.1
-pkgdown: 2.0.7
+pandoc: '3.2'
+pkgdown: 2.1.0
 pkgdown_sha: ~
 articles:
   estim: estim.html
-last_built: 2024-07-15T11:03Z
-
+last_built: 2025-03-21T21:57Z

@@ -1,3 +1,10 @@
+# estimators 0.10.0
+
+* Added tests for all distributions.
+* Added many functions that were not available for several distributions.
+* Corrected multiple bugs.
+* Removed Ncchisq, Ncfisher. They will be added in later versions.
+
 # estimators 0.9.1
 
 * Changed package name to estim.

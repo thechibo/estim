@@ -69,6 +69,12 @@ small_metrics <- function(D,
                           seed = 1,
                           ...) {
 
+  if (class(D) %in% c("Cat", "Multinom")) {
+    stop("This function is not implemented for the Multinomial distribution,
+           since changing the probability value of one category forces the rest
+           to change as well.")
+  }
+
   # Preliminaries
   set.seed(seed)
   distr <- class(D)[1]
@@ -79,8 +85,8 @@ small_metrics <- function(D,
   if (distr %in% c("Dir")) {
     setk <- set1of3
     mar <- 3
-  } else if (distr %in% c("MGamma")) {
-    setk <- set2of3
+  } else if (distr %in% c("Multigam")) {
+    setk <- set1of3
     mar <- 3
   } else {
     setk <- set1of2
@@ -88,7 +94,7 @@ small_metrics <- function(D,
   }
 
   # Unidimensional of Multidimensional
-  if (distr %in% c("Binom", "Exp", "Pois")) {
+  if (distr %in% c("Bern", "Binom", "Exp", "Pois", "Chisq", "Geom", "Nbinom")) {
     setd <- set1of1
   } else {
     setd <- set1of2
@@ -120,7 +126,7 @@ small_metrics <- function(D,
         y[i, j, k, ] <- setd(apply(setk(x, 1:obs[j]),
                                    MARGIN = mar,
                                    FUN = k,
-                                   distr = distr,
+                                   distr = D,
                                    ...), prm_name) - prm$val[i]
 
       }
@@ -142,7 +148,7 @@ small_metrics <- function(D,
   z$Parameter <- as.numeric(as.character(z$Parameter))
   z$Estimator <- factor(z$Estimator)
   z$Metric <- factor(z$Metric)
-  z$Observations <- factor(z$Observations)
+  z$Observations <- factor(z$Observations, ordered = TRUE)
 
   # Return the object
   z
@@ -186,6 +192,12 @@ large_metrics <- function(D,
                           prm,
                           est = c("same", "me", "mle"),
                           ...) {
+
+  if (class(D) %in% c("Cat", "Multinom")) {
+    stop("This function is not implemented for the Multinomial distribution,
+           since changing the probability value of one category forces the rest
+           to change as well.")
+  }
 
   # Preliminaries
   Row <- Col <- Parameter <- Estimator <- NULL

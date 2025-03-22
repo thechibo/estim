@@ -7,10 +7,13 @@
 \alias{qn,Pois-method}
 \alias{r,Pois-method}
 \alias{mean,Pois-method}
+\alias{median,Pois-method}
+\alias{mode,Pois-method}
 \alias{var,Pois-method}
 \alias{sd,Pois-method}
 \alias{skew,Pois-method}
 \alias{kurt,Pois-method}
+\alias{entro,Pois-method}
 \alias{finf,Pois-method}
 \alias{ll,numeric,numeric,Pois-method}
 \alias{mle,numeric,Pois-method}
@@ -31,6 +34,10 @@ Pois(lambda = 1)
 
 \S4method{mean}{Pois}(x)
 
+\S4method{median}{Pois}(x)
+
+\S4method{mode}{Pois}(x)
+
 \S4method{var}{Pois}(x)
 
 \S4method{sd}{Pois}(x)
@@ -38,6 +45,8 @@ Pois(lambda = 1)
 \S4method{skew}{Pois}(x)
 
 \S4method{kurt}{Pois}(x)
+
+\S4method{entro}{Pois}(x)
 
 \S4method{finf}{Pois}(x)
 

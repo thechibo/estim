@@ -3,7 +3,6 @@
 \docType{package}
 \name{estim-package}
 \alias{estim-package}
-\alias{_PACKAGE}
 \title{estim: Parameter Estimation}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}

@@ -214,7 +214,7 @@ setGeneric("finf", function(x, ...) {
 #' @param x numeric. A sample under estimation.
 #' @param prm numeric. A vector of the distribution parameters.
 #' @param distr A subclass of `Distribution`. The distribution family assumed.
-#' @param location,alpha,mu,sigma,meanlog,sdlog,min,max,size,prob,shape,rate,scale,mean,sd,lambda numeric.
+#' @param location,alpha,mu,sigma,meanlog,sdlog,min,max,size,prob,shape,rate,scale,mean,sd,lambda,df,df1,df2 numeric.
 #' Distribution parameters.
 #' @param ... extra arguments.
 #'
@@ -261,6 +261,7 @@ setGeneric("dlloptim", signature = c("par", "tx", "distr"),
 #' @param x numeric. A sample under estimation.
 #' @param distr A subclass of `Distribution`. The distribution family assumed.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param size the size parameter, needs to be specified for some distributions (Binom, Nbinom, etc).
 #' @param ... extra arguments.
 #'
 #' @return numeric. The estimator produced by the sample.
@@ -440,7 +441,7 @@ setMethod("same",
 #'
 #' @param distr A subclass of `Distribution`. The distribution family assumed.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
-#' @param alpha,mu,sigma,size,prob,shape,rate,scale,mean,sd,lambda numeric.
+#' @param alpha,mu,sigma,size,prob,shape,rate,scale,mean,sd,lambda,location,df,meanlog,sdlog numeric.
 #' Distribution parameters.
 #' @param ... extra arguments.
 #'

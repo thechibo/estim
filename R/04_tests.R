@@ -14,7 +14,7 @@ test_avar <- function(est, D0, n = 1e4, m = 1e3, seed = 1, bar = FALSE, ...) {
 
   # Preliminaries
   set.seed(seed)
-  params <- get_params(D0)
+  params <- get_unknown_params(D0)
   y <- matrix(nrow = m, ncol = length(params))
 
   # Loading bar
@@ -38,7 +38,7 @@ test_avar <- function(est, D0, n = 1e4, m = 1e3, seed = 1, bar = FALSE, ...) {
 
   # Calculate avar
   avar_est <- var(y)
-  prm_names <- names(get_params(D0))
+  prm_names <- names(get_unknown_params(D0))
 
   if (nrow(avar_est) == 1) {
     avar_est <- as.vector(avar_est)

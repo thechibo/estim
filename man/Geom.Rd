@@ -7,6 +7,7 @@
 \alias{qn,Geom-method}
 \alias{r,Geom-method}
 \alias{mean,Geom-method}
+\alias{median,Geom-method}
 \alias{mode,Geom-method}
 \alias{var,Geom-method}
 \alias{sd,Geom-method}
@@ -32,6 +33,8 @@ Geom(prob = 0.5)
 \S4method{r}{Geom}(x)
 
 \S4method{mean}{Geom}(x)
+
+\S4method{median}{Geom}(x)
 
 \S4method{mode}{Geom}(x)
 

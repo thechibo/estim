@@ -20,6 +20,8 @@ setClass("Nbinom",
 #' @param size,prob numeric. The distribution parameters.
 #' @param prm numeric. A vector including the distribution parameters.
 #'
+#' @importFrom stats integrate
+#'
 #' @inherit Distributions return
 #'
 #' @export
@@ -95,6 +97,15 @@ setMethod("mean",
 })
 
 #' @rdname Nbinom
+setMethod("median",
+          signature  = c(x = "Nbinom"),
+          definition = function(x) {
+
+  qnbinom(0.5, size = x@size, prob = x@prob)
+
+})
+
+#' @rdname Nbinom
 setMethod("mode",
           signature  = c(x = "Nbinom"),
           definition = function(x) {
@@ -143,6 +154,28 @@ setMethod("kurt",
 })
 
 #' @rdname Nbinom
+setMethod("entro",
+          signature  = c(x = "Nbinom"),
+          definition = function(x) {
+
+  # https://arxiv.org/pdf/1708.06394
+  # Expressions for the Entropy of Binomial-Type Distributions
+  k <- x@size
+  p <- x@prob
+  h <- - p * log(p) - (1 - p) * log(1 - p)
+
+  f <- function(z) {
+    ((1 - z)^(k - 1) - 1) * ((1 + p*z / (1 - p)) ^ (- k) + p*k*z / (1 - p) - 1) /
+      z * log(1 - z)
+  }
+
+  c <- integrate(f, lower = 0, upper = 1)$value
+
+  k * (h - p * log(k)) / (1 - p) + c
+
+})
+
+#' @rdname Nbinom
 setMethod("finf",
           signature  = c(x = "Nbinom"),
           definition = function(x) {
@@ -182,9 +215,9 @@ setMethod("ll",
 
 #' @rdname estimation
 #' @export
-enbinom <- function(x, type = "mle", ...) {
+enbinom <- function(x, size, type = "mle", ...) {
 
-  estim(x, Nbinom(), type, ...)
+  estim(x, Nbinom(size = size), type, ...)
 
 }
 

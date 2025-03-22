@@ -7,13 +7,22 @@
 \alias{qn,Chisq-method}
 \alias{r,Chisq-method}
 \alias{mean,Chisq-method}
+\alias{median,Chisq-method}
+\alias{mode,Chisq-method}
 \alias{var,Chisq-method}
 \alias{sd,Chisq-method}
 \alias{skew,Chisq-method}
 \alias{kurt,Chisq-method}
+\alias{entro,Chisq-method}
+\alias{finf,Chisq-method}
+\alias{ll,numeric,numeric,Chisq-method}
+\alias{mle,numeric,Chisq-method}
+\alias{me,numeric,Chisq-method}
+\alias{avar_mle,Chisq-method}
+\alias{avar_me,Chisq-method}
 \title{Chi-Square Distribution}
 \usage{
-Chisq(df = 1, ncp = 0)
+Chisq(df = 1)
 
 \S4method{d}{Chisq}(x)
 
@@ -25,6 +34,10 @@ Chisq(df = 1, ncp = 0)
 
 \S4method{mean}{Chisq}(x)
 
+\S4method{median}{Chisq}(x)
+
+\S4method{mode}{Chisq}(x)
+
 \S4method{var}{Chisq}(x)
 
 \S4method{sd}{Chisq}(x)
@@ -32,12 +45,30 @@ Chisq(df = 1, ncp = 0)
 \S4method{skew}{Chisq}(x)
 
 \S4method{kurt}{Chisq}(x)
+
+\S4method{entro}{Chisq}(x)
+
+\S4method{finf}{Chisq}(x)
+
+\S4method{ll}{numeric,numeric,Chisq}(x, prm, distr)
+
+\S4method{mle}{numeric,Chisq}(x, distr)
+
+\S4method{me}{numeric,Chisq}(x, distr)
+
+\S4method{avar_mle}{Chisq}(distr)
+
+\S4method{avar_me}{Chisq}(distr)
 }
 \arguments{
-\item{df, ncp}{numeric. The distribution parameters.}
+\item{df}{numeric. The distribution parameters.}
 
 \item{x}{an object of class \code{Chisq}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
+
+\item{prm}{numeric. A vector including the distribution parameters.}
+
+\item{distr}{an object of class \code{Chisq}.}
 }
 \value{
 The dpqr family of functions return the evaluated density, cumulative

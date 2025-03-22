@@ -1,5 +1,5 @@
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Unif Distribution                                                        ----
+# Unif Distribution                                                         ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -34,7 +34,7 @@ setValidity("Unif", function(object) {
   if(length(object@max) != 1) {
     stop("max has to be a numeric of length 1")
   }
-  if(object@min < object@max) {
+  if(object@min >= object@max) {
     stop("min must be less than max")
   }
   TRUE
@@ -90,6 +90,27 @@ setMethod("mean",
   (x@max + x@min) / 2
 
 })
+
+
+#' @rdname Unif
+setMethod("median",
+          signature  = c(x = "Unif"),
+          definition = function(x) {
+
+            (x@max + x@min) / 2
+
+          })
+
+#' @rdname Unif
+setMethod("mode",
+          signature  = c(x = "Unif"),
+          definition = function(x) {
+
+            warning("The mode is any element in the support (or its interior) of
+            a Uniform distribution. The mean is returned by default.")
+            return((x@max + x@min) / 2)
+
+          })
 
 #' @rdname Unif
 setMethod("var",

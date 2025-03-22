@@ -87,7 +87,7 @@ setMethod("mean",
           signature  = c(x = "Lnorm"),
           definition = function(x) {
 
-  exp(x@logmean + x@logsd ^ 2 / 2)
+  exp(x@meanlog + x@sdlog ^ 2 / 2)
 
 })
 
@@ -96,7 +96,7 @@ setMethod("median",
           signature  = c(x = "Lnorm"),
           definition = function(x) {
 
-  exp(x@logmean)
+  exp(x@meanlog)
 
 })
 
@@ -105,7 +105,7 @@ setMethod("mode",
           signature  = c(x = "Lnorm"),
           definition = function(x) {
 
-  exp(x@logmean - x@logsd ^ 2)
+  exp(x@meanlog - x@sdlog ^ 2)
 
 })
 
@@ -114,7 +114,7 @@ setMethod("var",
           signature  = c(x = "Lnorm"),
           definition = function(x) {
 
-  (exp(x@logsd ^ 2) - 1) * exp(2 * x@logmean + x@logsd ^ 2)
+  (exp(x@sdlog ^ 2) - 1) * exp(2 * x@meanlog + x@sdlog ^ 2)
 
 })
 
@@ -132,7 +132,7 @@ setMethod("skew",
           signature  = c(x = "Lnorm"),
           definition = function(x) {
 
-  s <- x@logsd
+  s <- x@sdlog
   (exp(s ^ 2) + 2) * sqrt(exp(s ^ 2) - 1)
 
 })
@@ -142,7 +142,7 @@ setMethod("kurt",
           signature  = c(x = "Lnorm"),
           definition = function(x) {
 
-  s <- x@logsd
+  s <- x@sdlog
   exp(4 * s ^ 2) + 2 * exp(3 * s ^ 2) + 3 * exp(2 * s ^ 2) - 6
 
 })
@@ -152,8 +152,8 @@ setMethod("entro",
           signature  = c(x = "Lnorm"),
           definition = function(x) {
 
-  m <- x@logmean
-  s <- x@logsd
+  m <- x@meanlog
+  s <- x@sdlog
 
   log(sqrt(2 * pi) * s * exp(m + 0.5), base = 2)
 
@@ -225,6 +225,14 @@ setMethod("me",
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname avar
+#' @export
+vlnorm <- function(meanlog, sdlog, type = "mle") {
+
+  avar(Lnorm(meanlog = meanlog, sdlog = sdlog), type = type)
+
+}
 
 #' @rdname Lnorm
 setMethod("avar_mle",

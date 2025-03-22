@@ -13,9 +13,11 @@
 \alias{sd,Stud-method}
 \alias{skew,Stud-method}
 \alias{kurt,Stud-method}
+\alias{entro,Stud-method}
+\alias{ll,numeric,numeric,Stud-method}
 \title{Student Distribution}
 \usage{
-Stud(df = 1, ncp = 0)
+Stud(df = 1)
 
 \S4method{d}{Stud}(x)
 
@@ -38,12 +40,20 @@ Stud(df = 1, ncp = 0)
 \S4method{skew}{Stud}(x)
 
 \S4method{kurt}{Stud}(x)
+
+\S4method{entro}{Stud}(x)
+
+\S4method{ll}{numeric,numeric,Stud}(x, prm, distr)
 }
 \arguments{
-\item{df, ncp}{numeric. The distribution parameters.}
+\item{df}{numeric. The distribution parameter.}
 
 \item{x}{an object of class \code{Stud}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
+
+\item{prm}{numeric. A vector including the distribution parameters.}
+
+\item{distr}{an object of class \code{Fisher}.}
 }
 \value{
 The dpqr family of functions return the evaluated density, cumulative

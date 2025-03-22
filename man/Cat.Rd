@@ -5,7 +5,9 @@
 \alias{d,Cat-method}
 \alias{r,Cat-method}
 \alias{mean,Cat-method}
+\alias{mode,Cat-method}
 \alias{var,Cat-method}
+\alias{entro,Cat-method}
 \alias{finf,Cat-method}
 \alias{ll,numeric,numeric,Cat-method}
 \alias{mle,numeric,Cat-method}
@@ -22,15 +24,19 @@ Cat(prob = c(0.5, 0.5))
 
 \S4method{mean}{Cat}(x)
 
+\S4method{mode}{Cat}(x)
+
 \S4method{var}{Cat}(x)
+
+\S4method{entro}{Cat}(x)
 
 \S4method{finf}{Cat}(x)
 
 \S4method{ll}{numeric,numeric,Cat}(x, prm, distr)
 
-\S4method{mle}{numeric,Cat}(x, distr)
+\S4method{mle}{numeric,Cat}(x, distr, dim = NULL)
 
-\S4method{me}{numeric,Cat}(x, distr)
+\S4method{me}{numeric,Cat}(x, distr, dim = NULL)
 
 \S4method{avar_mle}{Cat}(distr)
 
@@ -45,6 +51,8 @@ argument, \code{x} is a numeric vector, a sample of observations.}
 \item{prm}{numeric. A vector including the distribution parameters.}
 
 \item{distr}{an object of class \code{Cat}.}
+
+\item{dim}{numeric. The parameter dimension. See details.}
 }
 \value{
 The dpqr family of functions return the evaluated density, cumulative
@@ -63,4 +71,17 @@ the appropriate class and with the appropriate parameters.
 }
 \description{
 Categorical Distribution
+}
+\details{
+The estimation of \code{prob} from a sample would by default return a vector of
+probabilities corresponding to the categories that appeared in the sample and
+0 for the rest. However, the parameter dimension cannot be uncovered by the
+sample, it has to be provided separately. This can be done with the argument
+\code{dim}. If \code{dim} is not supplied, the dimension will be retrieved from the
+\code{distr} argument. Categories that did not appear in the sample will have 0
+probabilities appended to the end of the prob vector.
+
+Note that the actual dimension of the probability parameter vector is \code{k-1},
+therefore the Fisher information matrix and the asymptotic variance -
+covariance matrix of the estimators is of dimension \verb{(k-1)x(k-1)}.
 }

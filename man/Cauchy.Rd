@@ -6,14 +6,22 @@
 \alias{p,Cauchy-method}
 \alias{qn,Cauchy-method}
 \alias{r,Cauchy-method}
+\alias{mean,Cauchy-method}
 \alias{median,Cauchy-method}
 \alias{mode,Cauchy-method}
+\alias{var,Cauchy-method}
+\alias{sd,Cauchy-method}
+\alias{skew,Cauchy-method}
+\alias{kurt,Cauchy-method}
 \alias{entro,Cauchy-method}
 \alias{finf,Cauchy-method}
 \alias{ll,numeric,numeric,Cauchy-method}
+\alias{mle,numeric,Cauchy-method}
+\alias{me,numeric,Cauchy-method}
+\alias{avar_mle,Cauchy-method}
 \title{Cauchy Distribution}
 \usage{
-Cauchy(location = 1, scale = 1)
+Cauchy(location = 0, scale = 1)
 
 \S4method{d}{Cauchy}(x)
 
@@ -23,15 +31,38 @@ Cauchy(location = 1, scale = 1)
 
 \S4method{r}{Cauchy}(x)
 
+\S4method{mean}{Cauchy}(x)
+
 \S4method{median}{Cauchy}(x)
 
 \S4method{mode}{Cauchy}(x)
+
+\S4method{var}{Cauchy}(x)
+
+\S4method{sd}{Cauchy}(x)
+
+\S4method{skew}{Cauchy}(x)
+
+\S4method{kurt}{Cauchy}(x)
 
 \S4method{entro}{Cauchy}(x)
 
 \S4method{finf}{Cauchy}(x)
 
 \S4method{ll}{numeric,numeric,Cauchy}(x, prm, distr)
+
+\S4method{mle}{numeric,Cauchy}(
+  x,
+  distr,
+  par0 = "me",
+  method = "L-BFGS-B",
+  lower = c(-Inf, 1e-05),
+  upper = c(Inf, Inf)
+)
+
+\S4method{me}{numeric,Cauchy}(x, distr)
+
+\S4method{avar_mle}{Cauchy}(distr)
 }
 \arguments{
 \item{location, scale}{numeric. The distribution parameters.}
@@ -42,6 +73,8 @@ argument, \code{x} is a numeric vector, a sample of observations.}
 \item{prm}{numeric. A vector including the distribution parameters.}
 
 \item{distr}{an object of class \code{Cauchy}.}
+
+\item{par0, method, lower, upper}{arguments passed to optim.}
 }
 \value{
 The dpqr family of functions return the evaluated density, cumulative

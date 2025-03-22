@@ -7,10 +7,8 @@
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 loading_bar <- function(total) {
-
   frm <- "Processing [:bar] :percent | Remaining: :eta | Elapsed: :elapsedfull"
   progress::progress_bar$new(format = frm, total = total, clear = FALSE)
-
 }
 
 seqcol <- function(x) {
@@ -38,7 +36,7 @@ get_moment_methods <- function(x) {
 
   # Get class methods
   df_meth <- attr(methods(class = class(x)), "info")
-  meth <- df_meth[df_meth$from == "estimators", ]$generic
+  meth <- df_meth[df_meth$from == "estim", ]$generic
 
   mom[mom %in% meth]
 
@@ -86,10 +84,22 @@ get_params <- function(D) {
   unlist(params)
 }
 
+# Get the parameters of a distribution
+get_params_list <- function(D) {
+  params <- s4_to_list(D)
+  params["name"] <- NULL
+  params["ncp"] <- NULL
+  params
+}
+
 get_unknown_params <- function(D) {
   prm <- get_params(D)
   if (is(D, "Binom")) {
     return(prm["prob"])
+  } else if (is(D, "Nbinom")) {
+    return(prm["prob"])
+  } else if (is(D, "Multinom")) {
+    return(prm[-1])
   } else {
     return(prm)
   }
@@ -156,6 +166,10 @@ rowVar <- function(x) {
   rowMeans(x ^ 2) - rowMeans(x) ^ 2
 }
 
+colVar <- function(x) {
+  colMeans(x ^ 2) - colMeans(x) ^ 2
+}
+
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Gamma Function         ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -214,7 +228,7 @@ gammap <- function(x, p, log = FALSE) {
   g <- x
 
   for (i in seq_along(x)) {
-  g[i] <- (p * (p - 1) / 4) * log(pi)  + sum(lgamma(x[i] + (1 - 1:p) / 2))
+    g[i] <- (p * (p - 1) / 4) * log(pi)  + sum(lgamma(x[i] + (1 - 1:p) / 2))
   }
 
   if (!log) { g <- exp(g) }
@@ -279,8 +293,12 @@ is_pd <- function(x) {
 
 }
 
-is_natural <- function(x) {
+is_integer <- function(x) {
   identical(x, round(x))
+}
+
+is_natural <- function(x) {
+  is_integer(x) && (x > 0)
 }
 
 inv2x2 <- function(x) {
@@ -300,9 +318,13 @@ inv2x2 <- function(x) {
 ## Multivariate Gamma     ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+tdiff <- function(x) {
+  t(diff(t(x)))
+}
+
 fd <- function(x) {
   if (is.matrix(x)) {
-    return(rbind(x[1, ], diff(x)))
+    return(cbind(x[, 1], tdiff(x)))
   } else if (is.vector(x)) {
     return(c(x[1], diff(x)))
   } else {
@@ -313,7 +335,7 @@ fd <- function(x) {
 gendir <- function(x) {
   z <- fd(x)
   if (is.matrix(x)) {
-    return(t(t(z) / x[nrow(x), ]))
+    return(z / x[, ncol(x)])
   } else if (is.vector(x)) {
     return(z / x[length(x)])
   } else {

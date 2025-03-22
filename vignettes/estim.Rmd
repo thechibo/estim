@@ -51,8 +51,7 @@ In order to illustrate the parameter estimation as implemented in the package, a
 
 ```{r}
 set.seed(1)
-x <- rbeta(100, shape1, shape2)
-D <- Beta(shape1 = shape1, shape2 = shape2)
+x <- r(D)(100)
 ```
 
 ### Likelihood - The `ll` Functions
@@ -84,13 +83,13 @@ me(x, D)
 same(x, D)
 ```
 
-A general function `estim` is implemented, covering all distributions and estimators.
+A general function `estim` is also available, covering all distributions and estimators.
 
 ```{r}
 estim(x, D, type = "mle")
 ```
 
-Again, the S4 methods also accept a character for the distribution, case ignored.
+Again, the S4 methods may accept a character for the distribution, case ignored.
 
 ```{r}
 mle(x, "beta")
@@ -119,9 +118,9 @@ avar(D, type = "mle")
 
 ## Estimator Metrics
 
-The estimators can be compared based on both finite sample and asymptotic properties. The package includes the functions `small_metrics` and `large_metrics`, where small and large refers to the "small sample" and "large sample" terms that are often used for the two cases. The first one estimates the bias, variance and rmse of the estimator with Monte Carlo simulations, while the latter calculates the asymptotic variance - covariance matrix. The resulting data frames can be plotted with the functions `plot_small_metrics` and `plot_large_metrics`, respectively.
+The estimators can be compared based on both finite sample and asymptotic properties. The package includes the functions `small_metrics` and `large_metrics`, where small and large refers to the "small sample" and "large sample" terms that are often used for the two cases. The first one estimates the bias, variance and root mean square error (rmse) of the estimator with Monte Carlo simulations, while the latter calculates the asymptotic variance - covariance matrix (as derived by the avar functions). The resulting data frames can be plotted with the functions `plot_small_metrics` and `plot_large_metrics`, respectively.
 
-The functions get a `distribution` object and a parameter list that specifies which parameter should change and how. The metric of interest is evaluated as a function of this parameter. Specifically, `prm` includes three elements named "name", "pos", and "val". The first two elements determine the exact parameter that changes, while the third one is a numeric vector holding the values it takes. For example, in the case of the Multivariate Gamma distribution,
+The functions get a `distribution` object and a parameter list that specifies which parameter should change and how, keeping the others constant. The metric of interest is evaluated as a function of this parameter. Specifically, `prm` includes three elements: "name", "pos", and "val". The first two elements determine the exact parameter that changes, while the third one is a numeric vector holding the values it takes. For example, in the case of the Multivariate Gamma distribution,
 `D <- MGamma(shape = c(1, 2), scale = 3)` and `prm <- list(name = "shape", pos = 2, val = seq(1, 1.5, by = 0.1))` means that the evaluation will be performed for the MGamma distributions with
 shape parameters `(1, 1)`, `(1, 1.1)`, ..., `(1, 1.5)` and scale `3`. Notice that the initial shape parameter `2` in `D` is not utilized in the function.
 

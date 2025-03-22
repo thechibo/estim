@@ -7,11 +7,13 @@
 \alias{qn,Nbinom-method}
 \alias{r,Nbinom-method}
 \alias{mean,Nbinom-method}
+\alias{median,Nbinom-method}
 \alias{mode,Nbinom-method}
 \alias{var,Nbinom-method}
 \alias{sd,Nbinom-method}
 \alias{skew,Nbinom-method}
 \alias{kurt,Nbinom-method}
+\alias{entro,Nbinom-method}
 \alias{finf,Nbinom-method}
 \alias{ll,numeric,numeric,Nbinom-method}
 \alias{mle,numeric,Nbinom-method}
@@ -32,6 +34,8 @@ Nbinom(size = 1, prob = 0.5)
 
 \S4method{mean}{Nbinom}(x)
 
+\S4method{median}{Nbinom}(x)
+
 \S4method{mode}{Nbinom}(x)
 
 \S4method{var}{Nbinom}(x)
@@ -41,6 +45,8 @@ Nbinom(size = 1, prob = 0.5)
 \S4method{skew}{Nbinom}(x)
 
 \S4method{kurt}{Nbinom}(x)
+
+\S4method{entro}{Nbinom}(x)
 
 \S4method{finf}{Nbinom}(x)
 

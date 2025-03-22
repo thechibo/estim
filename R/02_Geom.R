@@ -89,6 +89,20 @@ setMethod("mean",
 })
 
 #' @rdname Geom
+setMethod("median",
+          signature  = c(x = "Geom"),
+          definition = function(x) {
+
+  y <- - 1 / log(1 - x@prob, base = 2)
+  if ((y %% 1) == 0 & x@prob != 0.5) {
+    warning("The median of the Geom distribution is not uniquely defined in this case.")
+  }
+
+  ceiling(y) - 1
+
+})
+
+#' @rdname Geom
 setMethod("mode",
           signature  = c(x = "Geom"),
           definition = function(x) {
@@ -148,7 +162,7 @@ setMethod("finf",
           signature  = c(x = "Geom"),
           definition = function(x) {
 
-  1 / (x@prob ^ 2 (1 - x@prob))
+  1 / (x@prob ^ 2 * (1 - x@prob))
 
 })
 
@@ -219,7 +233,7 @@ setMethod("avar_mle",
           definition = function(distr) {
 
   prob <- distr@prob
-  c(prob = prob ^ 2 (1 - prob))
+  c(prob = prob ^ 2 * (1 - prob))
 
 })
 

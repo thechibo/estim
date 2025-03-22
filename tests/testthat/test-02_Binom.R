@@ -1,86 +1,159 @@
-test_that("Log-Likelihood works", {
+test_that("Binom distr works", {
 
-  set.seed(1203)
-  size <- 10
-  prob <- 0.7
-  prm <- c(size, prob)
-  D <- Binom(size = size, prob = prob)
-  x <- rbinom(100, size, prob)
+  # Preliminaries
+  N <- 10
+  p <- 0.7
+  D <- Binom(N, p)
 
-  expect_identical(llbinom(x, size, prob), ll(x, prm, D))
+  # Types
+  expect_s4_class(D, "Distribution")
+  expect_s4_class(D, "Binom")
 
-})
-
-test_that("e functions work", {
-
-  set.seed(1203)
-  size <- 10
-  prob <- 0.7
-  prm <- c(size, prob)
-  D <- Binom(size = size, prob = prob)
-  x <- rbinom(100, size, prob)
-
-  expect_identical(ebinom(x, "mle"), mle(x, D))
-  expect_identical(ebinom(x, "me"), me(x, D))
+  # Errors
+  expect_error(Binom(-10, 0.5))
+  expect_error(Binom(0, 0.5))
+  expect_error(Binom(10, 5))
+  expect_error(Binom(3:4, 0.5))
+  expect_error(Binom(10, c(0.5, 0.6)))
 
 })
 
-test_that("v functions work", {
+test_that("Binom dpqr work", {
 
-  size <- 10
-  prob <- 0.7
-  prm <- c(size, prob)
-  D <- Binom(size = size, prob = prob)
+  # Preliminaries
+  N <- 10
+  p <- 0.7
+  D <- Binom(N, p)
+  set.seed(1)
+  n <- 100L
+  x <- r(D)(n)
 
-  expect_identical(vbinom(size, prob, "mle"), avar_mle(D))
-  expect_identical(vbinom(size, prob, "me"), avar_me(D))
+  # Types
+  expect_true(is.function(d(D)))
+  expect_true(is.function(p(D)))
+  expect_true(is.function(qn(D)))
+  expect_true(is.function(r(D)))
 
-})
+  # Values
+  expect_equal(d(D)(N), p ^ N, tolerance = 0.01)
+  expect_equal(d(D)(0), (1 - p) ^ N, tolerance = 0.01)
+  expect_identical(p(D)(N), 1)
+  expect_identical(qn(D)(1), N)
+  expect_identical(qn(D)(0), 0)
+  expect_identical(sum(x %in% 0:N), n)
 
-test_that("ME is consistent", {
-
-  set.seed(1203)
-  est <- "me"
-  D0 <- Binom()
-  d <- test_consistency(est, D0)
-  expect_equal(d$prm_true["prob"]["prob"], d$prm_est, tolerance = 0.5)
-
-})
-
-test_that("MLE is consistent", {
-
-  set.seed(1203)
-  est <- "mle"
-  D0 <- Binom()
-  d <- test_consistency(est, D0)
-  expect_equal(d$prm_true["prob"], d$prm_est, tolerance = 0.5)
-
-})
-
-test_that("ME avar is correct", {
-
-  set.seed(1203)
-  est <- "me"
-  D0 <- Binom()
-  d <- test_avar(est, D0)
-  expect_equal(unname(d$avar_true), d$avar_est["prob", "prob"], tolerance = 1)
+  # 2-Way Calls
+  expect_identical(d(D)(1), dbinom(1, N, p))
+  expect_identical(p(D)(1), pbinom(1, N, p))
+  expect_identical(qn(D)(1), qbinom(1, N, p))
+  expect_identical(qn(D)(0), qbinom(0, N, p))
 
 })
 
-test_that("MLE avar is correct", {
+test_that("Binom moments work", {
 
-  set.seed(1203)
-  est <- "mle"
-  D0 <- Binom()
-  d <- test_avar(est, D0)
-  expect_equal(unname(d$avar_true), d$avar_est["prob", "prob"], tolerance = 1)
+  # Preliminaries
+  N <- 10
+  p <- 0.7
+  D <- Binom(N, p)
+
+  # Types
+  expect_true(is.numeric(mean(D)))
+  expect_true(is.numeric(var(D)))
+  expect_true(is.numeric(sd(D)))
+  expect_true(is.numeric(skew(D)))
+  expect_true(is.numeric(kurt(D)))
+  expect_true(is.numeric(finf(D)))
+
+  # Warnings
+  expect_warning(moments(D))
+  expect_warning(entro(D))
+
+  # Values
+  expect_identical(mean(D), N * p)
+  expect_identical(var(D), N * p * (1 - p))
 
 })
 
-test_that("small_metrics works", {
+test_that("Binom likelihood works", {
 
-  set.seed(1203)
-  D <- Binom()
+  # Preliminaries
+  N <- 10
+  p <- 0.7
+  D <- Binom(N, p)
+  set.seed(1)
+  n <- 100L
+  x <- r(D)(n)
+
+  # Types
+  expect_true(is.numeric(llbinom(x, size = N, prob = p)))
+
+  # 2-Way Calls
+  expect_identical(llbinom(x, N, p), ll(x, c(N, p), D))
+
+})
+
+test_that("Binom estim works", {
+
+  # Preliminaries
+  N <- 10
+  p <- 0.7
+  D <- Binom(N, p)
+  set.seed(1)
+  n <- 100L
+  x <- r(D)(n)
+
+  # Types
+  expect_true(is.numeric(ebinom(x, N, type = "mle")))
+  expect_true(is.numeric(ebinom(x, N, type = "me")))
+
+  # 2-Way Calls
+  expect_identical(ebinom(x, N, type = "mle"), estim(x, D, type = "mle"))
+  expect_identical(ebinom(x, N, type = "me"), estim(x, D, type = "me"))
+
+  # Simulations
+  d <- test_consistency("me", D)
+  expect_equal(d$prm_true["prob"], d$prm_est, tolerance = 0.01)
+  d <- test_consistency("mle", D)
+  expect_equal(d$prm_true["prob"], d$prm_est, tolerance = 0.02)
+
+})
+
+test_that("Binom avar works", {
+
+  # Preliminaries
+  N <- 10
+  p <- 0.7
+  D <- Binom(N, p)
+  set.seed(1)
+  n <- 100L
+  x <- r(D)(n)
+
+  # Types
+  expect_true(is.numeric(vbinom(N, p, type = "mle")))
+  expect_true(is.numeric(vbinom(N, p, type = "me")))
+
+  # 2-Way Calls
+  expect_identical(vbinom(N, p, type = "mle"), avar(D, type = "mle"))
+  expect_identical(vbinom(N, p, type = "me"), avar(D, type = "me"))
+  expect_identical(vbinom(N, p, type = "mle"), avar_mle(D))
+  expect_identical(vbinom(N, p, type = "me"), avar_me(D))
+
+  # Simulations
+  d <- test_avar("mle", D)
+  expect_equal(d$avar_true, d$avar_est, tolerance = 0.1)
+  d <- test_avar("me", D)
+  expect_equal(d$avar_true, d$avar_est, tolerance = 0.1)
+
+})
+
+test_that("Binom small metrics work", {
+
+  # Preliminaries
+  N <- 10
+  p <- 0.7
+  D <- Binom(N, p)
+  set.seed(1)
 
   prm <- list(name = "prob",
               pos = NULL,
@@ -93,7 +166,6 @@ test_that("small_metrics works", {
                        sam = 1e2,
                        seed = 1)
   )
-  expect_s3_class(x, "data.frame")
 
   expect_no_error(
     plot_small_metrics(x,
@@ -101,12 +173,23 @@ test_that("small_metrics works", {
                        path = tempdir())
   )
 
+  # Types
+  expect_s3_class(x, "data.frame")
+  expect_true(is.numeric(x$Parameter))
+  expect_s3_class(x$Observations, "factor")
+  expect_s3_class(x$Estimator, "factor")
+  expect_s3_class(x$Metric, "factor")
+  expect_true(is.numeric(x$Value))
+
 })
 
-test_that("large_metrics works", {
+test_that("Binom large metrics work", {
 
-  set.seed(1203)
-  D <- Binom()
+  # Preliminaries
+  N <- 10
+  p <- 0.7
+  D <- Binom(N, p)
+  set.seed(1)
 
   prm <- list(name = "prob",
               pos = NULL,
@@ -117,12 +200,16 @@ test_that("large_metrics works", {
                        est = c("mle", "me"))
   )
 
-  expect_s3_class(x, "data.frame")
-
   expect_no_error(
     plot_large_metrics(x,
                        save = TRUE,
                        path = tempdir())
   )
+
+  # Types
+  expect_s3_class(x, "data.frame")
+  expect_true(is.numeric(x$Parameter))
+  expect_s3_class(x$Estimator, "factor")
+  expect_true(is.numeric(x$Value))
 
 })

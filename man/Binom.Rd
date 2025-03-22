@@ -11,6 +11,7 @@
 \alias{sd,Binom-method}
 \alias{skew,Binom-method}
 \alias{kurt,Binom-method}
+\alias{entro,Binom-method}
 \alias{finf,Binom-method}
 \alias{ll,numeric,numeric,Binom-method}
 \alias{mle,numeric,Binom-method}
@@ -38,6 +39,8 @@ Binom(size = 1, prob = 0.5)
 \S4method{skew}{Binom}(x)
 
 \S4method{kurt}{Binom}(x)
+
+\S4method{entro}{Binom}(x)
 
 \S4method{finf}{Binom}(x)
 

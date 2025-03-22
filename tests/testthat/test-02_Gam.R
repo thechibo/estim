@@ -1,112 +1,189 @@
-test_that("Log-Likelihood works", {
+test_that("Gam distr works", {
 
-  set.seed(1203)
-  shape <- 1
-  scale <- 2
-  prm <- c(shape, scale)
-  D <- Gam(shape = shape, scale = scale)
-  x <- rgamma(100, shape, scale)
+  # Preliminaries
+  a <- 2
+  b <- 3
+  D <- Gam(a, b)
 
-  expect_identical(llgamma(x, shape, scale), ll(x, prm, D))
+  # Types
+  expect_s4_class(D, "Distribution")
+  expect_s4_class(D, "Gam")
 
-})
-
-test_that("e functions work", {
-
-  set.seed(1203)
-  shape <- 1
-  scale <- 2
-  prm <- c(shape, scale)
-  D <- Gam(shape = shape, scale = scale)
-  x <- rgamma(100, shape, scale)
-
-  expect_identical(egamma(x, "mle"), mle(x, D))
-  expect_identical(egamma(x, "me"), me(x, D))
-  expect_identical(egamma(x, "same"), same(x, D))
+  # Errors
+  expect_error(Gam(c(0.1, 0.2, 0.3)))
+  expect_error(Gam(-1, 2))
+  expect_error(Gam(1, -2))
 
 })
 
-test_that("v functions work", {
+test_that("Gam dpqr work", {
 
-  shape <- 1
-  scale <- 2
-  prm <- c(shape, scale)
-  D <- Gam(shape = shape, scale = scale)
+  # Preliminaries
+  a <- 2
+  b <- 3
+  D <- Gam(a, b)
+  set.seed(1)
+  n <- 100L
+  x <- r(D)(n)
 
-  expect_identical(vgamma(shape, scale, "mle"), avar_mle(D))
-  expect_identical(vgamma(shape, scale, "me"), avar_me(D))
-  expect_identical(vgamma(shape, scale, "same"), avar_same(D))
+  # Types
+  expect_true(is.function(d(D)))
+  expect_true(is.function(p(D)))
+  expect_true(is.function(qn(D)))
+  expect_true(is.function(r(D)))
 
-})
+  # Values
+  expect_identical(d(D)(0), 0)
+  expect_identical(p(D)(Inf), 1)
+  expect_identical(p(D)(0), 0)
+  expect_identical(qn(D)(1), Inf)
+  expect_identical(qn(D)(0), 0)
+  expect_identical(sum(x >= 0), n)
 
-test_that("ME is consistent", {
-
-  set.seed(1203)
-  est <- "me"
-  D0 <- Gam()
-  d <- test_consistency(est, D0)
-  expect_equal(d$prm_true, d$prm_est, tolerance = 0.5)
-
-})
-
-test_that("SAME is consistent", {
-
-  set.seed(1203)
-  est <- "same"
-  D0 <- Gam()
-  d <- test_consistency(est, D0)
-  expect_equal(d$prm_true, d$prm_est, tolerance = 0.5)
+  # 2-Way Calls
+  expect_identical(d(D)(0.4), dgamma(0.4, shape = a, scale = b))
+  expect_identical(p(D)(0.4), pgamma(0.4, shape = a, scale = b))
+  expect_equal(qn(D)(0.4), qgamma(0.4, shape = a, scale = b), tolerance = 1e-8)
 
 })
 
-test_that("MLE is consistent", {
+test_that("Gam moments work", {
 
-  set.seed(1203)
-  est <- "mle"
-  D0 <- Gam()
-  d <- test_consistency(est, D0)
-  expect_equal(d$prm_true, d$prm_est, tolerance = 0.5)
+  # Preliminaries
+  a <- 2
+  b <- 3
+  D <- Gam(a, b)
 
-})
-
-test_that("ME avar is correct", {
-
-  set.seed(1203)
-  est <- "me"
-  D0 <- Gam()
-  d <- test_avar(est, D0)
-  expect_equal(d$avar_true, d$avar_est, tolerance = 1)
-
-})
-
-test_that("SAME avar is correct", {
-
-  set.seed(1203)
-  est <- "same"
-  D0 <- Gam()
-  d <- test_avar(est, D0)
-  expect_equal(d$avar_true, d$avar_est, tolerance = 1)
+  # Types
+  expect_true(is.list(moments(D)))
+  expect_true(is.numeric(mean(D)))
+  expect_true(is.numeric(median(D)))
+  expect_true(is.numeric(mode(D)))
+  expect_true(is.numeric(var(D)))
+  expect_true(is.numeric(sd(D)))
+  expect_true(is.numeric(skew(D)))
+  expect_true(is.numeric(kurt(D)))
+  expect_true(is.numeric(entro(D)))
+  expect_true(is.numeric(finf(D)))
 
 })
 
-test_that("MLE avar is correct", {
+test_that("Gam likelihood works", {
 
-  set.seed(1203)
-  est <- "mle"
-  D0 <- Gam()
-  d <- test_avar(est, D0)
-  expect_equal(d$avar_true, d$avar_est, tolerance = 1)
+  # Preliminaries
+  a <- 2
+  b <- 3
+  D <- Gam(a, b)
+  set.seed(1)
+  n <- 100L
+  x <- r(D)(n)
+
+  # Types
+  expect_true(is.numeric(llgamma(x, shape = a, scale = b)))
+
+  # 2-Way Calls
+  expect_identical(llgamma(x, shape = a, scale = b), ll(x, c(a, b), D))
+
+  # ll and lloptim convergence to a0 comparison
+  method <- "L-BFGS-B"
+  lower <- 1e-5
+  upper <- Inf
+  tx <- c(log(mean(x)), mean(log(x)))
+
+  par1 <- optim(par = sum(same(x, D)),
+                fn = lloptim,
+                gr = dlloptim,
+                tx = tx,
+                distr = D,
+                method = method,
+                lower = lower,
+                upper = upper,
+                control = list(fnscale = -1))$par
+
+  par2 <- optim(par = same(x, D),
+                fn = function(par, x, distr) { ll(x, par, distr) },
+                x = x,
+                distr = D,
+                method = method,
+                lower = lower,
+                upper = upper,
+                control = list(fnscale = -1))$par
+
+  expect_equal(c(shape = par1, scale = mean(x) / par1), par2, tolerance = 0.01)
 
 })
 
-test_that("small_metrics works", {
+test_that("Gam estim works", {
 
-  set.seed(1203)
-  D <- Gam(shape = 1, scale = 2)
+  # Preliminaries
+  a <- 2
+  b <- 3
+  D <- Gam(a, b)
+  set.seed(1)
+  n <- 100L
+  x <- r(D)(n)
+
+  # Types
+  expect_true(is.numeric(egamma(x, type = "mle")))
+  expect_true(is.numeric(egamma(x, type = "me")))
+  expect_true(is.numeric(egamma(x, type = "same")))
+
+  # 2-Way Calls
+  expect_identical(egamma(x, type = "mle"), estim(x, D, type = "mle"))
+  expect_identical(egamma(x, type = "me"), estim(x, D, type = "me"))
+  expect_identical(egamma(x, type = "same"), estim(x, D, type = "same"))
+
+  # Simulations
+  d <- test_consistency("me", D)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.05)
+  d <- test_consistency("mle", D)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.05)
+  d <- test_consistency("same", D)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.05)
+
+})
+
+test_that("Gam avar works", {
+
+  # Preliminaries
+  a <- 2
+  b <- 3
+  D <- Gam(a, b)
+
+  # Types
+  expect_true(is.numeric(vgamma(a, b, type = "mle")))
+  expect_true(is.numeric(vgamma(a, b, type = "me")))
+  expect_true(is.numeric(vgamma(a, b, type = "same")))
+
+  # 2-Way Calls
+  expect_identical(vgamma(a, b, type = "mle"), avar(D, type = "mle"))
+  expect_identical(vgamma(a, b, type = "me"), avar(D, type = "me"))
+  expect_identical(vgamma(a, b, type = "same"), avar(D, type = "same"))
+  expect_identical(vgamma(a, b, type = "mle"), avar_mle(D))
+  expect_identical(vgamma(a, b, type = "me"), avar_me(D))
+  expect_identical(vgamma(a, b, type = "same"), avar_same(D))
+
+  # Simulations
+  d <- test_avar("mle", D)
+  expect_equal(d$avar_true, d$avar_est, tolerance = 0.07)
+  d <- test_avar("me", D)
+  expect_equal(d$avar_true, d$avar_est, tolerance = 0.05)
+  d <- test_avar("same", D)
+  expect_equal(d$avar_true, d$avar_est, tolerance = 0.07)
+
+})
+
+test_that("Gam small metrics work", {
+
+  # Preliminaries
+  a <- 2
+  b <- 3
+  D <- Gam(a, b)
+  set.seed(1)
 
   prm <- list(name = "shape",
               pos = NULL,
-              val = seq(0.5, 2, by = 0.5))
+              val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
     x <- small_metrics(D, prm,
@@ -115,7 +192,6 @@ test_that("small_metrics works", {
                        sam = 1e2,
                        seed = 1)
   )
-  expect_s3_class(x, "data.frame")
 
   expect_no_error(
     plot_small_metrics(x,
@@ -123,28 +199,64 @@ test_that("small_metrics works", {
                        path = tempdir())
   )
 
+  # Types
+  expect_s3_class(x, "data.frame")
+  expect_true(is.numeric(x$Parameter))
+  expect_s3_class(x$Observations, "factor")
+  expect_s3_class(x$Estimator, "factor")
+  expect_s3_class(x$Metric, "factor")
+  expect_true(is.numeric(x$Value))
+
 })
 
-test_that("large_metrics works", {
+test_that("Gam large metrics work", {
 
-  set.seed(1203)
-  D <- Gam(shape = 1, scale = 2)
+  # Preliminaries
+  a <- 2
+  b <- 3
+  D <- Gam(a, b)
+  set.seed(1)
 
   prm <- list(name = "shape",
               pos = NULL,
-              val = seq(0.5, 2, by = 0.5))
+              val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
     x <- large_metrics(D, prm,
                        est = c("mle", "me", "same"))
   )
 
+  expect_no_error(
+    plot_large_metrics(x,
+                       save = TRUE,
+                       path = tempdir())
+  )
+
+  # Types
   expect_s3_class(x, "data.frame")
+  expect_true(is.numeric(x$Parameter))
+  expect_s3_class(x$Estimator, "factor")
+  expect_true(is.numeric(x$Value))
+
+  prm <- list(name = "scale",
+              pos = NULL,
+              val = seq(0.5, 5, by = 0.5))
+
+  expect_no_error(
+    x <- large_metrics(D, prm,
+                       est = c("mle", "me", "same"))
+  )
 
   expect_no_error(
     plot_large_metrics(x,
                        save = TRUE,
                        path = tempdir())
   )
+
+  # Types
+  expect_s3_class(x, "data.frame")
+  expect_true(is.numeric(x$Parameter))
+  expect_s3_class(x$Estimator, "factor")
+  expect_true(is.numeric(x$Value))
 
 })

@@ -96,6 +96,31 @@ setMethod("mean",
 })
 
 #' @rdname Gam
+#' @export
+setMethod("median",
+          signature  = c(x = "Gam"),
+          definition = function(x) {
+
+  qgamma(0.5, shape = x@shape, scale = x@scale)
+
+})
+
+#' @rdname Gam
+setMethod("mode",
+          signature  = c(x = "Gam"),
+          definition = function(x) {
+
+  a <- x@shape
+  b <- x@scale
+  if(a >= 1) {
+    return((a - 1) / b)
+  } else {
+    return(0)
+  }
+
+})
+
+#' @rdname Gam
 setMethod("var",
           signature  = c(x = "Gam"),
           definition = function(x) {

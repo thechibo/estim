@@ -1,6 +1,6 @@
 Package: estim
 Title: Parameter Estimation
-Version: 0.9.1
+Version: 0.10.0
 Authors@R: c(
     person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr",
            role = c("aut", "cre"),
@@ -41,4 +41,4 @@ Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.2

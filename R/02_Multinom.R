@@ -34,10 +34,10 @@ setValidity("Multinom", function(object) {
   if(!is_natural(object@size)) {
     stop("size has to be a natural number")
   }
-  if(length(object@prob) > 1) {
+  if(length(object@prob) < 2) {
     stop("prob has to be a numeric of length at least 2")
   }
-  if(any(object@prob <= 0 || object@prob >= 1)) {
+  if(any(object@prob <= 0) || any(object@prob >= 1)) {
     stop("prob has to be between 0 and 1")
   }
   TRUE
@@ -72,7 +72,16 @@ setMethod("mean",
           signature  = c(x = "Multinom"),
           definition = function(x) {
 
-  x@prob
+  x@size * x@prob
+
+})
+
+#' @rdname Multinom
+setMethod("mode",
+          signature  = c(x = "Multinom"),
+          definition = function(x) {
+
+  which(x@prob == max(x@prob))
 
 })
 
@@ -88,13 +97,35 @@ setMethod("var",
 })
 
 #' @rdname Multinom
+setMethod("entro",
+          signature  = c(x = "Multinom"),
+          definition = function(x) {
+
+  N <- x@size
+  p <- x@prob
+
+  z <- 0
+  for (x in 0:N) {
+    z <- z + choose(N, x) * p ^ x * (1 - p) ^ (N - x) * log(factorial(x))
+  }
+
+  - log(factorial(N)) - N * sum(p * log(p)) + sum(z)
+
+})
+
+#' @rdname Multinom
 setMethod("finf",
           signature  = c(x = "Multinom"),
           definition = function(x) {
 
   k <- length(x@prob)
 
-  x@size * (diag(1 / x@prob) - matrix(1, k, 1) %*% matrix(1, 1, k))
+  D <- x@size * (diag(1 / x@prob[-k]) - matrix(1, k - 1, 1) %*% matrix(1, 1, k - 1) /
+              x@prob[k])
+
+  rownames(D) <- paste0("prob", seq_along(x@prob[-k]))
+  colnames(D) <- paste0("prob", seq_along(x@prob[-k]))
+  D
 
 })
 
@@ -104,7 +135,7 @@ setMethod("finf",
 
 #' @rdname ll
 #' @export
-llMultinom <- function(x, size, prob) {
+llmultinom <- function(x, size, prob) {
   ll(x, prm = c(size, prob), distr = Multinom())
 }
 
@@ -112,6 +143,11 @@ llMultinom <- function(x, size, prob) {
 setMethod("ll",
           signature  = c(x = "matrix", prm = "numeric", distr = "Multinom"),
           definition = function(x, prm, distr) {
+
+  N <- unique(colSums(x))
+  if (length(N) != 1) {
+    stop("ColSums of x need to be equal. Found multiple values: ", paste(N, " "))
+  }
 
   ncol(x) * lfactorial(prm[1]) - sum(lfactorial(x)) +
   sum(t(x) %*% diag(log(prm[-1])))
@@ -135,7 +171,11 @@ setMethod("mle",
           signature  = c(x = "matrix", distr = "Multinom"),
           definition = function(x, distr) {
 
-  c(prob = colMeans(x))
+  N <- unique(colSums(x))
+  if (length(N) != 1) {
+    stop("ColSums of x need to be equal. Found multiple values: ", paste(N, " "))
+  }
+  c(prob = rowMeans(x) / N)
 
 })
 
@@ -165,7 +205,7 @@ setMethod("avar_mle",
           signature  = c(distr = "Multinom"),
           definition = function(distr) {
 
-  inv2x2(finf(distr))
+  as.matrix(nearPD(solve(finf(distr))))
 
 })
 

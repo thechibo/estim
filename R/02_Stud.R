@@ -8,29 +8,28 @@
 
 setClass("Stud",
          contains = "Distribution",
-         slots = c(df = "numeric", ncp = "numeric"),
-         prototype = list(df = 1, ncp = 0))
+         slots = c(df = "numeric"),
+         prototype = list(df = 1))
 
 #' @title Student Distribution
 #' @name Stud
 #'
 #' @param x an object of class `Stud`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
-#' @param df,ncp numeric. The distribution parameters.
+#' @param distr an object of class `Fisher`.
+#' @param df numeric. The distribution parameter.
+#' @param prm numeric. A vector including the distribution parameters.
 #'
 #' @inherit Distributions return
 #'
 #' @export
-Stud <- function(df = 1, ncp = 0) {
-  new("Stud", df = df, ncp = ncp)
+Stud <- function(df = 1) {
+  new("Stud", df = df)
 }
 
 setValidity("Stud", function(object) {
   if(length(object@df) != 1) {
     stop("df has to be a numeric of length 1")
-  }
-  if(length(object@ncp) != 1) {
-    stop("ncp has to be a numeric of length 1")
   }
   if(object@df <= 0) {
     stop("df has to be positive")
@@ -46,7 +45,7 @@ setValidity("Stud", function(object) {
 setMethod("d", signature = c(x = "Stud"),
           function(x) {
             function(y, log = FALSE) {
-              dt(y, df = x@df, ncp = x@ncp, log = log)
+              dt(y, df = x@df, log = log)
             }
           })
 
@@ -54,8 +53,7 @@ setMethod("d", signature = c(x = "Stud"),
 setMethod("p", signature = c(x = "Stud"),
           function(x) {
             function(q, lower.tail = TRUE, log.p = FALSE) {
-              pt(q, df = x@df, ncp = x@ncp,
-                    lower.tail = lower.tail, log.p = log.p)
+              pt(q, df = x@df, lower.tail = lower.tail, log.p = log.p)
             }
           })
 
@@ -63,8 +61,7 @@ setMethod("p", signature = c(x = "Stud"),
 setMethod("qn", signature = c(x = "Stud"),
           function(x) {
             function(p, lower.tail = TRUE, log.p = FALSE) {
-              qt(p, df = x@df, ncp = x@ncp,
-                    lower.tail = lower.tail, log.p = log.p)
+              qt(p, df = x@df, lower.tail = lower.tail, log.p = log.p)
             }
           })
 
@@ -72,7 +69,7 @@ setMethod("qn", signature = c(x = "Stud"),
 setMethod("r", signature = c(x = "Stud"),
           function(x) {
             function(n) {
-              rt(n, df = x@df, ncp = x@ncp)
+              rt(n, df = x@df)
             }
           })
 
@@ -88,7 +85,7 @@ setMethod("mean",
   df <- x@df
 
   if (df > 1) {
-    return(x@ncp * sqrt(df / 2) * gamma((df - 1) / 2) / gamma(df / 2))
+    return(0)
   } else {
     stop("Expectation is undefined for Student's t distribution
           no more than 1 df.")
@@ -101,11 +98,7 @@ setMethod("median",
           signature  = c(x = "Stud"),
           definition = function(x) {
 
-  if (x@ncp == 0) {
-    0
-  } else {
-    stop("Median not available for non-central Student's t.")
-  }
+  0
 
 })
 
@@ -114,11 +107,7 @@ setMethod("mode",
           signature  = c(x = "Stud"),
           definition = function(x) {
 
-  if (x@ncp == 0) {
-    0
-  } else {
-    stop("Mode not available for non-central Student's t.")
-  }
+  0
 
 })
 
@@ -130,10 +119,9 @@ setMethod("var",
   df <- x@df
 
   if (df > 2) {
-    return(df * (1 + x@ncp ^ 2) / (df - 2) -
-             0.5 * x@ncp ^ 2 * df * (gamma((df - 1) / 2) / gamma(df / 2)) ^ 2)
+    return(df / (df - 2))
   } else {
-    stop("Variance is undefined for Student's t distribution
+    stop("Variance is undefined for Student's t distribution with
           no more than 2 df.")
   }
 
@@ -153,15 +141,11 @@ setMethod("skew",
           signature  = c(x = "Stud"),
           definition = function(x) {
 
-  if (x@ncp == 0) {
-    if (x@df > 3) {
-      0
-    }  else {
-        stop("Skewness is undefined for Student's t distribution
-              with no more than 3 df.")
-      }
-  } else {
-    stop("Skewness not available for non-central Student's t.")
+  if (x@df > 3) {
+    0
+  }  else {
+    stop("Skewness is undefined for Student's t distribution
+    with no more than 3 df.")
   }
 
 })
@@ -171,17 +155,47 @@ setMethod("kurt",
           signature  = c(x = "Stud"),
           definition = function(x) {
 
-  if (x@ncp == 0) {
-    if (x@df > 4) {
-      6 / (x@df - 4)
-    } else if (x@df > 2) {
-      Inf
-    } else {
-      stop("Kurtosis is undefined for Student's t distribution
-            with no more than 2 df.")
-    }
+  if (x@df > 4) {
+    6 / (x@df - 4)
+  } else if (x@df > 2) {
+    Inf
   } else {
-    stop("Skewness not available for non-central Student's t.")
+    stop("Kurtosis is undefined for Student's t distribution
+  with no more than 2 df.")
   }
+
+})
+
+#' @rdname Stud
+setMethod("entro",
+          signature  = c(x = "Stud"),
+          definition = function(x) {
+
+  df <- x@df
+  ((df + 1) / 2) * (digamma((df + 1) / 2) - digamma(df / 2)) +
+              log(df) / 2 + lbeta(df / 2, 1 / 2)
+
+})
+
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+## Likelihood             ----
+## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname ll
+#' @export
+llt <- function(x, df) {
+  ll(x, prm = df, distr = Stud())
+}
+
+#' @rdname Stud
+setMethod("ll",
+          signature  = c(x = "numeric", prm = "numeric", distr = "Stud"),
+          definition = function(x, prm, distr) {
+
+  n <- length(x)
+  s <- sum(log(1 + x ^ 2 / prm))
+
+  n * lgamma((prm + 1) / 2) - n * lgamma(prm / 2) - n * log(pi * prm) / 2 -
+    (prm + 1) * s / 2
 
 })

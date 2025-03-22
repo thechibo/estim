@@ -136,11 +136,22 @@ setMethod("kurt",
 })
 
 #' @rdname Binom
+setMethod("entro",
+          signature  = c(x = "Binom"),
+          definition = function(x) {
+
+  warning("The entropy given is an approximation in the O(1 / n) order.")
+  p <- x@prob
+  0.5 * log(2 * pi  * exp(1) * x@size * p * (1 - p), base = 2)
+
+})
+
+#' @rdname Binom
 setMethod("finf",
           signature  = c(x = "Binom"),
           definition = function(x) {
 
-  1 / (x@prob * (1 - x@prob))
+  x@size / (x@prob * (1 - x@prob))
 
 })
 
@@ -173,9 +184,9 @@ setMethod("ll",
 
 #' @rdname estimation
 #' @export
-ebinom <- function(x, type = "mle", ...) {
+ebinom <- function(x, size, type = "mle", ...) {
 
-  estim(x, Binom(), type, ...)
+  estim(x, Binom(size = size), type, ...)
 
 }
 
@@ -184,7 +195,14 @@ setMethod("mle",
           signature  = c(x = "numeric", distr = "Binom"),
           definition = function(x, distr) {
 
-  c(prob = mean(x))
+  p <- mean(x) / distr@size
+
+  if (p > 1) {
+    stop("Success probability ", p, ", greater than 1.
+          Did you forget to specify the size of the Binomial?")
+  }
+
+  c(prob = p)
 
 })
 
@@ -215,7 +233,8 @@ setMethod("avar_mle",
           definition = function(distr) {
 
   prob <- distr@prob
-  c(prob = prob * (1 - prob))
+  size <- distr@size
+  c(prob = prob * (1 - prob) / size)
 
 })
 

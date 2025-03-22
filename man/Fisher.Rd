@@ -7,10 +7,14 @@
 \alias{qn,Fisher-method}
 \alias{r,Fisher-method}
 \alias{mean,Fisher-method}
+\alias{median,Fisher-method}
 \alias{mode,Fisher-method}
 \alias{var,Fisher-method}
 \alias{sd,Fisher-method}
 \alias{skew,Fisher-method}
+\alias{kurt,Fisher-method}
+\alias{entro,Fisher-method}
+\alias{ll,numeric,numeric,Fisher-method}
 \title{Fisher Distribution}
 \usage{
 Fisher(df1 = 1, df2 = 1)
@@ -25,6 +29,8 @@ Fisher(df1 = 1, df2 = 1)
 
 \S4method{mean}{Fisher}(x)
 
+\S4method{median}{Fisher}(x)
+
 \S4method{mode}{Fisher}(x)
 
 \S4method{var}{Fisher}(x)
@@ -32,12 +38,22 @@ Fisher(df1 = 1, df2 = 1)
 \S4method{sd}{Fisher}(x)
 
 \S4method{skew}{Fisher}(x)
+
+\S4method{kurt}{Fisher}(x)
+
+\S4method{entro}{Fisher}(x)
+
+\S4method{ll}{numeric,numeric,Fisher}(x, prm, distr)
 }
 \arguments{
 \item{df1, df2}{numeric. The distribution parameters.}
 
 \item{x}{an object of class \code{Fisher}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
+
+\item{prm}{numeric. A vector including the distribution parameters.}
+
+\item{distr}{an object of class \code{Fisher}.}
 }
 \value{
 The dpqr family of functions return the evaluated density, cumulative

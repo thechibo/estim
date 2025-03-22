@@ -124,12 +124,10 @@ setMethod("mode",
   if (a > 1 && b > 1) {
     return((a - 1) / (a + b - 2))
   } else if (a == 1 && b == 1) {
-    warning("In Beta(1, 1), all elements in the [0, 1] interval are modes.
-             0.5 is returned by default.")
+    warning("In Beta(1, 1), all elements in the [0, 1] interval are modes. 0.5 is returned by default.")
     return(0.5)
   } else if (a < 1 && b < 1) {
-    warning("In Beta(a, b) with a < 1 and b < 1, both 0 and 1 are modes.
-             1 is returned by default.")
+    warning("In Beta(a, b) with a < 1 and b < 1, both 0 and 1 are modes. 1 is returned by default.")
     return(1)
   } else if (a <= 1) {
     return(0)

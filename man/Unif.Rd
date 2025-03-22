@@ -7,6 +7,8 @@
 \alias{qn,Unif-method}
 \alias{r,Unif-method}
 \alias{mean,Unif-method}
+\alias{median,Unif-method}
+\alias{mode,Unif-method}
 \alias{var,Unif-method}
 \alias{sd,Unif-method}
 \alias{skew,Unif-method}
@@ -28,6 +30,10 @@ Unif(min = 0, max = 1)
 \S4method{r}{Unif}(x)
 
 \S4method{mean}{Unif}(x)
+
+\S4method{median}{Unif}(x)
+
+\S4method{mode}{Unif}(x)
 
 \S4method{var}{Unif}(x)
 
