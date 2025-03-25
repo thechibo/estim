@@ -10,8 +10,6 @@ status](https://www.r-pkg.org/badges/version/estim)](https://CRAN.R-project.org/
 [![R-CMD-check](https://github.com/thechibo/estim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thechibo/estim/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/thechibo/estim/branch/main/graph/badge.svg)](https://app.codecov.io/gh/thechibo/estim?branch=main)
-[![Codecov test
-coverage](https://codecov.io/gh/thechibo/estimators/graph/badge.svg)](https://app.codecov.io/gh/thechibo/estimators)
 <!-- badges: end -->
 
 ## Introduction

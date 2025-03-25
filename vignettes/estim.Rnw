@@ -1,0 +1,627 @@
+%\documentclass[article]{jss}
+\documentclass[nojss]{jss}
+
+%% -- LaTeX packages and custom commands ---------------------------------------
+
+%% recommended packages
+\usepackage{orcidlink,thumbpdf,lmodern}
+
+%% other packages
+\usepackage{framed}
+\usepackage{enumerate}
+\usepackage{amsfonts}
+
+%% new custom commands
+\newcommand{\class}[1]{`\code{#1}'}
+\newcommand{\fct}[1]{\code{#1()}}
+
+%% For Sweave-based articles about R packages:
+%% need no \usepackage{Sweave}
+\SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
+<<preliminaries, echo=FALSE, results=hide>>=
+options(prompt = "R> ", continue = "+  ", width = 70, useFancyQuotes = FALSE)
+library("estim")
+@
+
+%% -- Article metainformation (author, title, ...) -----------------------------
+
+%% - \author{} with primary affiliation (and optionally ORCID link)
+%% - \Plainauthor{} without affiliations
+%% - Separate authors by \And or \AND (in \author) or by comma (in \Plainauthor).
+%% - \AND starts a new line, \And does not.
+\author{Ioannis Oikonomidis~\orcidlink{0000-0001-8130-2104}\\National and Kapodistrian \\ University of Athens
+  \And Samis Trevezas\\National and Kapodistrian \\ University of Athens}
+\Plainauthor{Ioannis Oikonomidis, Samis Trevezas}
+
+%% - \title{} in title case
+%% - \Plaintitle{} without LaTeX markup (if any)
+%% - \Shorttitle{} with LaTeX markup (if any), used as running title
+\title{The \pkg{estim} Package: Object-Oriented Distributions and Parameter Estimation in \proglang{R}}
+\Plaintitle{The estim Package: Object-Oriented Distributions and Parameter Estimation in R}
+\Shorttitle{The \pkg{estim} R Package}
+
+%% - \Abstract{} almost as usual
+\Abstract{
+The \pkg{estim} package provides a comprehensive set of features for probabilities and mathematical statistics. It extends the range of available distribution families and facilitates the computation of key parametric quantities, such as moments and information-theoretic measures. The main focus of the package is parameter estimation through maximum likelihood and moment-based methods under an intuitive and efficient framework. All package features are available both in a \pkg{stats}-like syntax for entry-level users, and in an S4 object-oriented programming system for more experienced ones. The common \code{d}, \code{p}, \code{q}, \code{r} function family of each distribution, e.g. \fct{dnorm}, \fct{pnorm}, \fct{qnorm}, \fct{rnorm}, is enriched with the \code{ll} counterpart, e.g. \fct{llnorm}, that calculates the log-likelihood, the \code{e} counterpart, e.g. \fct{enorm}, that performs parameter estimation, and the \code{v} counterpart, e.g. \fct{vnorm}, that calculates the asymptotic variance-covariance matrix of an estimator. Furthermore, an S4-class distribution system is developed, so that these functions can be used generically. Moments and other parametric functions (mean, median, mode, variance, standard deviation, skewness, kurtosis, entropy, and Fisher information) are also included in the package. New distribution families, such as Dirichlet and multivariate gamma, not included in the \pkg{stats} package are made available. Parameter estimation is performed analytically if possible, while numerical optimization of the MLE (whenever required, e.g. the beta and gamma distribution families) is performed with computational efficiency, taking advantage of the score equation system to reduce the dimensionality of the optimization problem. Finally, the package includes functions to compute and plot the asymptotic variance and common finite-sample metrics (bias, variance, and root mean square error) of estimators, allowing their study and comparison. Overall, \pkg{estim} addresses several limitations in the state of the art \proglang{R} packages in an attempt to provide some of the most fundamental methods of statistics in a unified package.
+}
+
+%% - \Keywords{} with LaTeX markup, at least one required
+%% - \Plainkeywords{} without LaTeX markup (if necessary)
+%% - Should be comma-separated and in sentence case.
+\Keywords{Parameter estimation, Maximum likelihood estimation, Moment estimation, Score-adjusted moment estimation, Distribution, Entropy, Fisher information, S4, OOP, \proglang{R}}
+\Plainkeywords{Parameter estimation, Maximum likelihood estimation, Moment estimation, Score-adjusted moment estimation, Distribution, Entropy, Fisher information, S4, OOP, R}
+
+%% - \Address{} of at least one author
+%% - May contain multiple affiliations for each author
+%%   (in extra lines, separated by \emph{and}\\).
+%% - May contain multiple authors for the same affiliation
+%%   (in the same first line, separated by comma).
+\Address{
+  Ioannis Oikonomidis\\
+  Department of Mathematics\\
+  National and Kapodistrian University of Athens\\
+  15874 Zografos, Greece
+  E-mail: \email{goikon@math.uoa.gr}\\
+  URL: \url{users.uoa.gr/~goikon}
+}
+
+\begin{document}
+
+\section[Introduction]{Introduction} \label{s:intro}
+
+Package \pkg{estim} is designed to cover a broad collection of distribution families, extending the functionalities of the \pkg{stats} package to support new families, parametric quantity computation and parameter estimation. All package features are available both in a \pkg{stats}-like syntax for entry-level users, and in an S4 object-oriented programming system for more experienced ones. This section introduces the state-of-the-art \proglang{R} packages in this direction, highlighting both the advantages and the shortcomings of each package.
+
+\subsection[Literature Review]{Literature Review}\label{ss:review}
+
+\subsubsection[The stats package]{The stats package}\label{ss:stats}
+
+The \pkg{stats} package includes four functions for each distribution:
+\begin{itemize}
+  \item The \fct{d<name>} function that calculates the density function $f$,
+  \item the \fct{p<name>} function that calculates the distribution function $F$,
+  \item the \fct{q<name>} function that calculates the (generalized) inverse distribution function $F^{-1}$, and
+  \item the \fct{r<name>} function that simulates observations from the distribution.
+\end{itemize}
+
+This set of functions forms the foundation of statistical computing in \proglang{R}. They are implemented in \proglang{C} and \proglang{Fortran}, offering significantly higher computational efficiency compared to native \proglang{R} code, and are designed to be intuitive and accessible to new users. However, a notable limitation is their non-generic nature, as the distribution must be explicitly specified in the function name. This design is usually intuitive for new users, and is indeed a rational approach since the  \proglang{R} community is composed of individuals with diverse backgrounds, many of which are not programmers. However, it can pose challenges when developing functions that accept a distribution and its parameters as input arguments. The straightforward implementation usually comes down to long \code{if - else if - else} statements or the equivalent \fct{switch} calls, such as the following:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+densfun <- switch(distname,
+                   "beta" = dbeta,
+                   "cauchy" = dcauchy,
+                   "chi-squared" = dchisq,
+                   "exponential" = dexp,
+                   "f" = df,
+                   "gamma" = dgamma,
+                   "geometric" = dgeom,
+                   "log-normal" = dlnorm,
+                   "lognormal" = dlnorm,
+                   "logistic" = dlogis,
+                   "negative binomial" = dnbinom,
+                   "normal" = dnorm,
+                   "poisson" = dpois,
+                   "t" = mydt,
+                   "weibull" = dweibull,
+                   NULL)
+\end{CodeInput}
+\end{CodeChunk}
+
+Such implementations can be found in popular, important \proglang{R} packages, like \pkg{MASS}, from which the above code snippet is taken, or \pkg{smm}, a great package that implements semi-Markov modeling. Obviously, this problem can easily be tackled by object-oriented programming (OOP). Other programming languages commonly used in data analysis, like \proglang{Python} and \proglang{Julia}, do adopt such approaches.
+
+\subsubsection[The distr package ecosystem]{The distr package ecosystem}\label{ss:distr}
+
+The \proglang{R} package most similar to \pkg{estim} is the \pkg{distr} package, which started as an S4 distribution system \citep{distr2006, distr2014}. Since then, a few other complementary packages have been developed to offer new capabilities, including \pkg{distrEx} for moment computation and \pkg{distrMod} for parameter estimation. This package ecosystem is similar to \pkg{estim} in a number of ways, therefore their differences-and the thereof necessity for a new package-are explained in detail.
+
+The \pkg{distr} framework does not strictly adhere to S4 conventions, as the \fct{d}-\fct{p}-\fct{q}-\fct{r} function family is generated \emph{alongside} the random variable object. This design can lead to bugs upon modifying an object's parameter slots, as illustrated by the following example. Given a distribution object \code{D} from the $N(10, 1)$ distribution, a user wants to alter its mean to $-10$. This can be done in two different ways, using the \pkg{distr} function \code{mean<-} and accessing the parameter slot directly. In the second way, the \fct{r} function is not affected, since it was already created along with \code{D}.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+library(distr)
+set.seed(1)
+
+D <- Norm(10, 1)
+mean(D) <- -10
+x <- r(D)(100) # r simulates from N(-10, 1)
+mean(x) # -9.891113
+
+D <- Norm(10, 1)
+D@param@mean <- - 10
+x <- r(D)(100) # r simulates from N(10, 1)
+mean(x) # 9.962192
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{leftbar}
+\textbf{Note}
+
+\pkg{estim} actually started as a short extension of the \pkg{distr} package ecosystem. The initial purpose was to code the score-adjusted moment estimators (SAME) developed by the authors in *cite* and study their properties. However, upon examining the S4 implementation, realizing the extra complexity accompanying the definition of new distribution families, and eventually falling in the aforementioned bug, it was decided that it was preferable to create a new S4 system that could accommodate the needs of the research team.
+\end{leftbar}
+
+\subsubsection[The distr6 package]{The distr6 package}\label{ss:distr6}
+
+The second alternative for a OOP distribution system in \proglang{R} is the \pkg{distr6} package, based on the R6 class system \citep{distr6}. Before analyzing its capabilities, it seems fitting to quote the \pkg{distr6} development team:
+
+\begin{leftbar}
+\textbf{What is \pkg{distr6}?}
+
+\pkg{distr6} is a unified and clean interface to organize the probability distributions implemented in \proglang{R} into one R6 object-oriented package, as well as adding distributions yet to implemented in \proglang{R} [...]. \pkg{distr6} extends the work of Peter Ruckdeschel, Matthias Kohl et al. who created the first object-oriented (OO) interface for distributions using S4. Their \pkg{distr} package is currently the gold-standard in \proglang{R} for OO distribution handling.
+\end{leftbar}
+
+At the time of writing, \pkg{distr6} is not available on CRAN, and according to the authors \emph{``it will not be for the foreseeable future"}, although it can be easily downloaded from github:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+devtools::install_github("xoopR/distr6")
+\end{CodeInput}
+\end{CodeChunk}
+
+It is important to underline that the \code{R6} system handles memory more efficiently in comparison with S3 and S4, avoiding the creation of object copies, as detailed in *citation*. However, many \proglang{R} users are not familiarized with the R6 system, since the majority of \proglang{R} functions are implemented in the \code{S3} system. This is the main reason the S4 system was chosen for the development of \pkg{estim}. The \pkg{distr6} package indeed includes a great number of distribution families. Unfortunately, it does not cover parameter estimation, which is the main reason behind the development of the \pkg{estim} package.
+
+\subsubsection[Parameter Estimation in R packages]{Parameter Estimation in R packages}\label{ss:par-est}
+
+Parameter estimation in the iid (independent and identically distributed) framework is implemented in some \proglang{R} packages, although not in \pkg{stats}. The two most notable mentions are the the \fct{MCEstimator} function of the \pkg{distrMod} R package (part of the \pkg{distr} ecosystem), and the \fct{fitdistr} function of the \pkg{MASS} package. Other packages that can perform maximum likelihood estimation given a log-likelihood function also exists, such as \pkg{stats4} and \pkg{bbmle}. However, the purpose of \pkg{estim} is to provide readily estimates without the need for the user to manually supply optimization functions or starting points.
+
+\fct{MCEstimator} computes parameter estimates by minimizing a user-defined criterion, such as the negative log-likelihood for maximum likelihood estimation or distance measures for minimum distance estimation.
+
+\fct{fitdistr} supports, at the moment of writing, the MLE for 14 common univariate distributions: beta, Cauchy, $\mathcal{X}^2$, exponential, Fisher's $F$, Gamma, Geometric, log-normal, logistic, negative binomial, normal, Poisson, Student's $t$, and Weibull. MLEs that can be explicitly derived are directly coded in the function, while non-explicit ones are numerically computed using \fct{optim}. The function optimized in these distributions is the log-likelihood in its general form, i.e. the sum of the log-densities, without simplifications with respect to the sufficient statistics, or the removal of constant terms. A similar approach is adopted by the \fct{fitdist} function of the \pkg{fitdistrplus} package, which covers maximum likelihood, quantile matching, maximum goodness-of-fit (minimum distance), and moment estimation. The advantages of \pkg{estim} in this direction are extensively discussed in Subsection \ref{ss:ll}.
+
+\subsection[Purpose and Innovation]{Purpose and Innovation}\label{ss:innovation}
+
+The \pkg{estim} package provides a comprehensive set of features for mathematical and asymptotic statistics. It extends the range of available distribution families and facilitates the computation of key parametric quantities, such as moments and information-theoretic measures. The main focus of the package is parameter estimation through maximum likelihood and moment-based methods under an intuitive and efficient framework. Its goal is to encapsulate the distribution richness of the \pkg{distr6} package and enhance the capabilities of the \pkg{distr} package ecosystem in a simple framework. All package features are available both in a \pkg{stats}-like syntax for the entry-level users, and in a OOP system for more experienced ones. Overall, \pkg{estim} addresses several limitations in the state of the art \proglang{R} packages in an attempt to provide the most fundamental methods of statistics in a unified package. The remainder of this paper introduces the main functionalities of the package.
+
+\section[The estim S4 Distribution System]{The estim S4 Distribution System} \label{s:distr}
+
+\subsection[Probability Distributions]{Probability Distributions} \label{s:dpqr}
+
+In the \pkg{estim} OOP system each distribution has a respective S4 class, all of which are subclasses of the \code{Distribution} S4 class. Table \ref{tab:overview} shows the distributions available in the package, along with their class names.
+
+\begin{table}[t!]
+\centering
+\begin{tabular}{llllll}
+\hline
+Distribution            & Class Name        & Distribution            & Class Name        \\ \hline
+Bernoulli               & \code{Bern}       & Laplace                 & \code{Laplace}    \\
+Beta                    & \code{Beta}       & Log-Normal              & \code{Lnorm}      \\
+Binomial                & \code{Binom}      & Multivariate Gamma      & \code{Multigam}   \\
+Categorical             & \code{Cat}        & Multinomial             & \code{Multinom}   \\
+Cauchy                  & \code{Cauchy}     & Negative Binomial       & \code{Nbinom}     \\
+Chi-Square              & \code{Chisq}      & Normal                  & \code{Norm}       \\
+Dirichlet               & \code{Dir}        & Poisson                 & \code{Pois}       \\
+Fisher                  & \code{Fisher}     & Student                 & \code{Stud}       \\
+Gamma                   & \code{Gam}        & Uniform                 & \code{Unif}       \\
+Geometric               & \code{Geom}       & Weibull                 & \code{Weib}       \\ \hline
+\end{tabular}
+\caption{\label{tab:overview} Overview of the distributions implemented in the \pkg{estim} package, along with their respective class names.}
+\end{table}
+
+Defining an object from the desired distribution class is straightforward, as seen in the following example. The parameter names, which are generally identical to the ones defined in the \pkg{stats} package, can be omitted.
+
+<<distr>>=
+D <- Beta(shape1 = 1, shape2 = 2)
+D <- Beta(1, 2)
+@
+
+Having defined the distribution object \code{D}, the \fct{d}-\fct{p}-\fct{q}-\fct{r} functionals (i.e. functions that return functions) can be used. The following example illustrates the \pkg{estim} and \pkg{stats} formats in comparison.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> d(D)(0.5) ; dbeta(0.5, shape1, shape2)
+R> p(D)(0.5) ; pbeta(0.5, shape1, shape2)
+R> qn(D)(0.75) ; qbeta(0.75, shape1, shape2)
+R> r(D)(2) ; rbeta(2, shape1, shape2)
+\end{CodeInput}
+\end{CodeChunk}
+
+Of course, the function returned by the functionals can be assigned to a variable and be used accordingly, i.e. \code{F <- p(D) ; F(0.5)}.
+
+\begin{leftbar}
+\textbf{Technical Detail}
+
+The quantile function is called \fct{qn} rather than the more intuitive \fct{q}. The reason behind this choice lies in the \proglang{RStudio} IDE (Integrated Development Environment), which overrides the method selection process of the \pkg{base} function \fct{q} used to quit an \proglang{R} session, i.e. a function named \fct{q} always ends the session. In order to avoid this unpleasant behavior, the name \fct{qn} was chosen instead.
+\end{leftbar}
+
+\subsection[Parametric Quantities of Interest]{Parametric Quantities of Interest} \label{ss:moments}
+
+The \pkg{estim} package contains a set of methods that calculate the theoretical moments (expectation, variance and standard deviation, skewness, excess kurtosis) and other important parametric functions (median, mode, entropy, Fisher information) of a distribution. Alternatively, the \fct{moments} function automatically finds the available methods for a given distribution and returns all of the results in a list.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> mean(D)
+R> median(D)
+R> mode(D)
+R> var(D)
+R> sd(D)
+R> skew(D)
+R> kurt(D)
+R> entro(D)
+R> finf(D)
+R> moments(D)
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{leftbar}
+\textbf{Technical Detail}
+
+Only the function-distribution combinations that are theoretically defined are available; for example, while \fct{var} is available for all distributions, \fct{sd} is available only for the univariate ones. In case the result is not unique, a predetermined value is returned with a warning. The following example illustrates this in the case of $\mathcal{B}(1, 1)$, i.e. a uniform distribution for which every value in the $[0, 1]$ interval is a mode.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> mode(Beta(1, 1))
+\end{CodeInput}
+\begin{CodeOutput}
+[1] 0.5
+Warning message:
+In mode(Beta(1, 1)) :
+  In Beta(1, 1), all elements in the [0, 1] interval are modes.
+  0.5 is returned by default.
+\end{CodeOutput}
+\end{CodeChunk}
+
+\end{leftbar}
+
+\section[Parameter Estimation]{Parameter Estimation} \label{s:estim}
+
+The \pkg{estim} package includes a number of options when it comes to parameter estimation. In order to illustrate these alternatives, a random sample is generated from the Beta distribution.
+
+<<simulation>>=
+set.seed(1)
+shape1 <- 1
+shape2 <- 2
+D <- Beta(shape1, shape2)
+x <- r(D)(100)
+@
+
+\subsection[Estimation Methods]{Estimation Methods}\label{ss:estim-methods}
+
+The \pkg{estim} package covers three major estimation methods: maximum likelihood estimation (MLE), moment estimation (ME), and score-adjusted estimation (SAME).
+
+In order to perform parameter estimation, a new \fct{e<name>} member is added to the \fct{d}-\fct{p}-\fct{q}-\fct{r} family, following the standard \pkg{stats} name convention. These \fct{e<name>} functions take two arguments, the observations \code{x} (an atomic vector for univariate or a matrix for multivariate distibutions) and the \code{type} of estimation method to use (a character with possible values \code{"mle"}, \code{"me"}, and \code{"same"}.)
+
+<<e>>=
+ebeta(x, type = "mle")
+ebeta(x, type = "me")
+ebeta(x, type = "same")
+@
+
+Point estimation functions are available in two versions, the distribution specific one, e.g. \fct{ebeta}, and the S4 generic ones, namely \fct{mle}, \fct{me}, and \fct{same}. A general function called \fct{estim} is also implemented, covering all distributions and estimators.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> mle(x, D)
+R> me(x, D)
+R> same(x, D)
+R> estim(x, D, type = "mle")
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{leftbar}
+\textbf{Technical Detail}
+
+It is important to note that the S4 methods also accept a character for the distribution. The name should be the same as the S4 distribution generator, case ignored (i.e. "Beta", "beta", or "bEtA").
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> mle(x, "beta")
+R> mle(x, "Beta")
+R> mle(x, "bEtA")
+R> estim(x, "Beta", type = "mle")
+\end{CodeInput}
+\end{CodeChunk}
+
+\end{leftbar}
+
+\subsection[Log-likelihood]{Log-likelihood}\label{ss:ll}
+
+Log-likelihood functions are also available in two versions, the distribution specific one, e.g. \fct{llbeta}, and the \fct{ll} S4 generic one. Again, \fct{ll} can accept either a \code{Distribution} object, or a \code{character}.
+
+<<ll>>=
+llbeta(x, shape1, shape2)
+ll(x, c(shape1, shape2), D)
+ll(x, c(shape1, shape2), "beta")
+@
+
+In some distribution families like beta and gamma, the MLE cannot be explicitly derived and numerical optimization algorithms have to be employed. Even in ``good" scenarios, with plenty of observations and a smooth optimization function, numerical algorithms should not be viewed as panacea, and extra care should be taken to ensure a fast and right convergence if possible. Two important steps are taken in \pkg{estim} in this direction:
+
+\begin{enumerate}
+  \item The log-likelihood function is analytically calculated for each distribution family, so that constant terms with respect to the parameters can be removed, leaving only the sufficient statistics as a requirement for the function evaluation.
+  \item Multidimensional problems are reduced to unidimensional ones by utilizing the score equations.
+\end{enumerate}
+
+An illustrative example for the Beta distribution is shown below. Let $f$ denote the probability density function of $X\sim\mathcal{B}(\alpha,\beta)$:
+
+\[
+f(x; \alpha, \beta) = \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)}x^{\alpha-1} (1 - x)^{\beta-1}, \quad 0 < x < 1,
+\]
+
+where \( \Gamma \) is the Gamma function. Then, the log-likelihood function, divided by the sample size $n$, takes the form:
+
+\[
+\ell(\alpha, \beta) = (\alpha - 1) \overline{\log X} + (\beta - 1) \overline{\log (1 - X)} - \log \Gamma(\alpha) - \log \Gamma(\beta) + \log \Gamma(\alpha + \beta).
+\]
+
+The score equation for \( \alpha \) is:
+
+\[
+\frac{\partial \ell}{\partial \alpha}(\alpha, \beta) = \overline{\log X} - \psi(\alpha) + \psi(\alpha + \beta) = 0.
+\]
+
+The score equation for \( \beta \) is:
+
+\[
+\frac{\partial \ell}{\partial \beta}(\alpha, \beta) = \overline{\log (1 - X)} - \psi(\beta) + \psi(\alpha + \beta) = 0.
+\]
+
+These two nonlinear equations must be solved numerically. However, instead of solving the above two-dimensional problem, one can see that by denoting $c := \alpha + \beta$, the two score equations can be rewritten as:
+
+\[
+  \alpha = \psi^{-1}\left[\psi(c) + \overline{\log X}\right] \quad \beta = \psi^{-1}\left[\psi(c) + \overline{\log (1-X)}\right],
+\]
+
+i.e. restricted to the score equation system solution space, both parameters can be expressed as a function of their sum $c$, and therefore the log-likelihood function can be optimized with respect to $c$:
+
+\[
+\ell^\star(c) = \left[\alpha(c) - 1\right] \overline{\log X} + \left[\beta(c) - 1\right] \overline{\log (1 - X)} - \log \Gamma\left[\alpha(c)\right] - \log \Gamma\left[\beta(c)\right] + \log \Gamma(c).
+\]
+
+\begin{leftbar}
+\textbf{Technical Detail}
+
+It would perhaps be more intuitive to use the score equations to express $\alpha$ as a function of $\beta$ or vice versa. However, the above method can be directly generalized to the Dirichlet case and reduce the initial $k$-dimensional problem to a unidimensional one. The same technique can be utilized for the gamma and multivariate gamma distribution families, also reducing the dimension to unity, from $2$ and $k+1$ respectively.
+\end{leftbar}
+
+In \pkg{estim}, the resulting function that is inserted in the optimization algorithm is called \fct{lloptim}, and is not to be confused with the actual log-likelihood function \fct{ll}. The corresponding derivative is called \fct{dlloptim}. Therefore, whenever numerical computation of the MLE is required, \pkg{estim} calls the \fct{optim} function with the following arguments:
+
+\begin{itemize}
+  \item \fct{lloptim}, an efficient function to be optimized,
+  \item \fct{dlloptim}, its analytically-computed derivate,
+  \item the ME or SAME as the starting point (user's choice),
+  \item the L-BFGS-U optimization algorithm, with lower and upper limits defined by default as the parameter space boundary.
+\end{itemize}
+
+\subsection[Asymptotic Variance - Covariance Matrix]{Asymptotic Variance - Covariance Matrix} \label{s:avar}
+
+The asymptotic variance (or variance - covariance matrix for multidimensional parameters) of the estimators are also covered in the package. As with point estimation, the implementation is twofold, distribution specific (\fct{vbeta}) and S4 generic. In the first case, the \code{type} argument can be used to specify the estimator type. The general function \fct{avar} covers all distributions and estimators.
+
+<<v>>=
+vbeta(shape1, shape2, type = "mle")
+vbeta(shape1, shape2, type = "me")
+vbeta(shape1, shape2, type = "same")
+@
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> avar_mle(D)
+R> avar_me(D)
+R> avar_same(D)
+R> avar(D, type = "mle")
+\end{CodeInput}
+\end{CodeChunk}
+
+\section[Estimation Metrics and Comparison]{Estimation Metrics and Comparison}
+
+The different estimators of a parameter can be compared based on both finite sample and asymptotic properties. The package includes two functions named \fct{small\_metrics} and \fct{large\_metrics}, where small and large refers to the ``small sample" and ``large sample" terms that are often used for the two cases. The former estimates the bias, variance and root mean square error (RMSE) of the estimator with Monte Carlo simulations, while the latter calculates the asymptotic variance - covariance matrix (as derived by the \code{avar} functions). The resulting data frames can be plotted with the functions \fct{plot\_small\_metrics} and \fct{plot\_large\_metrics}, respectively.
+
+To illustrate the function's design, consider the following example from the beta distribution: We are interested to calculate the metrics (bias, variance, and RMSE) of the $\alpha$ parameter estimators (MLE, ME, and SAME), for sample sizes 20 and 50. Specifically, we want to illustrate how these metrics change for $\alpha\in[1,5]$, and $\beta=2$ (constant). The following code can do that:
+
+<<small_metrics_beta>>=
+D <- Beta(1, 2)
+
+prm <- list(name = "shape1",
+            val = seq(1, 5, by = 0.5))
+
+x <- small_metrics(D, prm,
+             obs = c(20, 50),
+             est = c("mle", "same", "me"),
+             sam = 1e3,
+             seed = 1)
+
+head(x)
+@
+
+The \fct{small\_metrics} function takes the following arguments:
+\begin{itemize}
+\item \code{D}, the distribution object of interest,
+\item \code{prm}, a list that specifies how the \code{shape1} parameter values should change,
+\item \code{obs}, a numeric vector holding the sample sizes,
+\item \code{est}, a character vector specifying the estimators under comparison,
+\item \code{sam}, the Monte Carlo sample size to use for the metrics estimation,
+\item \code{seed}, a seed to be passed to \fct{set.seed} for replicability.
+\end{itemize}
+
+The resulting data frame can be passed to \fct{plot} to see the results. This \fct{plot} method depends on \pkg{ggplot2} to provide a highly-customizable graph.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+plot(x)
+\end{CodeInput}
+\end{CodeChunk}
+
+\begin{figure}[t!]
+\centering
+<<vis_small_beta, echo=FALSE, fig=TRUE, height=6, width=15>>=
+  plot_small_metrics(x)
+@
+  \caption{\label{fig:vis-small-beta} Small-sample metrics comparison for MLE, ME, and SAME of the beta distribution $\alpha$ parameter.}
+\end{figure}
+
+Note that in some distribution families the parameter is a vector, as is the case with the Dirichlet distribution (a multivariate generalization of beta), which holds a single parameter vector \code{alpha}. In these cases, the \code{prm} list can include a third element, \code{pos}, specifying which parameter of the vector should change:
+
+<<small_metrics_dir>>=
+D <- Dir(alpha = 1:4)
+
+prm <- list(name = "alpha",
+            pos = 1,
+            val = seq(1, 5, by = 0.5))
+
+x <- small_metrics(D, prm,
+                   obs = c(20, 50),
+                   est = c("mle", "same", "me"),
+                   sam = 1e3,
+                   seed = 1)
+
+head(x)
+@
+
+The \fct{large\_metrics} function design is almost identical, except that no \code{obs}, \code{sam}, and \code{seed} arguments are needed here. The following example illustrates the large sample metrics for the beta distribution shape $\alpha$ estimators. Again, the resulting data frame can be passed to \fct{plot}.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+plot(x)
+\end{CodeInput}
+\end{CodeChunk}
+
+<<large_metrics_beta>>=
+D <- Beta(1, 2)
+
+prm <- list(name = "shape1",
+            val = seq(1, 5, by = 0.1))
+
+x <- large_metrics(D, prm,
+                   est = c("mle", "same", "me"))
+
+head(x)
+@
+
+\begin{figure}[t!]
+\centering
+<<vis_large_beta, echo=FALSE, fig=TRUE, height=6, width=15>>=
+  plot_large_metrics(x)
+@
+  \caption{\label{fig:vis-large-beta} Large-sample metrics comparison for MLE, ME, and SAME of the beta distribution $\alpha$ parameter.}
+\end{figure}
+
+\section[Documentation and Checks]{Documentation and Checks} \label{s:doc}
+
+\subsection[Documentation]{Documentation}
+
+\subsection[Testing]{Testing}
+
+The R package is rigorously tested to ensure reliability, correctness, and stability. More than 1,000 automated tests have been implemented using the **testthat** package, a widely used framework for unit testing in R. These tests cover a broad range of functionalities, including edge cases, error handling, and performance checks, to verify that every function behaves as expected under various conditions. Continuous testing helps detect potential regressions early, maintaining the integrity of the package as it evolves. By leveraging **testthat**, we ensure that all updates and modifications uphold the expected behavior and performance standards.
+
+\section[Defining New Classes and Methods]{Defining New Classes and Methods} \label{s:new}
+
+Of course, it is possible to be interested in a distribution family not included in the package. It is straightforward for users to define their own S4 class and methods. Since this paper is addressed to both novice and experienced \proglang{R} users, the beta distribution paradigm is explained in detail below:
+
+\subsection[Defining the Class]{Defining the Class}
+
+The \fct{setClass} function defines a new S4 class, i.e. the distribution of interest. The \code{slots} argument defines the parameters and their respective class (usually numeric, but it can also be a matrix in distributions like the multivariate normal and the Wishart). The optional argument \code{prototype} can be used to define the default parameter values in case they are not specified by the user.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+setClass("Beta",
+  contains = "Distribution",
+  slots = c(shape1 = "numeric", shape2 = "numeric"),
+  prototype = list(shape1 = 1, shape2 = 1))
+\end{CodeInput}
+\end{CodeChunk}
+
+\subsection[Defining a Generator]{Defining a Generator}
+
+Now that the class is defined, one can type \code{D <- new("Beta", shape1 = shape1, shape2 = shape2)} to create a new object of class \code{Beta}. However, this is not so intuitive, and a wrapper function with the class name can be used instead. This function, often called a ``generator", can be used to simply code \code{D <- Beta(1, 2)} and define a new object from the $\mathcal{B}(1,2)$ distribution. The parameter slots can be accessed with the \code{@} sign, as shown above.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+Beta <- function(shape1 = 1, shape2 = 1) {
+  new("Beta", shape1 = shape1, shape2 = shape2)
+}
+
+D <- Beta(1, 2)
+D@shape1 ; D@shape2
+\end{CodeInput}
+\end{CodeChunk}
+
+\subsection[Defining Validity Checks]{Defining Validity Checks}
+
+This step is optional but rather essential. So far, a user could type \code{D <- Beta(-1, 2)} without any errors, even though the beta parameters are defined in $\mathbb{R}_{+}$. To prevent such behaviors (that will probably end in bugs further down the road), the developer is advised to create a \fct{setValidity} function, including all the necessary restrictions posed by the parameter space.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+setValidity("Beta", function(object) {
+  if(length(object@shape1) != 1) {
+    stop("shape1 has to be a numeric of length 1")
+  }
+  if(object@shape1 <= 0) {
+    stop("shape1 has to be positive")
+  }
+  if(length(object@shape2) != 1) {
+    stop("shape2 has to be a numeric of length 1")
+  }
+  if(object@shape2 <= 0) {
+    stop("shape2 has to be positive")
+  }
+  TRUE
+})
+\end{CodeInput}
+\end{CodeChunk}
+
+\subsection[Defining the Class Methods]{Defining the Class Methods}
+
+Now that everything is set, it is time to define methods for the new class. Creating functions and S4 methods in \proglang{R} are two very similar processes, except the latter wraps the function in \fct{setMethod} and specifies a signature class, as shown above. The package source code can be used to easily define all methods of interest for the new distribution class.
+
+\begin{CodeChunk}
+\begin{CodeInput}
+# probability density function
+setMethod("d", signature = c(x = "Beta"),
+          function(x) {
+            function(y, log = FALSE) {
+              dbeta(y, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
+                    log = log)
+            }
+          })
+
+# (theoretical) expectation
+setMethod("mean",
+          signature  = c(x = "Beta"),
+          definition = function(x) {
+
+  x@shape1 / (x@shape1 + x@shape2)
+
+})
+
+# moment estimator
+setMethod("me",
+          signature  = c(x = "numeric", distr = "Beta"),
+          definition = function(x, distr) {
+
+  m  <- mean(x)
+  m2 <- mean(x ^ 2)
+  d  <- (m - m2) / (m2 - m ^ 2)
+
+  c(shape1 = d * m, shape2 = d * (1 - m))
+
+})
+\end{CodeInput}
+\end{CodeChunk}
+
+\section[Discussion]{Discussion}
+
+\subsection[Advantages]{Advantages}
+
+\subsection[Limitations]{Limitations}
+
+\subsection[Perspectives]{Perspectives}
+
+\section[Conclusion]{Conclusion}
+
+\section*{Computational details}
+
+The results in this paper were obtained using
+\proglang{R}~\Sexpr{paste(R.Version()[7:8], collapse = ".")} with the
+\pkg{estim}~\Sexpr{packageVersion("estim")} package. \proglang{R} itself
+and all packages used are available from the Comprehensive
+\proglang{R} Archive Network (CRAN) at
+\url{https://CRAN.R-project.org/}.
+
+\section*{Acknowledgments}
+
+\begin{leftbar}
+The authors would like to thank the editor and the anonymous reviewers for their valuable suggestions. Ioannis Oikonomidis would like to thank the Fanourakis Foundation for supporting his PhD studies.
+\end{leftbar}
+
+%% -- Bibliography -------------------------------------------------------------
+%% - JSS-specific markup (\proglang, \pkg, \code) should be used in the .bib.
+
+\bibliography{refs}
+
+\end{document}

@@ -1,3 +1,7 @@
+# estimators 0.10.3
+
+* Added new JSS vignette.
+
 # estimators 0.10.2
 
 * Tried to update test-coverage.
