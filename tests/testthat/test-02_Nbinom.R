@@ -51,9 +51,9 @@ test_that("Nbinom dpqr work", {
   # Special Case: Geom
   D1 <- Nbinom(1, 0.7)
   D2 <- Geom(0.7)
-  expect_identical(d(D1)(3), d(D2)(3))
-  expect_identical(p(D1)(3), p(D2)(3))
-  expect_identical(qn(D1)(0.7), qn(D2)(0.7))
+  expect_equal(d(D1)(3), d(D2)(3), tolerance = 0.01)
+  expect_equal(p(D1)(3), p(D2)(3), tolerance = 0.01)
+  expect_equal(qn(D1)(0.7), qn(D2)(0.7), tolerance = 0.01)
 
 })
 

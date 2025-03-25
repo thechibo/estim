@@ -1,3 +1,8 @@
+# estimators 0.10.2
+
+* Tried to update test-coverage.
+* Fixed bug in Nbinom test.
+
 # estimators 0.10.1
 
 * Removed false documentation file that caused R CMD check to fail.
