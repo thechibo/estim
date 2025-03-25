@@ -263,7 +263,9 @@ setMethod("lloptim",
           signature  = c(par = "numeric", tx = "numeric", distr = "Beta"),
           definition = function(par, tx, distr) {
 
+  # Shape parameters (a, b) as a function of a0
   a <- idigamma(digamma(par) + tx)
+
   lgamma(sum(a)) - sum(lgamma(a)) + sum((a - 1) * tx)
 
 })

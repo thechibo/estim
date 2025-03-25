@@ -16,7 +16,7 @@ setClass("Stud",
 #'
 #' @param x an object of class `Stud`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
-#' @param distr an object of class `Fisher`.
+#' @param distr an object of class `Stud`.
 #' @param df numeric. The distribution parameter.
 #' @param prm numeric. A vector including the distribution parameters.
 #'

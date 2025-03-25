@@ -1,3 +1,7 @@
+# estimators 0.10.1
+
+* Removed false documentation file that caused R CMD check to fail.
+
 # estimators 0.10.0
 
 * Added tests for all distributions.

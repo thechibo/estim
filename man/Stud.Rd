@@ -53,7 +53,7 @@ argument, \code{x} is a numeric vector, a sample of observations.}
 
 \item{prm}{numeric. A vector including the distribution parameters.}
 
-\item{distr}{an object of class \code{Fisher}.}
+\item{distr}{an object of class \code{Stud}.}
 }
 \value{
 The dpqr family of functions return the evaluated density, cumulative
