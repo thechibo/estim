@@ -14,8 +14,8 @@
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
-<link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="Package Overview">
 </head>
 <body>
@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">estim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.9.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -56,7 +56,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-      <img src="../logo.png" class="logo" alt=""><h1>Package Overview</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Package Overview</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/thechibo/estim/blob/main/vignettes/estim.Rmd" class="external-link"><code>vignettes/estim.Rmd</code></a></small>
@@ -109,8 +109,7 @@ generically.</p>
 package, a random sample is generated from the Beta distribution.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fl">100</span>, <span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span></span>
-<span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/Beta.html">Beta</a></span><span class="op">(</span>shape1 <span class="op">=</span> <span class="va">shape1</span>, shape2 <span class="op">=</span> <span class="va">shape2</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dpqr.html">r</a></span><span class="op">(</span><span class="va">D</span><span class="op">)</span><span class="op">(</span><span class="fl">100</span><span class="op">)</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="likelihood---the-ll-functions">Likelihood - The <code>ll</code> Functions<a class="anchor" aria-label="anchor" href="#likelihood---the-ll-functions"></a>
 </h3>
@@ -120,15 +119,15 @@ specific one (<code>llbeta</code>) and the S4 generic one
 (<code>ll</code>).</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/Beta.html">llbeta</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 26.56269</span></span>
+<span><span class="co">#&gt; [1] 24.27059</span></span>
 <span><span class="fu"><a href="../reference/ll.html">ll</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span>, <span class="va">D</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 26.56269</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 24.27059</span></span></code></pre></div>
 <p>It is important to note that the S4 methods also accept a character
 for the distribution. The name should be the same as the S4 distribution
 generator, case ignored (i.e. “Beta” or “beta”).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/ll.html">ll</a></span><span class="op">(</span><span class="va">x</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">shape1</span>, <span class="va">shape2</span><span class="op">)</span>, <span class="st">"beta"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] 26.56269</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] 24.27059</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="point-estimation">Point Estimation<a class="anchor" aria-label="anchor" href="#point-estimation"></a>
@@ -141,38 +140,38 @@ estimator type.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/estimation.html">ebeta</a></span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"mle"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.066968 2.466715</span></span>
+<span><span class="co">#&gt; 1.063191 2.333189</span></span>
 <span><span class="fu"><a href="../reference/estimation.html">ebeta</a></span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"me"</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.074511 2.469756</span></span>
+<span><span class="co">#&gt;    shape1    shape2 </span></span>
+<span><span class="co">#&gt; 0.9988814 2.2451062</span></span>
 <span><span class="fu"><a href="../reference/estimation.html">ebeta</a></span><span class="op">(</span><span class="va">x</span>, type <span class="op">=</span> <span class="st">"same"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.067768 2.454257</span></span>
+<span><span class="co">#&gt; 1.041966 2.341944</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/mle.html">mle</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">D</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.066968 2.466715</span></span>
+<span><span class="co">#&gt; 1.063191 2.333189</span></span>
 <span><span class="fu"><a href="../reference/me.html">me</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">D</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.074511 2.469756</span></span>
+<span><span class="co">#&gt;    shape1    shape2 </span></span>
+<span><span class="co">#&gt; 0.9988814 2.2451062</span></span>
 <span><span class="fu"><a href="../reference/same.html">same</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">D</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.067768 2.454257</span></span></code></pre></div>
-<p>A general function <code>estim</code> is implemented, covering all
+<span><span class="co">#&gt; 1.041966 2.341944</span></span></code></pre></div>
+<p>A general function <code>estim</code> is also available, covering all
 distributions and estimators.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/estimation.html">estim</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">D</span>, type <span class="op">=</span> <span class="st">"mle"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.066968 2.466715</span></span></code></pre></div>
-<p>Again, the S4 methods also accept a character for the distribution,
+<span><span class="co">#&gt; 1.063191 2.333189</span></span></code></pre></div>
+<p>Again, the S4 methods may accept a character for the distribution,
 case ignored.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/mle.html">mle</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"beta"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.066968 2.466715</span></span>
+<span><span class="co">#&gt; 1.063191 2.333189</span></span>
 <span><span class="fu"><a href="../reference/estimation.html">estim</a></span><span class="op">(</span><span class="va">x</span>, <span class="st">"Beta"</span>, type <span class="op">=</span> <span class="st">"mle"</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   shape1   shape2 </span></span>
-<span><span class="co">#&gt; 1.066968 2.466715</span></span></code></pre></div>
+<span><span class="co">#&gt; 1.063191 2.333189</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -227,19 +226,20 @@ asymptotic properties. The package includes the functions
 <code>small_metrics</code> and <code>large_metrics</code>, where small
 and large refers to the “small sample” and “large sample” terms that are
 often used for the two cases. The first one estimates the bias, variance
-and rmse of the estimator with Monte Carlo simulations, while the latter
-calculates the asymptotic variance - covariance matrix. The resulting
-data frames can be plotted with the functions
-<code>plot_small_metrics</code> and <code>plot_large_metrics</code>,
-respectively.</p>
+and root mean square error (RMSE) of the estimator with Monte Carlo
+simulations, while the latter calculates the asymptotic variance -
+covariance matrix (as derived by the avar functions). The resulting data
+frames can be plotted with the functions <code>plot_small_metrics</code>
+and <code>plot_large_metrics</code>, respectively.</p>
 <p>The functions get a <code>distribution</code> object and a parameter
-list that specifies which parameter should change and how. The metric of
-interest is evaluated as a function of this parameter. Specifically,
-<code>prm</code> includes three elements named “name”, “pos”, and “val”.
-The first two elements determine the exact parameter that changes, while
-the third one is a numeric vector holding the values it takes. For
-example, in the case of the Multivariate Gamma distribution,
-<code>D &lt;- MGamma(shape = c(1, 2), scale = 3)</code> and
+list that specifies which parameter should change and how, keeping the
+others constant. The metric of interest is evaluated as a function of
+this parameter. Specifically, <code>prm</code> includes three elements:
+“name”, “pos”, and “val”. The first two elements determine the exact
+parameter that changes, while the third one is a numeric vector holding
+the values it takes. For example, in the case of the Multivariate Gamma
+distribution, <code>D &lt;- MGamma(shape = c(1, 2), scale = 3)</code>
+and
 <code>prm &lt;- list(name = "shape", pos = 2, val = seq(1, 1.5, by = 0.1))</code>
 means that the evaluation will be performed for the MGamma distributions
 with shape parameters <code>(1, 1)</code>, <code>(1, 1.1)</code>, …,
@@ -305,7 +305,7 @@ distribution estimators.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
     </footer>
