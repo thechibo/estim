@@ -57,10 +57,16 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Install LaTeX (TinyTeX)
+      - name: Install TeX Live
         run: |
-          Rscript -e 'install.packages("tinytex")'
-          Rscript -e 'tinytex::install_tinytex()'
+          sudo apt-get install texlive
+          sudo apt-get install texlive-fonts-recommended
+          sudo apt-get install texlive-latex-extra
+
+      - name: Install TinyTeX
+        run: |
+          Rscript -e "install.packages('tinytex')"
+          Rscript -e "tinytex::install_tinytex()"
 
       - uses: r-lib/actions/check-r-package@v2
         with:
