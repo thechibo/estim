@@ -1,3 +1,8 @@
+# estim 0.11.1
+
+* Added pkgdown check.
+* Attempted to fix compact-vignettes bug.
+
 # estim 0.11.0
 
 * Changed plot_small_metrics, plot_large_metrics to plot
