@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Unif.R
 \name{Unif}
 \alias{Unif}
-\alias{d,Unif-method}
-\alias{p,Unif-method}
-\alias{qn,Unif-method}
-\alias{r,Unif-method}
+\alias{d,Unif,numeric-method}
+\alias{p,Unif,numeric-method}
+\alias{qn,Unif,numeric-method}
+\alias{r,Unif,numeric-method}
 \alias{mean,Unif-method}
 \alias{median,Unif-method}
 \alias{mode,Unif-method}
@@ -14,20 +14,22 @@
 \alias{skew,Unif-method}
 \alias{kurt,Unif-method}
 \alias{entro,Unif-method}
-\alias{ll,numeric,numeric,Unif-method}
-\alias{mle,numeric,Unif-method}
-\alias{me,numeric,Unif-method}
+\alias{llunif}
+\alias{ll,Unif,numeric-method}
+\alias{eunif}
+\alias{mle,Unif,numeric-method}
+\alias{me,Unif,numeric-method}
 \title{Uniform Distribution}
 \usage{
 Unif(min = 0, max = 1)
 
-\S4method{d}{Unif}(x)
+\S4method{d}{Unif,numeric}(distr, x)
 
-\S4method{p}{Unif}(x)
+\S4method{p}{Unif,numeric}(distr, x)
 
-\S4method{qn}{Unif}(x)
+\S4method{qn}{Unif,numeric}(distr, x)
 
-\S4method{r}{Unif}(x)
+\S4method{r}{Unif,numeric}(distr, n)
 
 \S4method{mean}{Unif}(x)
 
@@ -45,36 +47,47 @@ Unif(min = 0, max = 1)
 
 \S4method{entro}{Unif}(x)
 
-\S4method{ll}{numeric,numeric,Unif}(x, prm, distr)
+llunif(x, min, max)
 
-\S4method{mle}{numeric,Unif}(x, distr)
+\S4method{ll}{Unif,numeric}(distr, x)
 
-\S4method{me}{numeric,Unif}(x, distr)
+eunif(x, type = "mle", ...)
+
+\S4method{mle}{Unif,numeric}(distr, x)
+
+\S4method{me}{Unif,numeric}(distr, x)
 }
 \arguments{
 \item{min, max}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Unif}.}
+
 \item{x}{an object of class \code{Unif}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Unif}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Uniform Distribution

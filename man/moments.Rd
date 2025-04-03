@@ -34,7 +34,7 @@ entro(x, ...)
 finf(x, ...)
 }
 \arguments{
-\item{x}{an object of a \code{Distribution} subclass.}
+\item{x}{a \code{Distribution} object.}
 
 \item{...}{extra arguments.}
 
@@ -43,7 +43,8 @@ finf(x, ...)
 }
 \value{
 Numeric, either vector or matrix depending on the moment and the
-distribution. Function \code{moments()} returns a list of all available methods.
+distribution. The \code{moments()} function returns a list with all the available
+methods.
 }
 \description{
 A set of functions that calculate the theoretical moments
@@ -52,40 +53,69 @@ parametric functions (median, mode, entropy, Fisher information) of a
 distribution.
 }
 \details{
+Given a distribution, these functions calculate the theoretical moments and
+other parametric quantities of interest. Some distribution-function
+combinations are not available; for example, the \code{sd()} function is
+available only for univariate distributions.
+
 The \code{moments()} function automatically finds the available methods for a
 given distribution and results all of the results in a list.
 
-Not all functions are available for distributions; for example, the \code{sd()}
-is available only for univariate distributions.
+Technical Note:
+The argument of the moment functions does not follow the naming convention of
+the package, i.e. the \code{Distribution} object is names \code{x} rather than \code{distr}.
+This is due to the fact that most of the generics are already defined in the
+\code{stats} package (\code{mean}, \code{median}, \code{mode}, \code{var}, \code{sd}), therefore the first
+argument was already named \code{x} and could not change.
 }
+\section{Functions}{
+\itemize{
+\item \code{median()}: Median
+
+\item \code{mode()}: Mode
+
+\item \code{var()}: Variance
+
+\item \code{sd()}: Standard Deviation
+
+\item \code{skew()}: Skewness
+
+\item \code{kurt()}: Kurtosis
+
+\item \code{entro()}: Entropy
+
+\item \code{finf()}: Fisher Information (numeric or matrix)
+
+}}
 \examples{
 # -----------------------------------------------------
 # Beta Distribution Example
 # -----------------------------------------------------
 
-library(estim)
-
 # Create the distribution
-x <- Beta(3, 5)
+D <- Beta(3, 5)
 
 # List of all available moments
-mom <- moments(x)
+mom <- moments(D)
 
 # Expectation
-mean(x)
+mean(D)
 mom$mean
 
 # Variance and Standard Deviation
-var(x)
-sd(x)
+var(D)
+sd(D)
 
 # Skewness and Excess Kurtosis
-skew(x)
-kurt(x)
+skew(D)
+kurt(D)
 
 # Entropy
-entro(x)
+entro(D)
 
 # Fisher Information Matrix
-finf(x)
+finf(D)
+}
+\seealso{
+\link{Distributions}, \link{loglikelihood}, \link{estimation}
 }

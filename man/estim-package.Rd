@@ -2,6 +2,7 @@
 % Please edit documentation in R/estim-package.R
 \docType{package}
 \name{estim-package}
+\alias{estim}
 \alias{estim-package}
 \title{estim: Parameter Estimation}
 \description{

@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Weib.R
 \name{Weib}
 \alias{Weib}
-\alias{d,Weib-method}
-\alias{p,Weib-method}
-\alias{qn,Weib-method}
-\alias{r,Weib-method}
+\alias{d,Weib,numeric-method}
+\alias{p,Weib,numeric-method}
+\alias{qn,Weib,numeric-method}
+\alias{r,Weib,numeric-method}
 \alias{mean,Weib-method}
 \alias{median,Weib-method}
 \alias{mode,Weib-method}
@@ -14,22 +14,27 @@
 \alias{skew,Weib-method}
 \alias{kurt,Weib-method}
 \alias{entro,Weib-method}
-\alias{ll,numeric,numeric,Weib-method}
-\alias{mle,numeric,Weib-method}
-\alias{me,numeric,Weib-method}
+\alias{llweib}
+\alias{ll,Weib,numeric-method}
+\alias{eweib}
+\alias{mle,Weib,numeric-method}
+\alias{me,Weib,numeric-method}
+\alias{same,Weib,numeric-method}
+\alias{vweib}
 \alias{avar_mle,Weib-method}
 \alias{avar_me,Weib-method}
+\alias{avar_same,Weib-method}
 \title{Weibull Distribution}
 \usage{
 Weib(shape = 1, scale = 1)
 
-\S4method{d}{Weib}(x)
+\S4method{d}{Weib,numeric}(distr, x)
 
-\S4method{p}{Weib}(x)
+\S4method{p}{Weib,numeric}(distr, x)
 
-\S4method{qn}{Weib}(x)
+\S4method{qn}{Weib,numeric}(distr, x)
 
-\S4method{r}{Weib}(x)
+\S4method{r}{Weib,numeric}(distr, n)
 
 \S4method{mean}{Weib}(x)
 
@@ -47,42 +52,59 @@ Weib(shape = 1, scale = 1)
 
 \S4method{entro}{Weib}(x)
 
-\S4method{ll}{numeric,numeric,Weib}(x, prm, distr)
+llweib(x, shape, scale)
 
-\S4method{mle}{numeric,Weib}(x, distr, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+\S4method{ll}{Weib,numeric}(distr, x)
 
-\S4method{me}{numeric,Weib}(x, distr)
+eweib(x, type = "mle", ...)
+
+\S4method{mle}{Weib,numeric}(distr, x, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+
+\S4method{me}{Weib,numeric}(distr, x)
+
+\S4method{same}{Weib,numeric}(distr, x)
+
+vweib(shape, scale, type = "mle")
 
 \S4method{avar_mle}{Weib}(distr)
 
 \S4method{avar_me}{Weib}(distr)
+
+\S4method{avar_same}{Weib}(distr)
 }
 \arguments{
 \item{shape, scale}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Weib}.}
+
 \item{x}{an object of class \code{Weib}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Weib}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 
 \item{par0, method, lower, upper}{arguments passed to optim.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Weibull Distribution

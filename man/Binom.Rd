@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Binom.R
 \name{Binom}
 \alias{Binom}
-\alias{d,Binom-method}
-\alias{p,Binom-method}
-\alias{qn,Binom-method}
-\alias{r,Binom-method}
+\alias{d,Binom,numeric-method}
+\alias{p,Binom,numeric-method}
+\alias{qn,Binom,numeric-method}
+\alias{r,Binom,numeric-method}
 \alias{mean,Binom-method}
 \alias{var,Binom-method}
 \alias{sd,Binom-method}
@@ -13,22 +13,25 @@
 \alias{kurt,Binom-method}
 \alias{entro,Binom-method}
 \alias{finf,Binom-method}
-\alias{ll,numeric,numeric,Binom-method}
-\alias{mle,numeric,Binom-method}
-\alias{me,numeric,Binom-method}
+\alias{llbinom}
+\alias{ll,Binom,numeric-method}
+\alias{ebinom}
+\alias{mle,Binom,numeric-method}
+\alias{me,Binom,numeric-method}
+\alias{vbinom}
 \alias{avar_mle,Binom-method}
 \alias{avar_me,Binom-method}
 \title{Binomial Distribution}
 \usage{
 Binom(size = 1, prob = 0.5)
 
-\S4method{d}{Binom}(x)
+\S4method{d}{Binom,numeric}(distr, x)
 
-\S4method{p}{Binom}(x)
+\S4method{p}{Binom,numeric}(distr, x)
 
-\S4method{qn}{Binom}(x)
+\S4method{qn}{Binom,numeric}(distr, x)
 
-\S4method{r}{Binom}(x)
+\S4method{r}{Binom,numeric}(distr, n)
 
 \S4method{mean}{Binom}(x)
 
@@ -44,11 +47,17 @@ Binom(size = 1, prob = 0.5)
 
 \S4method{finf}{Binom}(x)
 
-\S4method{ll}{numeric,numeric,Binom}(x, prm, distr)
+llbinom(x, size, prob)
 
-\S4method{mle}{numeric,Binom}(x, distr)
+\S4method{ll}{Binom,numeric}(distr, x)
 
-\S4method{me}{numeric,Binom}(x, distr)
+ebinom(x, size, type = "mle", ...)
+
+\S4method{mle}{Binom,numeric}(distr, x)
+
+\S4method{me}{Binom,numeric}(distr, x)
+
+vbinom(size, prob, type = "mle")
 
 \S4method{avar_mle}{Binom}(distr)
 
@@ -57,27 +66,34 @@ Binom(size = 1, prob = 0.5)
 \arguments{
 \item{size, prob}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Binom}.}
+
 \item{x}{an object of class \code{Binom}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Binom}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Binomial Distribution

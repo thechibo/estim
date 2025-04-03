@@ -16,9 +16,11 @@ setClass("Laplace",
 #'
 #' @param x an object of class `Laplace`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Laplace`.
 #' @param mu,sigma numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -46,37 +48,29 @@ setValidity("Laplace", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Laplace
-setMethod("d", signature = c(x = "Laplace"),
-          function(x) {
-            function(y, log = FALSE) {
-              extraDistr::dlaplace(y, mu = x@mu, sigma = x@sigma, log = log)
-            }
+setMethod("d", signature = c(distr = "Laplace", x = "numeric"),
+          function(distr, x) {
+            extraDistr::dlaplace(x, mu = distr@mu, sigma = distr@sigma)
           })
 
 #' @rdname Laplace
-setMethod("p", signature = c(x = "Laplace"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              extraDistr::plaplace(q, mu = x@mu, sigma = x@sigma,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Laplace", x = "numeric"),
+          function(distr, x) {
+            extraDistr::plaplace(x, mu = distr@mu, sigma = distr@sigma)
           })
 
-#' @rdname Laplace
-setMethod("qn", signature = c(x = "Laplace"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              extraDistr::qlaplace(p, mu = x@mu, sigma = x@sigma,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
-          })
 
 #' @rdname Laplace
-setMethod("r", signature = c(x = "Laplace"),
-          function(x) {
-            function(n) {
-              extraDistr::rlaplace(n, mu = x@mu, sigma = x@sigma)
-            }
+setMethod("qn", signature = c(distr = "Laplace", x = "numeric"),
+          function(distr, x) {
+            extraDistr::qlaplace(x, mu = distr@mu, sigma = distr@sigma)
+          })
+
+
+#' @rdname Laplace
+setMethod("r", signature = c(distr = "Laplace", n = "numeric"),
+          function(distr, n) {
+            extraDistr::rlaplace(n, mu = distr@mu, sigma = distr@sigma)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -172,18 +166,18 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Laplace
 #' @export
 lllaplace <- function(x, mu, sigma) {
-  ll(x, prm = c(mu, sigma), distr = Laplace())
+  ll(distr = Laplace(mu, sigma), x)
 }
 
 #' @rdname Laplace
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Laplace"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Laplace", x = "numeric"),
+          definition = function(distr, x) {
 
-  - length(x) * log(2 * prm[2]) - sum(abs(x - prm[1])) / prm[2]
+  - length(x) * log(2 * distr@sigma) - sum(abs(x - distr@mu)) / distr@sigma
 
 })
 
@@ -191,30 +185,31 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Laplace
 #' @export
 elaplace <- function(x, type = "mle", ...) {
 
-  estim(x, Laplace(), type, ...)
+  e(Laplace(), x, type, ...)
 
 }
 
 #' @rdname Laplace
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Laplace"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Laplace", x = "numeric"),
+          definition = function(distr, x) {
 
   m <- median(x)
-  c(mu = m, sigma = mean(abs(x - m)))
+
+  list(mu = m, sigma = mean(abs(x - m)))
 
 })
 
 #' @rdname Laplace
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Laplace"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Laplace", x = "numeric"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -222,7 +217,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Laplace
 #' @export
 vlaplace <- function(mu, sigma, type = "mle") {
 

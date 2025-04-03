@@ -1,5 +1,7 @@
-%\documentclass[article]{jss}
+%%\documentclass[article]{jss}
 \documentclass[nojss]{jss}
+
+%\VignetteIndexEntry{Getting Started with estim}
 
 %% -- LaTeX packages and custom commands ---------------------------------------
 
@@ -200,18 +202,24 @@ R> D <- Beta(1, 2)
 \end{Sinput}
 \end{Schunk}
 
-Having defined the distribution object \code{D}, the \fct{d}-\fct{p}-\fct{q}-\fct{r} functionals (i.e. functions that return functions) can be used. The following example illustrates the \pkg{estim} and \pkg{stats} formats in comparison.
+Having defined the distribution object \code{D}, the \fct{d}-\fct{p}-\fct{q}-\fct{r} functions can be used, as shown in the following example, comparing against the \pkg{stats} syntax.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> d(D)(0.5) ; dbeta(0.5, shape1, shape2)
-R> p(D)(0.5) ; pbeta(0.5, shape1, shape2)
-R> qn(D)(0.75) ; qbeta(0.75, shape1, shape2)
-R> r(D)(2) ; rbeta(2, shape1, shape2)
+R> d(D, 0.5) ; dbeta(0.5, shape1, shape2)
+R> p(D, 0.5) ; pbeta(0.5, shape1, shape2)
+R> qn(D, 0.75) ; qbeta(0.75, shape1, shape2)
+R> r(D, 2) ; rbeta(2, shape1, shape2)
 \end{CodeInput}
 \end{CodeChunk}
 
-Of course, the function returned by the functionals can be assigned to a variable and be used accordingly, i.e. \code{F <- p(D) ; F(0.5)}.
+Alternatively, if only the distribution argument is supplied, the methods behave as functionals (i.e. they return a function). This behavior offers enhanced functionality such as:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> F <- p(D) ; F(0.5)
+\end{CodeInput}
+\end{CodeChunk}
 
 \begin{leftbar}
 \textbf{Technical Detail}
@@ -268,7 +276,7 @@ R> set.seed(1)
 R> shape1 <- 1
 R> shape2 <- 2
 R> D <- Beta(shape1, shape2)
-R> x <- r(D)(100)
+R> x <- r(D, 100)
 \end{Sinput}
 \end{Schunk}
 
@@ -283,33 +291,42 @@ In order to perform parameter estimation, a new \fct{e<name>} member is added to
 R> ebeta(x, type = "mle")
 \end{Sinput}
 \begin{Soutput}
-  shape1   shape2 
-1.063191 2.333189 
+$shape1
+[1] 1.066968
+
+$shape2
+[1] 2.466715
 \end{Soutput}
 \begin{Sinput}
 R> ebeta(x, type = "me")
 \end{Sinput}
 \begin{Soutput}
-   shape1    shape2 
-0.9988814 2.2451062 
+$shape1
+[1] 1.074511
+
+$shape2
+[1] 2.469756
 \end{Soutput}
 \begin{Sinput}
 R> ebeta(x, type = "same")
 \end{Sinput}
 \begin{Soutput}
-  shape1   shape2 
-1.041966 2.341944 
+$shape1
+[1] 1.067768
+
+$shape2
+[1] 2.454257
 \end{Soutput}
 \end{Schunk}
 
-Point estimation functions are available in two versions, the distribution specific one, e.g. \fct{ebeta}, and the S4 generic ones, namely \fct{mle}, \fct{me}, and \fct{same}. A general function called \fct{estim} is also implemented, covering all distributions and estimators.
+Point estimation functions are available in two versions, the distribution specific one, e.g. \fct{ebeta}, and the S4 generic ones, namely \fct{mle}, \fct{me}, and \fct{same}. A general function called \fct{e} is also implemented, covering all distributions and estimators.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> mle(x, D)
-R> me(x, D)
-R> same(x, D)
-R> estim(x, D, type = "mle")
+R> mle(D, x)
+R> me(D, x)
+R> same(D, x)
+R> e(D, x, type = "mle")
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -320,10 +337,9 @@ It is important to note that the S4 methods also accept a character for the dist
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> mle(x, "beta")
-R> mle(x, "Beta")
-R> mle(x, "bEtA")
-R> estim(x, "Beta", type = "mle")
+R> mle("beta", x)
+R> mle("bEtA", x)
+R> e("Beta", x, type = "mle")
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -331,26 +347,20 @@ R> estim(x, "Beta", type = "mle")
 
 \subsection[Log-likelihood]{Log-likelihood}\label{ss:ll}
 
-Log-likelihood functions are also available in two versions, the distribution specific one, e.g. \fct{llbeta}, and the \fct{ll} S4 generic one. Again, \fct{ll} can accept either a \code{Distribution} object, or a \code{character}.
+Log-likelihood functions are also available in two versions, the distribution specific one, e.g. \fct{llbeta}, and the \fct{ll} S4 generic one.
 
 \begin{Schunk}
 \begin{Sinput}
 R> llbeta(x, shape1, shape2)
 \end{Sinput}
 \begin{Soutput}
-[1] 24.27059
+[1] 26.56269
 \end{Soutput}
 \begin{Sinput}
-R> ll(x, c(shape1, shape2), D)
+R> ll(D, x)
 \end{Sinput}
 \begin{Soutput}
-[1] 24.27059
-\end{Soutput}
-\begin{Sinput}
-R> ll(x, c(shape1, shape2), "beta")
-\end{Sinput}
-\begin{Soutput}
-[1] 24.27059
+[1] 26.56269
 \end{Soutput}
 \end{Schunk}
 
@@ -468,16 +478,24 @@ R> x <- small_metrics(D, prm,
 +               est = c("mle", "same", "me"),
 +               sam = 1e3,
 +               seed = 1)
-R> head(x)
+R> class(x)
+\end{Sinput}
+\begin{Soutput}
+[1] "SmallMetrics"
+attr(,"package")
+[1] "estim"
+\end{Soutput}
+\begin{Sinput}
+R> head(x@df)
 \end{Sinput}
 \begin{Soutput}
   Parameter Observations Estimator Metric     Value
-1       1.0           20       mle   Bias 0.1601449
-2       1.5           20       mle   Bias 0.2445916
-3       2.0           20       mle   Bias 0.3570855
-4       2.5           20       mle   Bias 0.4033628
-5       3.0           20       mle   Bias 0.5140536
-6       3.5           20       mle   Bias 0.6659094
+1       1.0           20       mle   Bias 0.1322510
+2       1.5           20       mle   Bias 0.2486026
+3       2.0           20       mle   Bias 0.3276922
+4       2.5           20       mle   Bias 0.5215973
+5       3.0           20       mle   Bias 0.5517199
+6       3.5           20       mle   Bias 0.5381523
 \end{Soutput}
 \end{Schunk}
 
@@ -501,7 +519,7 @@ plot(x)
 
 \begin{figure}[t!]
 \centering
-\includegraphics{estim-vis_small_beta}
+\includegraphics{estim_jss-vis_small_beta}
   \caption{\label{fig:vis-small-beta} Small-sample metrics comparison for MLE, ME, and SAME of the beta distribution $\alpha$ parameter.}
 \end{figure}
 
@@ -518,16 +536,24 @@ R> x <- small_metrics(D, prm,
 +                     est = c("mle", "same", "me"),
 +                     sam = 1e3,
 +                     seed = 1)
-R> head(x)
+R> class(x)
+\end{Sinput}
+\begin{Soutput}
+[1] "SmallMetrics"
+attr(,"package")
+[1] "estim"
+\end{Soutput}
+\begin{Sinput}
+R> head(x@df)
 \end{Sinput}
 \begin{Soutput}
   Parameter Observations Estimator Metric      Value
-1       1.0           20       mle   Bias 0.07749898
-2       1.5           20       mle   Bias 0.11915573
-3       2.0           20       mle   Bias 0.17460681
-4       2.5           20       mle   Bias 0.20514839
-5       3.0           20       mle   Bias 0.32877382
-6       3.5           20       mle   Bias 0.32915608
+1       1.0           20       mle   Bias 0.07759434
+2       1.5           20       mle   Bias 0.11916042
+3       2.0           20       mle   Bias 0.17488071
+4       2.5           20       mle   Bias 0.20523185
+5       3.0           20       mle   Bias 0.32907680
+6       3.5           20       mle   Bias 0.32915767
 \end{Soutput}
 \end{Schunk}
 
@@ -546,7 +572,15 @@ R> prm <- list(name = "shape1",
 +              val = seq(1, 5, by = 0.1))
 R> x <- large_metrics(D, prm,
 +                     est = c("mle", "same", "me"))
-R> head(x)
+R> class(x)
+\end{Sinput}
+\begin{Soutput}
+[1] "LargeMetrics"
+attr(,"package")
+[1] "estim"
+\end{Soutput}
+\begin{Sinput}
+R> head(x@df)
 \end{Sinput}
 \begin{Soutput}
      Row    Col Parameter Estimator    Value
@@ -561,7 +595,7 @@ R> head(x)
 
 \begin{figure}[t!]
 \centering
-\includegraphics{estim-vis_large_beta}
+\includegraphics{estim_jss-vis_large_beta}
   \caption{\label{fig:vis-large-beta} Large-sample metrics comparison for MLE, ME, and SAME of the beta distribution $\alpha$ parameter.}
 \end{figure}
 
@@ -636,12 +670,9 @@ Now that everything is set, it is time to define methods for the new class. Crea
 \begin{CodeChunk}
 \begin{CodeInput}
 # probability density function
-setMethod("d", signature = c(x = "Beta"),
-          function(x) {
-            function(y, log = FALSE) {
-              dbeta(y, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
-                    log = log)
-            }
+setMethod("d", signature = c(distr = "Beta", x = "numeric"),
+          function(distr, x) {
+            dbeta(x, shape1 = distr@shape1, shape2 = distr@shape2)
           })
 
 # (theoretical) expectation
@@ -655,8 +686,8 @@ setMethod("mean",
 
 # moment estimator
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Beta"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Beta", x = "numeric"),
+          definition = function(distr, x) {
 
   m  <- mean(x)
   m2 <- mean(x ^ 2)
@@ -682,7 +713,7 @@ setMethod("me",
 
 The results in this paper were obtained using
 \proglang{R}~4.4.1 with the
-\pkg{estim}~0.9.1 package. \proglang{R} itself
+\pkg{estim}~0.11.0 package. \proglang{R} itself
 and all packages used are available from the Comprehensive
 \proglang{R} Archive Network (CRAN) at
 \url{https://CRAN.R-project.org/}.

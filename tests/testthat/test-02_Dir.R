@@ -34,6 +34,7 @@ test_that("Dir dpqr work", {
 
   # 2-Way Calls
   expect_identical(d(D)(1:4 / 10), ddirichlet(1:4 / 10, a))
+  expect_identical(d(D)(1:4 / 10), d(D, 1:4 / 10))
 
 })
 
@@ -66,14 +67,15 @@ test_that("Dir likelihood works", {
   expect_true(is.numeric(lldirichlet(x, a)))
 
   # 2-Way Calls
-  expect_identical(lldirichlet(x, a), ll(x, a, D))
+  expect_identical(lldirichlet(x, a), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
   # ll and lloptim convergence to a0 comparison
   method <- "L-BFGS-B"
   lower <- 1e-5
   upper <- Inf
 
-  par1 <- optim(par = sum(sum(same(x, D))),
+  par1 <- optim(par = sum(same(D, x)$alpha),
                 fn = lloptim,
                 gr = dlloptim,
                 tx = colMeans(log(x)),
@@ -83,10 +85,9 @@ test_that("Dir likelihood works", {
                 upper = upper,
                 control = list(fnscale = -1))$par
 
-  par2 <- optim(par = same(x, D),
-                fn = function(par, x, distr) { ll(x, par, distr) },
+  par2 <- optim(par = same(D, x)$alpha,
+                fn = function(par, x) { ll(Dir(par), x) },
                 x = x,
-                distr = D,
                 method = method,
                 lower = lower,
                 upper = upper,
@@ -106,14 +107,14 @@ test_that("Dir estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(edirichlet(x, type = "mle")))
-  expect_true(is.numeric(edirichlet(x, type = "me")))
-  expect_true(is.numeric(edirichlet(x, type = "same")))
+  expect_true(is.list(edirichlet(x, type = "mle")))
+  expect_true(is.list(edirichlet(x, type = "me")))
+  expect_true(is.list(edirichlet(x, type = "same")))
 
   # 2-Way Calls
-  expect_identical(edirichlet(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(edirichlet(x, type = "me"), estim(x, D, type = "me"))
-  expect_identical(edirichlet(x, type = "same"), estim(x, D, type = "same"))
+  expect_identical(edirichlet(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(edirichlet(x, type = "me"), e(D, x, type = "me"))
+  expect_identical(edirichlet(x, type = "same"), e(D, x, type = "same"))
 
   # Simulations
   d <- test_consistency("me", D)
@@ -172,18 +173,11 @@ test_that("Dir small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })
 
@@ -203,15 +197,10 @@ test_that("Dir large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
 })

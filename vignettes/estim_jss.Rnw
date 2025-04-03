@@ -1,5 +1,7 @@
-%\documentclass[article]{jss}
+%%\documentclass[article]{jss}
 \documentclass[nojss]{jss}
+
+%\VignetteIndexEntry{Getting Started with estim}
 
 %% -- LaTeX packages and custom commands ---------------------------------------
 
@@ -202,18 +204,24 @@ D <- Beta(shape1 = 1, shape2 = 2)
 D <- Beta(1, 2)
 @
 
-Having defined the distribution object \code{D}, the \fct{d}-\fct{p}-\fct{q}-\fct{r} functionals (i.e. functions that return functions) can be used. The following example illustrates the \pkg{estim} and \pkg{stats} formats in comparison.
+Having defined the distribution object \code{D}, the \fct{d}-\fct{p}-\fct{q}-\fct{r} functions can be used, as shown in the following example, comparing against the \pkg{stats} syntax.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> d(D)(0.5) ; dbeta(0.5, shape1, shape2)
-R> p(D)(0.5) ; pbeta(0.5, shape1, shape2)
-R> qn(D)(0.75) ; qbeta(0.75, shape1, shape2)
-R> r(D)(2) ; rbeta(2, shape1, shape2)
+R> d(D, 0.5) ; dbeta(0.5, shape1, shape2)
+R> p(D, 0.5) ; pbeta(0.5, shape1, shape2)
+R> qn(D, 0.75) ; qbeta(0.75, shape1, shape2)
+R> r(D, 2) ; rbeta(2, shape1, shape2)
 \end{CodeInput}
 \end{CodeChunk}
 
-Of course, the function returned by the functionals can be assigned to a variable and be used accordingly, i.e. \code{F <- p(D) ; F(0.5)}.
+Alternatively, if only the distribution argument is supplied, the methods behave as functionals (i.e. they return a function). This behavior offers enhanced functionality such as:
+
+\begin{CodeChunk}
+\begin{CodeInput}
+R> F <- p(D) ; F(0.5)
+\end{CodeInput}
+\end{CodeChunk}
 
 \begin{leftbar}
 \textbf{Technical Detail}
@@ -269,7 +277,7 @@ set.seed(1)
 shape1 <- 1
 shape2 <- 2
 D <- Beta(shape1, shape2)
-x <- r(D)(100)
+x <- r(D, 100)
 @
 
 \subsection[Estimation Methods]{Estimation Methods}\label{ss:estim-methods}
@@ -284,14 +292,14 @@ ebeta(x, type = "me")
 ebeta(x, type = "same")
 @
 
-Point estimation functions are available in two versions, the distribution specific one, e.g. \fct{ebeta}, and the S4 generic ones, namely \fct{mle}, \fct{me}, and \fct{same}. A general function called \fct{estim} is also implemented, covering all distributions and estimators.
+Point estimation functions are available in two versions, the distribution specific one, e.g. \fct{ebeta}, and the S4 generic ones, namely \fct{mle}, \fct{me}, and \fct{same}. A general function called \fct{e} is also implemented, covering all distributions and estimators.
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> mle(x, D)
-R> me(x, D)
-R> same(x, D)
-R> estim(x, D, type = "mle")
+R> mle(D, x)
+R> me(D, x)
+R> same(D, x)
+R> e(D, x, type = "mle")
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -302,10 +310,9 @@ It is important to note that the S4 methods also accept a character for the dist
 
 \begin{CodeChunk}
 \begin{CodeInput}
-R> mle(x, "beta")
-R> mle(x, "Beta")
-R> mle(x, "bEtA")
-R> estim(x, "Beta", type = "mle")
+R> mle("beta", x)
+R> mle("bEtA", x)
+R> e("Beta", x, type = "mle")
 \end{CodeInput}
 \end{CodeChunk}
 
@@ -313,12 +320,11 @@ R> estim(x, "Beta", type = "mle")
 
 \subsection[Log-likelihood]{Log-likelihood}\label{ss:ll}
 
-Log-likelihood functions are also available in two versions, the distribution specific one, e.g. \fct{llbeta}, and the \fct{ll} S4 generic one. Again, \fct{ll} can accept either a \code{Distribution} object, or a \code{character}.
+Log-likelihood functions are also available in two versions, the distribution specific one, e.g. \fct{llbeta}, and the \fct{ll} S4 generic one.
 
 <<ll>>=
 llbeta(x, shape1, shape2)
-ll(x, c(shape1, shape2), D)
-ll(x, c(shape1, shape2), "beta")
+ll(D, x)
 @
 
 In some distribution families like beta and gamma, the MLE cannot be explicitly derived and numerical optimization algorithms have to be employed. Even in ``good" scenarios, with plenty of observations and a smooth optimization function, numerical algorithms should not be viewed as panacea, and extra care should be taken to ensure a fast and right convergence if possible. Two important steps are taken in \pkg{estim} in this direction:
@@ -416,7 +422,8 @@ x <- small_metrics(D, prm,
              sam = 1e3,
              seed = 1)
 
-head(x)
+class(x)
+head(x@df)
 @
 
 The \fct{small\_metrics} function takes the following arguments:
@@ -439,8 +446,8 @@ plot(x)
 
 \begin{figure}[t!]
 \centering
-<<vis_small_beta, echo=FALSE, fig=TRUE, height=6, width=15>>=
-  plot_small_metrics(x)
+<<vis_small_beta, echo=FALSE, fig=TRUE, height=4, width=8, dev="pdf", dpi=72>>=
+  plot(x)
 @
   \caption{\label{fig:vis-small-beta} Small-sample metrics comparison for MLE, ME, and SAME of the beta distribution $\alpha$ parameter.}
 \end{figure}
@@ -460,7 +467,8 @@ x <- small_metrics(D, prm,
                    sam = 1e3,
                    seed = 1)
 
-head(x)
+class(x)
+head(x@df)
 @
 
 The \fct{large\_metrics} function design is almost identical, except that no \code{obs}, \code{sam}, and \code{seed} arguments are needed here. The following example illustrates the large sample metrics for the beta distribution shape $\alpha$ estimators. Again, the resulting data frame can be passed to \fct{plot}.
@@ -480,13 +488,14 @@ prm <- list(name = "shape1",
 x <- large_metrics(D, prm,
                    est = c("mle", "same", "me"))
 
-head(x)
+class(x)
+head(x@df)
 @
 
 \begin{figure}[t!]
 \centering
-<<vis_large_beta, echo=FALSE, fig=TRUE, height=6, width=15>>=
-  plot_large_metrics(x)
+<<vis_large_beta, echo=FALSE, fig=TRUE, height=4, width=8, dev="pdf", dpi=72>>=
+  plot(x)
 @
   \caption{\label{fig:vis-large-beta} Large-sample metrics comparison for MLE, ME, and SAME of the beta distribution $\alpha$ parameter.}
 \end{figure}
@@ -562,12 +571,9 @@ Now that everything is set, it is time to define methods for the new class. Crea
 \begin{CodeChunk}
 \begin{CodeInput}
 # probability density function
-setMethod("d", signature = c(x = "Beta"),
-          function(x) {
-            function(y, log = FALSE) {
-              dbeta(y, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
-                    log = log)
-            }
+setMethod("d", signature = c(distr = "Beta", x = "numeric"),
+          function(distr, x) {
+            dbeta(x, shape1 = distr@shape1, shape2 = distr@shape2)
           })
 
 # (theoretical) expectation
@@ -581,8 +587,8 @@ setMethod("mean",
 
 # moment estimator
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Beta"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Beta", x = "numeric"),
+          definition = function(distr, x) {
 
   m  <- mean(x)
   m2 <- mean(x ^ 2)

@@ -7,7 +7,7 @@
 \alias{gammap}
 \title{Polygamma Functions}
 \usage{
-idigamma(x)
+idigamma(x, ...)
 
 Ddigamma(x, y)
 
@@ -18,6 +18,8 @@ gammap(x, p, log = FALSE)
 \arguments{
 \item{x, y}{numeric. The points to evaluate the function.}
 
+\item{...}{extra arguments passed to \code{optim()}.}
+
 \item{p}{integer. The p-variate Gamma function.}
 
 \item{log}{logical. Should the logarithm of the result be returned?}
@@ -26,7 +28,22 @@ gammap(x, p, log = FALSE)
 numeric. The evaluated function.
 }
 \description{
-This set of functions revolve around the polygamma functions.
+This set of functions revolve around the polygamma functions, i.e. the
+derivatives of the gamma function.
+}
+\details{
+These functions are needed for the beta and gamma distribution families (and
+their multivariate analogs, e.g. the Dirichlet). They appear in the
+estimation and the asymptotic variance-covariance matrix of the MLE and the
+SAME.
+
+The \code{idigamma()} function implements the inverse of the digamma function
+\eqn{\psi}. It is a numerical approximation based on the L-BFGS-U
+quasi-Newton algorithm. Specifically, \code{idigamma()} makes a call to \code{optim()}
+in order to to solve the equation \eqn{\psi(x) = y}; more accurately, to find
+the minimum of \eqn{f(x) = \log\Gamma(x) - xy}, whose derivative is
+\eqn{f'(x) = \psi(x) - y}. The optimization is restricted within the tight
+bounds derived by Batir (2017). The function is vectorized.
 }
 \section{Functions}{
 \itemize{
@@ -44,4 +61,12 @@ idigamma(2)
 Ddigamma(2, 3)
 Dtrigamma(2, 3)
 gammap(1:3, 3)
+}
+\references{
+Necdet Batir (2017), INEQUALITIES FOR THE INVERSES OF THE POLYGAMMA FUNCTIONS
+https://arxiv.org/pdf/1705.06547
+
+Oikonomidis, I. & Trevezas, S. (2023), Moment-Type Estimators for the
+Dirichlet and the Multivariate Gamma Distributions, arXiv,
+https://arxiv.org/abs/2311.15025
 }

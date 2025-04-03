@@ -1,24 +1,34 @@
-# estimators 0.10.3
+# estim 0.11.0
+
+* Changed plot_small_metrics, plot_large_metrics to plot
+* Updated documentation pages.
+* Added methods for d(D, x), p(D, x) etc.
+* Added Multigam and Weibull distributions.
+* Changed estim() to e().
+* Changed estimators to be lists instead of atomic vectors.
+* Created a more accurate idigamma() function.
+
+# estim 0.10.3
 
 * Added new JSS vignette.
 
-# estimators 0.10.2
+# estim 0.10.2
 
 * Tried to update test-coverage.
 * Fixed bug in Nbinom test.
 
-# estimators 0.10.1
+# estim 0.10.1
 
 * Removed false documentation file that caused R CMD check to fail.
 
-# estimators 0.10.0
+# estim 0.10.0
 
 * Added tests for all distributions.
 * Added many functions that were not available for several distributions.
 * Corrected multiple bugs.
 * Removed Ncchisq, Ncfisher. They will be added in later versions.
 
-# estimators 0.9.1
+# estim 0.9.0
 
 * Changed package name to estim.
 * Fixed Fisher df bug.

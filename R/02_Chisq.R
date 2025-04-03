@@ -16,9 +16,11 @@ setClass("Chisq",
 #'
 #' @param x an object of class `Chisq`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Chisq`.
 #' @param df numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -42,37 +44,27 @@ setValidity("Chisq", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Chisq
-setMethod("d", signature = c(x = "Chisq"),
-          function(x) {
-            function(y, log = FALSE) {
-              dchisq(y, df = x@df, ncp = 0, log = log)
-            }
+setMethod("d", signature = c(distr = "Chisq", x = "numeric"),
+          function(distr, x) {
+            dchisq(x, df = distr@df, ncp = 0)
           })
 
 #' @rdname Chisq
-setMethod("p", signature = c(x = "Chisq"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pchisq(q, df = x@df, ncp = 0,
-                 lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Chisq", x = "numeric"),
+          function(distr, x) {
+            pchisq(x, df = distr@df, ncp = 0)
           })
 
 #' @rdname Chisq
-setMethod("qn", signature = c(x = "Chisq"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qchisq(p, df = x@df, ncp = 0,
-                 lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Chisq", x = "numeric"),
+          function(distr, x) {
+            qchisq(x, df = distr@df, ncp = 0)
           })
 
 #' @rdname Chisq
-setMethod("r", signature = c(x = "Chisq"),
-          function(x) {
-            function(n) {
-              rchisq(n, df = x@df, ncp = 0)
-            }
+setMethod("r", signature = c(distr = "Chisq", n = "numeric"),
+          function(distr, n) {
+            rchisq(n, df = distr@df, ncp = 0)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -170,19 +162,20 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Chisq
 #' @export
 llchisq <- function(x, df) {
-  ll(x, prm = df, distr = Chisq())
+  ll(Chisq(df), x)
 }
 
 #' @rdname Chisq
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Chisq"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Chisq", x = "numeric"),
+          definition = function(distr, x) {
 
-  - length(x) * (lgamma(prm / 2) + prm * log(2) / 2) +
-    (prm / 2 - 1) * sum(log(x)) - sum(x) / 2
+    df <- distr@df
+  - length(x) * (lgamma(df / 2) + df * log(2) / 2) +
+    (df / 2 - 1) * sum(log(x)) - sum(x) / 2
 
 })
 
@@ -190,29 +183,29 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Chisq
 #' @export
 echisq <- function(x, type = "mle", ...) {
 
-  estim(x, Chisq(), type, ...)
+  e(Chisq(), x, type, ...)
 
 }
 
 #' @rdname Chisq
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Chisq"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Chisq", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(df = 2 * idigamma(mean(log(x)) - log(2)))
+  list(df = 2 * idigamma(mean(log(x)) - log(2)))
 
 })
 
 #' @rdname Chisq
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Chisq"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Chisq", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(df = mean(x))
+  list(df = mean(x))
 
 })
 
@@ -220,7 +213,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Chisq
 #' @export
 vchisq <- function(df, type = "mle") {
 

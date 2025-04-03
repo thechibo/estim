@@ -16,9 +16,11 @@ setClass("Lnorm",
 #'
 #' @param x an object of class `Lnorm`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Lnorm`.
 #' @param meanlog,sdlog numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -45,37 +47,27 @@ setValidity("Lnorm", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Lnorm
-setMethod("d", signature = c(x = "Lnorm"),
-          function(x) {
-            function(y, log = FALSE) {
-              dlnorm(y, meanlog = x@meanlog, sdlog = x@sdlog, log = log)
-            }
+setMethod("d", signature = c(distr = "Lnorm", x = "numeric"),
+          function(distr, x) {
+            dlnorm(x, meanlog = distr@meanlog, sdlog = distr@sdlog)
           })
 
 #' @rdname Lnorm
-setMethod("p", signature = c(x = "Lnorm"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              plnorm(q, meanlog = x@meanlog, sdlog = x@sdlog,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Lnorm", x = "numeric"),
+          function(distr, x) {
+            plnorm(x, meanlog = distr@meanlog, sdlog = distr@sdlog)
           })
 
 #' @rdname Lnorm
-setMethod("qn", signature = c(x = "Lnorm"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qlnorm(p, meanlog = x@meanlog, sdlog = x@sdlog,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Lnorm", x = "numeric"),
+          function(distr, x) {
+            qlnorm(x, meanlog = distr@meanlog, sdlog = distr@sdlog)
           })
 
 #' @rdname Lnorm
-setMethod("r", signature = c(x = "Lnorm"),
-          function(x) {
-            function(n) {
-              rlnorm(n, meanlog = x@meanlog, sdlog = x@sdlog)
-            }
+setMethod("r", signature = c(distr = "Lnorm", n = "numeric"),
+          function(distr, n) {
+            rlnorm(n, meanlog = distr@meanlog, sdlog = distr@sdlog)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -176,19 +168,21 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Lnorm
 #' @export
 lllnorm <- function(x, meanlog, sdlog) {
-  ll(x, prm = c(meanlog, sdlog), distr = Lnorm())
+  ll(Lnorm(meanlog, sdlog), x)
 }
 
 #' @rdname Lnorm
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Lnorm"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Lnorm", x = "numeric"),
+          definition = function(distr, x) {
 
-  - 0.5 * length(x) * log(2 * pi * prm[2] ^ 2) - sum(log(x)) -
-    0.5 * sum((log(x) - prm[1]) ^ 2) / prm[2] ^ 2
+    m <- distr@meanlog
+    s <- distr@sdlog
+  - 0.5 * length(x) * log(2 * pi * s ^ 2) - sum(log(x)) -
+    0.5 * sum((log(x) - m) ^ 2) / s ^ 2
 
 })
 
@@ -196,29 +190,29 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Lnorm
 #' @export
 elnorm <- function(x, type = "mle", ...) {
 
-  estim(x, Lnorm(), type, ...)
+  e(Lnorm(), x, type, ...)
 
 }
 
 #' @rdname Lnorm
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Lnorm"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Lnorm", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(meanlog = mean(log(x)), sdlog = bsd(log(x)))
+  list(meanlog = mean(log(x)), sdlog = bsd(log(x)))
 
 })
 
 #' @rdname Lnorm
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Lnorm"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Lnorm", x = "numeric"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -226,7 +220,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Lnorm
 #' @export
 vlnorm <- function(meanlog, sdlog, type = "mle") {
 

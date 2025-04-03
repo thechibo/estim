@@ -44,6 +44,9 @@ test_that("Fisher dpqr work", {
   expect_equal(d(D)(1), df(1, df1, df2), tolerance = 0.01)
   expect_equal(p(D)(1), pf(1, df1, df2), tolerance = 0.01)
   expect_equal(qn(D)(0.5), qf(0.5, df1, df2), tolerance = 0.01)
+  expect_equal(d(D)(1), d(D, 1), tolerance = 0.01)
+  expect_equal(p(D)(1), p(D, 1), tolerance = 0.01)
+  expect_equal(qn(D)(0.5), qn(D, 0.5), tolerance = 0.01)
 
 })
 
@@ -87,6 +90,7 @@ test_that("Fisher likelihood works", {
   expect_true(is.numeric(llf(x, df1, df2)))
 
   # 2-Way Calls
-  expect_identical(llf(x, df1, df2), ll(x, c(df1, df2), D))
+  expect_identical(llf(x, df1, df2), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })

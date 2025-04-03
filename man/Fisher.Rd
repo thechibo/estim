@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Fisher.R
 \name{Fisher}
 \alias{Fisher}
-\alias{d,Fisher-method}
-\alias{p,Fisher-method}
-\alias{qn,Fisher-method}
-\alias{r,Fisher-method}
+\alias{d,Fisher,numeric-method}
+\alias{p,Fisher,numeric-method}
+\alias{qn,Fisher,numeric-method}
+\alias{r,Fisher,numeric-method}
 \alias{mean,Fisher-method}
 \alias{median,Fisher-method}
 \alias{mode,Fisher-method}
@@ -14,18 +14,19 @@
 \alias{skew,Fisher-method}
 \alias{kurt,Fisher-method}
 \alias{entro,Fisher-method}
-\alias{ll,numeric,numeric,Fisher-method}
+\alias{llf}
+\alias{ll,Fisher,numeric-method}
 \title{Fisher Distribution}
 \usage{
 Fisher(df1 = 1, df2 = 1)
 
-\S4method{d}{Fisher}(x)
+\S4method{d}{Fisher,numeric}(distr, x)
 
-\S4method{p}{Fisher}(x)
+\S4method{p}{Fisher,numeric}(distr, x)
 
-\S4method{qn}{Fisher}(x)
+\S4method{qn}{Fisher,numeric}(distr, x)
 
-\S4method{r}{Fisher}(x)
+\S4method{r}{Fisher,numeric}(distr, n)
 
 \S4method{mean}{Fisher}(x)
 
@@ -43,32 +44,37 @@ Fisher(df1 = 1, df2 = 1)
 
 \S4method{entro}{Fisher}(x)
 
-\S4method{ll}{numeric,numeric,Fisher}(x, prm, distr)
+llf(x, df1, df2)
+
+\S4method{ll}{Fisher,numeric}(distr, x)
 }
 \arguments{
 \item{df1, df2}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Fisher}.}
+
 \item{x}{an object of class \code{Fisher}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
-
-\item{distr}{an object of class \code{Fisher}.}
+\item{n}{numeric. The sample size.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Fisher Distribution

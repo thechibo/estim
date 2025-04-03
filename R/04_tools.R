@@ -77,32 +77,32 @@ s4_to_list <- function(object) {
 }
 
 # Get the parameters of a distribution
-get_params <- function(D) {
+get_params <- function(D, list = TRUE) {
   params <- s4_to_list(D)
   params["name"] <- NULL
   params["ncp"] <- NULL
-  unlist(params)
-}
 
-# Get the parameters of a distribution
-get_params_list <- function(D) {
-  params <- s4_to_list(D)
-  params["name"] <- NULL
-  params["ncp"] <- NULL
+  if (!list) {
+    params <- unlist(params)
+  }
+
   params
 }
 
-get_unknown_params <- function(D) {
-  prm <- get_params(D)
-  if (is(D, "Binom")) {
-    return(prm["prob"])
-  } else if (is(D, "Nbinom")) {
-    return(prm["prob"])
-  } else if (is(D, "Multinom")) {
-    return(prm[-1])
-  } else {
-    return(prm)
+# Get the unknown parameters of a distribution
+get_unknown_params <- function(D, list = TRUE) {
+
+  params <- get_params(D)
+
+  if (is(D, "Binom") || is(D, "Nbinom") || is(D, "Multinom")) {
+    params$size <- NULL
   }
+
+  if (!list) {
+    params <- unlist(params)
+  }
+
+  params
 }
 
 # Update the distribution parameters
@@ -174,25 +174,16 @@ colVar <- function(x) {
 ## Gamma Function         ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# .x <- seq(1e-70, exp(25), length = 1e7)
-# .y <- digamma(.x)
-# idigamma_approx <- approxfun(.y, .x)
-# rm(.x, .y)
-
-## an extensive grid of x-values
-.xg <- sort(c(10^(-70:-1),qexp(unique(pmin(seq(0,1,length=5e3)+1e-10,1-1e-10))),qcauchy(seq(0.999,1-1e-10,length=5e3))))
-.dxg <- digamma(.xg)
-igamma <- approxfun(.dxg,.xg)
-rm(.xg,.dxg)
-
 #' @title Polygamma Functions
 #'
 #' @description
-#' This set of functions revolve around the polygamma functions.
+#' This set of functions revolve around the polygamma functions, i.e. the
+#' derivatives of the gamma function.
 #'
 #' @param x,y numeric. The points to evaluate the function.
 #' @param p integer. The p-variate Gamma function.
 #' @param log logical. Should the logarithm of the result be returned?
+#' @param ... extra arguments passed to `optim()`.
 #'
 #' @describeIn idigamma inverse digamma function.
 #'
@@ -200,13 +191,50 @@ rm(.xg,.dxg)
 #'
 #' @export
 #'
+#' @details
+#' These functions are needed for the beta and gamma distribution families (and
+#' their multivariate analogs, e.g. the Dirichlet). They appear in the
+#' estimation and the asymptotic variance-covariance matrix of the MLE and the
+#' SAME.
+#'
+#' The `idigamma()` function implements the inverse of the digamma function
+#' \eqn{\psi}. It is a numerical approximation based on the L-BFGS-U
+#' quasi-Newton algorithm. Specifically, `idigamma()` makes a call to `optim()`
+#' in order to to solve the equation \eqn{\psi(x) = y}; more accurately, to find
+#' the minimum of \eqn{f(x) = \log\Gamma(x) - xy}, whose derivative is
+#' \eqn{f'(x) = \psi(x) - y}. The optimization is restricted within the tight
+#' bounds derived by Batir (2017). The function is vectorized.
+#'
+#' @references
+#' Necdet Batir (2017), INEQUALITIES FOR THE INVERSES OF THE POLYGAMMA FUNCTIONS
+#' https://arxiv.org/pdf/1705.06547
+#'
+#' Oikonomidis, I. & Trevezas, S. (2023), Moment-Type Estimators for the
+#' Dirichlet and the Multivariate Gamma Distributions, arXiv,
+#' https://arxiv.org/abs/2311.15025
+#'
 #' @examples
 #' idigamma(2)
 #' Ddigamma(2, 3)
 #' Dtrigamma(2, 3)
 #' gammap(1:3, 3)
-idigamma <- function(x) {
-  igamma(x)#idigamma_approx(x)
+idigamma <- function(x, ...) {
+
+  unlist(lapply(x, FUN = function(x) {
+
+    # Tight bounds derived in https://arxiv.org/pdf/1705.06547
+    l <- 1 / log(1 + exp(- x))
+    u <- exp(x) + 0.5
+
+    # Quasi-Newton optimization
+    optim(par = (l + u) / 2,
+          fn = function(y) {lgamma(y) - x * y},
+          gr = function(y) {digamma(y) - x},
+          method = "Brent",
+          lower = l,
+          upper = u, ...)$par
+  }))
+
 }
 
 #' @describeIn idigamma digamma difference function.

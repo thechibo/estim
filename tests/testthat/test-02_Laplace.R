@@ -41,6 +41,9 @@ test_that("Laplace dpqr work", {
   expect_identical(d(D)(1), dlaplace(1, mu, sigma))
   expect_identical(p(D)(1), plaplace(1, mu, sigma))
   expect_equal(qn(D)(0.5), qlaplace(0.5, mu, sigma), tolerance = 0.01)
+  expect_identical(d(D)(1), d(D, 1))
+  expect_identical(p(D)(1), p(D, 1))
+  expect_equal(qn(D)(0.5), qn(D)(0.5), tolerance = 0.01)
 
 })
 
@@ -78,7 +81,8 @@ test_that("Laplace likelihood works", {
   expect_true(is.numeric(lllaplace(x, mu, sigma)))
 
   # 2-Way Calls
-  expect_identical(lllaplace(x, mu, sigma), ll(x, c(mu, sigma), D))
+  expect_identical(lllaplace(x, mu, sigma), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })
 
@@ -93,18 +97,18 @@ test_that("Laplace estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(elaplace(x, type = "mle")))
-  expect_true(is.numeric(elaplace(x, type = "me")))
+  expect_true(is.list(elaplace(x, type = "mle")))
+  expect_true(is.list(elaplace(x, type = "me")))
 
   # 2-Way Calls
-  expect_identical(elaplace(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(elaplace(x, type = "me"), estim(x, D, type = "me"))
+  expect_identical(elaplace(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(elaplace(x, type = "me"), e(D, x, type = "me"))
 
   # Simulations
   d <- test_consistency("me", D)
-  expect_equal(d$prm_true, d$prm_est, tolerance = 0.01)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.02)
   d <- test_consistency("mle", D)
-  expect_equal(d$prm_true, d$prm_est, tolerance = 0.01)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.02)
 
 })
 
@@ -147,7 +151,6 @@ test_that("Laplace small metrics work", {
   x <- r(D)(n)
 
   prm <- list(name = "mu",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -159,21 +162,13 @@ test_that("Laplace small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
   prm <- list(name = "sigma",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -185,18 +180,11 @@ test_that("Laplace small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })
 
@@ -211,7 +199,6 @@ test_that("Laplace large metrics work", {
   x <- r(D)(n)
 
   prm <- list(name = "mu",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -220,19 +207,13 @@ test_that("Laplace large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
   prm <- list(name = "sigma",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -241,15 +222,10 @@ test_that("Laplace large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
 })

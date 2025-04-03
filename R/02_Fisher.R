@@ -16,9 +16,9 @@ setClass("Fisher",
 #'
 #' @param x an object of class `Fisher`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Fisher`.
 #' @param df1,df2 numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
 #'
 #' @inherit Distributions return
 #'
@@ -48,37 +48,27 @@ setValidity("Fisher", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Fisher
-setMethod("d", signature = c(x = "Fisher"),
-          function(x) {
-            function(y, log = FALSE) {
-              df(y, df1 = x@df1, df2 = x@df2, ncp = 0, log = log)
-            }
+setMethod("d", signature = c(distr = "Fisher", x = "numeric"),
+          function(distr, x) {
+            df(x, df1 = distr@df1, df2 = distr@df2, ncp = 0)
           })
 
 #' @rdname Fisher
-setMethod("p", signature = c(x = "Fisher"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pf(q, df1 = x@df1, df2 = x@df2, ncp = 0,
-                 lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Fisher", x = "numeric"),
+          function(distr, x) {
+            pf(x, df1 = distr@df1, df2 = distr@df2, ncp = 0)
           })
 
 #' @rdname Fisher
-setMethod("qn", signature = c(x = "Fisher"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qf(p, df1 = x@df1, df2 = x@df2, ncp = 0,
-                 lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Fisher", x = "numeric"),
+          function(distr, x) {
+            qf(x, df1 = distr@df1, df2 = distr@df2, ncp = 0)
           })
 
 #' @rdname Fisher
-setMethod("r", signature = c(x = "Fisher"),
-          function(x) {
-            function(n) {
-              rf(n, df1 = x@df1, df2 = x@df2, ncp = 0)
-            }
+setMethod("r", signature = c(distr = "Fisher", n = "numeric"),
+          function(distr, n) {
+            rf(n, df1 = distr@df1, df2 = distr@df2, ncp = 0)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -198,19 +188,19 @@ setMethod("entro",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Fisher
 #' @export
 llf <- function(x, df1, df2) {
-  ll(x, prm = c(df1, df2), distr = Fisher())
+  ll(Fisher(df1, df2), x)
 }
 
 #' @rdname Fisher
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Fisher"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Fisher", x = "numeric"),
+          definition = function(distr, x) {
 
-  d1 <- prm[1]
-  d2 <- prm[2]
+  d1 <- distr@df1
+  d2 <- distr@df2
   n <- length(x)
   s <- sum(log(x))
   t <- sum(log(d1 * x + d2))

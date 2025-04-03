@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Gam.R
 \name{Gam}
 \alias{Gam}
-\alias{d,Gam-method}
-\alias{p,Gam-method}
-\alias{qn,Gam-method}
-\alias{r,Gam-method}
+\alias{d,Gam,numeric-method}
+\alias{p,Gam,numeric-method}
+\alias{qn,Gam,numeric-method}
+\alias{r,Gam,numeric-method}
 \alias{mean,Gam-method}
 \alias{median,Gam-method}
 \alias{mode,Gam-method}
@@ -15,10 +15,13 @@
 \alias{kurt,Gam-method}
 \alias{entro,Gam-method}
 \alias{finf,Gam-method}
-\alias{ll,numeric,numeric,Gam-method}
-\alias{mle,numeric,Gam-method}
-\alias{me,numeric,Gam-method}
-\alias{same,numeric,Gam-method}
+\alias{llgamma}
+\alias{ll,Gam,numeric-method}
+\alias{egamma}
+\alias{mle,Gam,numeric-method}
+\alias{me,Gam,numeric-method}
+\alias{same,Gam,numeric-method}
+\alias{vgamma}
 \alias{avar_mle,Gam-method}
 \alias{avar_me,Gam-method}
 \alias{avar_same,Gam-method}
@@ -26,13 +29,13 @@
 \usage{
 Gam(shape = 1, scale = 1)
 
-\S4method{d}{Gam}(x)
+\S4method{d}{Gam,numeric}(distr, x)
 
-\S4method{p}{Gam}(x)
+\S4method{p}{Gam,numeric}(distr, x)
 
-\S4method{qn}{Gam}(x)
+\S4method{qn}{Gam,numeric}(distr, x)
 
-\S4method{r}{Gam}(x)
+\S4method{r}{Gam,numeric}(distr, n)
 
 \S4method{mean}{Gam}(x)
 
@@ -52,13 +55,19 @@ Gam(shape = 1, scale = 1)
 
 \S4method{finf}{Gam}(x)
 
-\S4method{ll}{numeric,numeric,Gam}(x, prm, distr)
+llgamma(x, shape, scale)
 
-\S4method{mle}{numeric,Gam}(x, distr, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+\S4method{ll}{Gam,numeric}(distr, x)
 
-\S4method{me}{numeric,Gam}(x, distr)
+egamma(x, type = "mle", ...)
 
-\S4method{same}{numeric,Gam}(x, distr)
+\S4method{mle}{Gam,numeric}(distr, x, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+
+\S4method{me}{Gam,numeric}(distr, x)
+
+\S4method{same}{Gam,numeric}(distr, x)
+
+vgamma(shape, scale, type = "mle")
 
 \S4method{avar_mle}{Gam}(distr)
 
@@ -69,29 +78,36 @@ Gam(shape = 1, scale = 1)
 \arguments{
 \item{shape, scale}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Gam}.}
+
 \item{x}{an object of class \code{Gam}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Gam}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 
 \item{par0, method, lower, upper}{arguments passed to optim.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Gamma Distribution

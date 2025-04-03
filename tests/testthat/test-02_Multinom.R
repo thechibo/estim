@@ -39,6 +39,8 @@ test_that("Multinom dpqr work", {
   # 2-Way Calls
   expect_identical(d(Multinom(N, p))(c(4, 3, 3)),
                    dmultinom(c(4, 3, 3), N, p))
+  expect_identical(d(Multinom(N, p))(c(4, 3, 3)),
+                   d(Multinom(N, p), c(4, 3, 3)))
 
   # Special Case: Binomial
   expect_equal(d(Multinom(N, c(0.3, 0.7)))(c(2, N-2)),
@@ -79,7 +81,8 @@ test_that("Multinom likelihood works", {
   expect_true(is.numeric(llmultinom(x, size = N, prob = p)))
 
   # 2-Way Calls
-  expect_identical(llmultinom(x, N, p), ll(x, c(N, p), D))
+  expect_identical(llmultinom(x, N, p), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })
 
@@ -94,18 +97,18 @@ test_that("Multinom estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(emultinom(x, type = "mle")))
-  expect_true(is.numeric(emultinom(x, type = "me")))
+  expect_true(is.list(emultinom(x, type = "mle")))
+  expect_true(is.list(emultinom(x, type = "me")))
 
   # 2-Way Calls
-  expect_identical(emultinom(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(emultinom(x, type = "me"), estim(x, D, type = "me"))
+  expect_identical(emultinom(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(emultinom(x, type = "me"), e(D, x, type = "me"))
 
   # Simulations
   d <- test_consistency("me", D)
-  expect_equal(d$prm_true[-1], d$prm_est, tolerance = 0.01)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.01)
   d <- test_consistency("mle", D)
-  expect_equal(d$prm_true[-1], d$prm_est, tolerance = 0.01)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.01)
 
 })
 
@@ -141,14 +144,12 @@ test_that("Multinom avar works", {
 test_that("Multinom small metrics work", {
 
   # Preliminaries
-  N <- 100
+  N <- 10
   p <- c(0.7, 0.2, 0.1)
   D <- Multinom(N, p)
-  set.seed(1)
 
   prm <- list(name = "prob",
-              pos = NULL,
-              val = seq(0.5, 0.8, by = 1))
+              val = seq(0.5, 0.8, by = 0.1))
 
   expect_error(
     x <- small_metrics(D, prm,
@@ -166,10 +167,8 @@ test_that("Multinom large metrics work", {
   N <- 10
   p <- c(0.7, 0.2, 0.1)
   D <- Multinom(N, p)
-  set.seed(1)
 
   prm <- list(name = "prob",
-              pos = NULL,
               val = seq(0.5, 0.8, by = 0.1))
 
   expect_error(

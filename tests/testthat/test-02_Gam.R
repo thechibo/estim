@@ -44,6 +44,9 @@ test_that("Gam dpqr work", {
   expect_identical(d(D)(0.4), dgamma(0.4, shape = a, scale = b))
   expect_identical(p(D)(0.4), pgamma(0.4, shape = a, scale = b))
   expect_equal(qn(D)(0.4), qgamma(0.4, shape = a, scale = b), tolerance = 1e-8)
+  expect_identical(d(D)(0.4), d(D, 0.4))
+  expect_identical(p(D)(0.4), p(D, 0.4))
+  expect_identical(qn(D)(0.4), qn(D, 0.4))
 
 })
 
@@ -82,7 +85,8 @@ test_that("Gam likelihood works", {
   expect_true(is.numeric(llgamma(x, shape = a, scale = b)))
 
   # 2-Way Calls
-  expect_identical(llgamma(x, shape = a, scale = b), ll(x, c(a, b), D))
+  expect_identical(llgamma(x, shape = a, scale = b), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
   # ll and lloptim convergence to a0 comparison
   method <- "L-BFGS-B"
@@ -90,7 +94,7 @@ test_that("Gam likelihood works", {
   upper <- Inf
   tx <- c(log(mean(x)), mean(log(x)))
 
-  par1 <- optim(par = sum(same(x, D)),
+  par1 <- optim(par = sum(unlist(same(D, x))),
                 fn = lloptim,
                 gr = dlloptim,
                 tx = tx,
@@ -100,10 +104,9 @@ test_that("Gam likelihood works", {
                 upper = upper,
                 control = list(fnscale = -1))$par
 
-  par2 <- optim(par = same(x, D),
-                fn = function(par, x, distr) { ll(x, par, distr) },
+  par2 <- optim(par = unlist(same(D, x)),
+                fn = function(par, x, distr) { ll(Gam(par[1], par[2]), x) },
                 x = x,
-                distr = D,
                 method = method,
                 lower = lower,
                 upper = upper,
@@ -124,14 +127,14 @@ test_that("Gam estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(egamma(x, type = "mle")))
-  expect_true(is.numeric(egamma(x, type = "me")))
-  expect_true(is.numeric(egamma(x, type = "same")))
+  expect_true(is.list(egamma(x, type = "mle")))
+  expect_true(is.list(egamma(x, type = "me")))
+  expect_true(is.list(egamma(x, type = "same")))
 
   # 2-Way Calls
-  expect_identical(egamma(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(egamma(x, type = "me"), estim(x, D, type = "me"))
-  expect_identical(egamma(x, type = "same"), estim(x, D, type = "same"))
+  expect_identical(egamma(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(egamma(x, type = "me"), e(D, x, type = "me"))
+  expect_identical(egamma(x, type = "same"), e(D, x, type = "same"))
 
   # Simulations
   d <- test_consistency("me", D)
@@ -182,7 +185,6 @@ test_that("Gam small metrics work", {
   set.seed(1)
 
   prm <- list(name = "shape",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -194,18 +196,11 @@ test_that("Gam small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })
 
@@ -218,7 +213,6 @@ test_that("Gam large metrics work", {
   set.seed(1)
 
   prm <- list(name = "shape",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -227,19 +221,13 @@ test_that("Gam large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
   prm <- list(name = "scale",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -248,15 +236,10 @@ test_that("Gam large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
 })

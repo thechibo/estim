@@ -16,9 +16,11 @@ setClass("Pois",
 #'
 #' @param x an object of class `Pois`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Pois`.
 #' @param lambda numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -42,37 +44,27 @@ setValidity("Pois", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Pois
-setMethod("d", signature = c(x = "Pois"),
-          function(x) {
-            function(y, log = FALSE) {
-              dpois(y, lambda = x@lambda, log = log)
-            }
+setMethod("d", signature = c(distr = "Pois", x = "numeric"),
+          function(distr, x) {
+            dpois(x, lambda = distr@lambda)
           })
 
 #' @rdname Pois
-setMethod("p", signature = c(x = "Pois"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              ppois(q, lambda = x@lambda,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Pois", x = "numeric"),
+          function(distr, x) {
+            ppois(x, lambda = distr@lambda)
           })
 
 #' @rdname Pois
-setMethod("qn", signature = c(x = "Pois"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qpois(p, lambda = x@lambda,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Pois", x = "numeric"),
+          function(distr, x) {
+            qpois(x, lambda = distr@lambda)
           })
 
 #' @rdname Pois
-setMethod("r", signature = c(x = "Pois"),
-          function(x) {
-            function(n) {
-              rpois(n, lambda = x@lambda)
-            }
+setMethod("r", signature = c(distr = "Pois", n = "numeric"),
+          function(distr, n) {
+            rpois(n, lambda = distr@lambda)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -172,18 +164,19 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Pois
 #' @export
 llpois <- function(x, lambda) {
-  ll(x, prm = lambda, distr = Pois())
+  ll(Pois(lambda), x)
 }
 
 #' @rdname Pois
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Pois"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Pois", x = "numeric"),
+          definition = function(distr, x) {
 
-  log(prm) * sum(x) - length(x) * prm - sum(log(factorial(x)))
+  lam <- distr@lambda
+  log(lam) * sum(x) - length(x) * lam - sum(log(factorial(x)))
 
 })
 
@@ -191,29 +184,29 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Pois
 #' @export
 epois <- function(x, type = "mle", ...) {
 
-  estim(x, Pois(), type, ...)
+  e(Pois(), x, type, ...)
 
 }
 
 #' @rdname Pois
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Pois"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Pois", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(lambda = mean(x))
+  list(lambda = mean(x))
 
 })
 
 #' @rdname Pois
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Pois"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Pois", x = "numeric"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -221,7 +214,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Pois
 #' @export
 vpois <- function(lambda, type = "mle") {
 

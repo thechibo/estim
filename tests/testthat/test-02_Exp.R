@@ -41,6 +41,9 @@ test_that("Exp dpqr work", {
   expect_identical(d(D)(1), dexp(1, rate))
   expect_identical(p(D)(1), pexp(1, rate))
   expect_equal(qn(D)(0.5), qexp(0.5, rate), tolerance = 0.01)
+  expect_identical(d(D)(1), d(D, 1))
+  expect_identical(p(D)(1), p(D, 1))
+  expect_equal(qn(D)(0.5), qn(D, 0.5), tolerance = 0.01)
 
 })
 
@@ -76,7 +79,8 @@ test_that("Exp likelihood works", {
   expect_true(is.numeric(llexp(x, rate)))
 
   # 2-Way Calls
-  expect_identical(llexp(x, rate), ll(x, rate, D))
+  expect_identical(llexp(x, rate), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })
 
@@ -90,12 +94,12 @@ test_that("Exp estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(eexp(x, type = "mle")))
-  expect_true(is.numeric(eexp(x, type = "me")))
+  expect_true(is.list(eexp(x, type = "mle")))
+  expect_true(is.list(eexp(x, type = "me")))
 
   # 2-Way Calls
-  expect_identical(eexp(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(eexp(x, type = "me"), estim(x, D, type = "me"))
+  expect_identical(eexp(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(eexp(x, type = "me"), e(D, x, type = "me"))
 
   # Simulations
   d <- test_consistency("me", D)
@@ -149,18 +153,11 @@ test_that("Exp small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })
 
@@ -181,15 +178,10 @@ test_that("Exp large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
 })

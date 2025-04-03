@@ -2,23 +2,110 @@
 % Please edit documentation in R/01_generics.R
 \name{Distributions}
 \alias{Distributions}
+\alias{d}
+\alias{p}
+\alias{q}
+\alias{r}
+\alias{qn}
 \title{Distribution S4 Classes}
+\usage{
+d(distr, x, ...)
+
+p(distr, x, ...)
+
+qn(distr, x, ...)
+
+r(distr, n, ...)
+}
+\arguments{
+\item{distr}{a \code{Distribution} object.}
+
+\item{x}{numeric. The point to evaluate the function.}
+
+\item{...}{extra arguments.}
+
+\item{n}{numeric. The sample size.}
+}
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
-A collection of classes that provide a flexible and structured way to work
+A collection of S4 classes that provide a flexible and structured way to work
 with probability distributions.
+}
+\details{
+These S4 generic methods can work both as functions and as functionals
+(functions that return functions). The available distribution families are
+coded as S4 classes, specifically subclasses of the \code{Distribution}
+superclass. The methods can be used in two ways:
+
+Option 1: If both the \code{distr} argument and \code{x} or \code{n} are supplied, then the
+function is evaluated directly, as usual.
+
+Option 2: If only the \code{distr} argument is supplied, the method returns a
+function that takes as input the missing argument \code{x} or \code{n}, allowing the
+user to work with the function object itself. See examples.
+
+Looking for a specific distribution family?
+This help page is general. Use the help page of each distribution to see the
+available methods for the class, details, and examples. Check the See Also
+section.
+}
+\section{Functions}{
+\itemize{
+\item \code{d()}: density function
+
+\item \code{p()}: cumulative distribution function
+
+\item \code{qn()}: generalized inverse distribution function
+
+\item \code{r()}: random sample generator function
+
+}}
+\examples{
+# -----------------------------------------------------
+# Beta Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+D <- Beta(3, 5)
+x <- c(0.3, 0.8, 0.5)
+n <- 5
+
+# Density function
+df <- d(D) ; df(x) # df is a function itself
+d(D, x) # alternative way to use the function
+
+# Distribution function
+pf <- p(D) ; pf(x)
+p(D, x)
+
+# Inverse distribution function
+qf <- qn(D) ; qf(x)
+qn(D, x)
+
+# Random Generator function
+rf <- r(D) ; rf(n)
+r(D, n)
+}
+\seealso{
+\link{moments}, \link{loglikelihood}, \link{estimation}, \link{Bern},
+\link{Beta}, \link{Binom}, \link{Cat}, \link{Cauchy}, \link{Chisq}, \link{Dir}, \link{Exp},
+\link{Fisher}, \link{Gam}, \link{Geom}, \link{Laplace}, \link{Lnorm}, \link{Multigam}, \link{Multinom},
+\link{Nbinom}, \link{Norm}, \link{Pois}, \link{Stud}, \link{Unif}, \link{Weib}
 }

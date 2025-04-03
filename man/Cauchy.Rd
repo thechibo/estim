@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Cauchy.R
 \name{Cauchy}
 \alias{Cauchy}
-\alias{d,Cauchy-method}
-\alias{p,Cauchy-method}
-\alias{qn,Cauchy-method}
-\alias{r,Cauchy-method}
+\alias{d,Cauchy,numeric-method}
+\alias{p,Cauchy,numeric-method}
+\alias{qn,Cauchy,numeric-method}
+\alias{r,Cauchy,numeric-method}
 \alias{mean,Cauchy-method}
 \alias{median,Cauchy-method}
 \alias{mode,Cauchy-method}
@@ -15,21 +15,24 @@
 \alias{kurt,Cauchy-method}
 \alias{entro,Cauchy-method}
 \alias{finf,Cauchy-method}
-\alias{ll,numeric,numeric,Cauchy-method}
-\alias{mle,numeric,Cauchy-method}
-\alias{me,numeric,Cauchy-method}
+\alias{llcauchy}
+\alias{ll,Cauchy,numeric-method}
+\alias{ecauchy}
+\alias{mle,Cauchy,numeric-method}
+\alias{me,Cauchy,numeric-method}
+\alias{vcauchy}
 \alias{avar_mle,Cauchy-method}
 \title{Cauchy Distribution}
 \usage{
 Cauchy(location = 0, scale = 1)
 
-\S4method{d}{Cauchy}(x)
+\S4method{d}{Cauchy,numeric}(distr, x)
 
-\S4method{p}{Cauchy}(x)
+\S4method{p}{Cauchy,numeric}(distr, x)
 
-\S4method{qn}{Cauchy}(x)
+\S4method{qn}{Cauchy,numeric}(distr, x)
 
-\S4method{r}{Cauchy}(x)
+\S4method{r}{Cauchy,numeric}(distr, n)
 
 \S4method{mean}{Cauchy}(x)
 
@@ -49,47 +52,60 @@ Cauchy(location = 0, scale = 1)
 
 \S4method{finf}{Cauchy}(x)
 
-\S4method{ll}{numeric,numeric,Cauchy}(x, prm, distr)
+llcauchy(x, location, scale)
 
-\S4method{mle}{numeric,Cauchy}(
-  x,
+\S4method{ll}{Cauchy,numeric}(distr, x)
+
+ecauchy(x, type = "mle", ...)
+
+\S4method{mle}{Cauchy,numeric}(
   distr,
+  x,
   par0 = "me",
   method = "L-BFGS-B",
   lower = c(-Inf, 1e-05),
   upper = c(Inf, Inf)
 )
 
-\S4method{me}{numeric,Cauchy}(x, distr)
+\S4method{me}{Cauchy,numeric}(distr, x)
+
+vcauchy(location, scale, type = "mle")
 
 \S4method{avar_mle}{Cauchy}(distr)
 }
 \arguments{
 \item{location, scale}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Cauchy}.}
+
 \item{x}{an object of class \code{Cauchy}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Cauchy}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 
 \item{par0, method, lower, upper}{arguments passed to optim.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Cauchy Distribution

@@ -16,9 +16,11 @@ setClass("Binom",
 #'
 #' @param x an object of class `Binom`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Binom`.
 #' @param size,prob numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -48,37 +50,27 @@ setValidity("Binom", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Binom
-setMethod("d", signature = c(x = "Binom"),
-          function(x) {
-            function(y, log = FALSE) {
-              dbinom(y, size = x@size, prob = x@prob, log = log)
-            }
+setMethod("d", signature = c(distr = "Binom", x = "numeric"),
+          function(distr, x) {
+            dbinom(x, size = distr@size, prob = distr@prob)
           })
 
 #' @rdname Binom
-setMethod("p", signature = c(x = "Binom"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pbinom(q, size = x@size, prob = x@prob,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Binom", x = "numeric"),
+          function(distr, x) {
+            pbinom(x, size = distr@size, prob = distr@prob)
           })
 
 #' @rdname Binom
-setMethod("qn", signature = c(x = "Binom"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qbinom(p, size = x@size, prob = x@prob,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Binom", x = "numeric"),
+          function(distr, x) {
+            qbinom(x, size = distr@size, prob = distr@prob)
           })
 
 #' @rdname Binom
-setMethod("r", signature = c(x = "Binom"),
-          function(x) {
-            function(n) {
-              rbinom(n, size = x@size, prob = x@prob)
-            }
+setMethod("r", signature = c(distr = "Binom", n = "numeric"),
+          function(distr, n) {
+            rbinom(n, size = distr@size, prob = distr@prob)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -159,22 +151,24 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Binom
 #' @export
 llbinom <- function(x, size, prob) {
-  ll(x, prm = c(size, prob), distr = Binom())
+  ll(distr = Binom(size, prob), x)
 }
 
 #' @rdname Binom
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Binom"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Binom", x = "numeric"),
+          definition = function(distr, x) {
 
+  N <- distr@size
+  p <- distr@prob
   n <- length(x)
   s <- sum(x)
-  y <- sum(unlist(lapply(x, FUN = function(x) { lchoose(prm[1], x) })))
+  y <- sum(unlist(lapply(x, FUN = function(x) { lchoose(N, x) })))
 
-  log(prm[2]) * s + log(1 - prm[2]) * (n * prm[1] - s) + y
+  log(p) * s + log(1 - p) * (n * N - s) + y
 
 })
 
@@ -182,18 +176,18 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Binom
 #' @export
 ebinom <- function(x, size, type = "mle", ...) {
 
-  estim(x, Binom(size = size), type, ...)
+  e(Binom(size = size), x, type, ...)
 
 }
 
 #' @rdname Binom
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Binom"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Binom", x = "numeric"),
+          definition = function(distr, x) {
 
   p <- mean(x) / distr@size
 
@@ -202,16 +196,16 @@ setMethod("mle",
           Did you forget to specify the size of the Binomial?")
   }
 
-  c(prob = p)
+  list(prob = p)
 
 })
 
 #' @rdname Binom
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Binom"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Binom", x = "numeric"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -219,7 +213,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Binom
 #' @export
 vbinom <- function(size, prob, type = "mle") {
 

@@ -43,6 +43,9 @@ test_that("Geom dpqr work", {
   expect_identical(d(D)(1), dgeom(1, p))
   expect_identical(p(D)(1), pgeom(1, p))
   expect_equal(qn(D)(0.5), qgeom(0.5, p), tolerance = 0.01)
+  expect_identical(d(D)(1), d(D, 1))
+  expect_identical(p(D)(1), p(D, 1))
+  expect_equal(qn(D)(0.5), qn(D, 0.5), tolerance = 0.01)
 
 })
 
@@ -78,7 +81,8 @@ test_that("Geom likelihood works", {
   expect_true(is.numeric(llgeom(x, p)))
 
   # 2-Way Calls
-  expect_identical(llgeom(x, p), ll(x, p, D))
+  expect_identical(llgeom(x, p), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })
 
@@ -92,12 +96,12 @@ test_that("Geom estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(eexp(x, type = "mle")))
-  expect_true(is.numeric(eexp(x, type = "me")))
+  expect_true(is.list(eexp(x, type = "mle")))
+  expect_true(is.list(eexp(x, type = "me")))
 
   # 2-Way Calls
-  expect_identical(egeom(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(egeom(x, type = "me"), estim(x, D, type = "me"))
+  expect_identical(egeom(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(egeom(x, type = "me"), e(D, x, type = "me"))
 
   # Simulations
   d <- test_consistency("me", D)
@@ -139,7 +143,6 @@ test_that("Geom small metrics work", {
   set.seed(1)
 
   prm <- list(name = "prob",
-              pos = NULL,
               val = seq(0.5, 0.8, by = 0.1))
 
   expect_no_error(
@@ -151,18 +154,11 @@ test_that("Geom small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })
 
@@ -173,7 +169,6 @@ test_that("Geom large metrics work", {
   D <- Geom(p)
 
   prm <- list(name = "prob",
-              pos = NULL,
               val = seq(0.5, 0.8, by = 0.1))
 
   expect_no_error(
@@ -182,15 +177,10 @@ test_that("Geom large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
 })

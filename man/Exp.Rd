@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Exp.R
 \name{Exp}
 \alias{Exp}
-\alias{d,Exp-method}
-\alias{p,Exp-method}
-\alias{qn,Exp-method}
-\alias{r,Exp-method}
+\alias{d,Exp,numeric-method}
+\alias{p,Exp,numeric-method}
+\alias{qn,Exp,numeric-method}
+\alias{r,Exp,numeric-method}
 \alias{mean,Exp-method}
 \alias{median,Exp-method}
 \alias{mode,Exp-method}
@@ -15,22 +15,25 @@
 \alias{kurt,Exp-method}
 \alias{entro,Exp-method}
 \alias{finf,Exp-method}
-\alias{ll,numeric,numeric,Exp-method}
-\alias{mle,numeric,Exp-method}
-\alias{me,numeric,Exp-method}
+\alias{llexp}
+\alias{ll,Exp,numeric-method}
+\alias{eexp}
+\alias{mle,Exp,numeric-method}
+\alias{me,Exp,numeric-method}
+\alias{vexp}
 \alias{avar_mle,Exp-method}
 \alias{avar_me,Exp-method}
 \title{Exponential Distribution}
 \usage{
 Exp(rate = 1)
 
-\S4method{d}{Exp}(x)
+\S4method{d}{Exp,numeric}(distr, x)
 
-\S4method{p}{Exp}(x)
+\S4method{p}{Exp,numeric}(distr, x)
 
-\S4method{qn}{Exp}(x)
+\S4method{qn}{Exp,numeric}(distr, x)
 
-\S4method{r}{Exp}(x)
+\S4method{r}{Exp,numeric}(distr, n)
 
 \S4method{mean}{Exp}(x)
 
@@ -50,11 +53,17 @@ Exp(rate = 1)
 
 \S4method{finf}{Exp}(x)
 
-\S4method{ll}{numeric,numeric,Exp}(x, prm, distr)
+llexp(x, rate)
 
-\S4method{mle}{numeric,Exp}(x, distr)
+\S4method{ll}{Exp,numeric}(distr, x)
 
-\S4method{me}{numeric,Exp}(x, distr)
+eexp(x, type = "mle", ...)
+
+\S4method{mle}{Exp,numeric}(distr, x)
+
+\S4method{me}{Exp,numeric}(distr, x)
+
+vexp(rate, type = "mle")
 
 \S4method{avar_mle}{Exp}(distr)
 
@@ -63,27 +72,34 @@ Exp(rate = 1)
 \arguments{
 \item{rate}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Exp}.}
+
 \item{x}{an object of class \code{Exp}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Exp}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Exponential Distribution

@@ -37,6 +37,9 @@ test_that("Stud dpqr work", {
   expect_equal(d(D)(1), dt(1, df), tolerance = 0.01)
   expect_equal(p(D)(1), pt(1, df), tolerance = 0.01)
   expect_equal(qn(D)(0.5), qt(0.5, df), tolerance = 0.01)
+  expect_equal(d(D)(1), d(D, 1), tolerance = 0.01)
+  expect_equal(p(D)(1), p(D, 1), tolerance = 0.01)
+  expect_equal(qn(D)(0.5), qn(D, 0.5), tolerance = 0.01)
 
 })
 
@@ -78,13 +81,14 @@ test_that("Stud likelihood works", {
   set.seed(1)
   D <- Stud(3)
   n <- 100L
-  df <- get_params_list(D)$df
+  df <- D@df
   x <- r(D)(n)
 
   # Types
   expect_true(is.numeric(llt(x, df)))
 
   # 2-Way Calls
-  expect_identical(llt(x, df), ll(x, df, D))
+  expect_identical(llt(x, df), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })

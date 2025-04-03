@@ -1,6 +1,8 @@
 pandoc: '3.2'
-pkgdown: 2.1.0
+pkgdown: 2.1.1
 pkgdown_sha: ~
-articles:
-  estim: estim.html
-last_built: 2025-03-21T21:57Z
+articles: {}
+last_built: 2025-04-03T19:43Z
+urls:
+  reference: https:///thechibo.github.io/estim/reference
+  article: https:///thechibo.github.io/estim/articles

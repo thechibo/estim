@@ -2,25 +2,28 @@
 % Please edit documentation in R/02_Multinom.R
 \name{Multinom}
 \alias{Multinom}
-\alias{d,Multinom-method}
-\alias{r,Multinom-method}
+\alias{d,Multinom,numeric-method}
+\alias{r,Multinom,numeric-method}
 \alias{mean,Multinom-method}
 \alias{mode,Multinom-method}
 \alias{var,Multinom-method}
 \alias{entro,Multinom-method}
 \alias{finf,Multinom-method}
-\alias{ll,matrix,numeric,Multinom-method}
-\alias{mle,matrix,Multinom-method}
-\alias{me,matrix,Multinom-method}
+\alias{llmultinom}
+\alias{ll,Multinom,matrix-method}
+\alias{emultinom}
+\alias{mle,Multinom,matrix-method}
+\alias{me,Multinom,matrix-method}
+\alias{vmultinom}
 \alias{avar_mle,Multinom-method}
 \alias{avar_me,Multinom-method}
 \title{Multinomial Distribution}
 \usage{
 Multinom(size = 1, prob = c(0.5, 0.5))
 
-\S4method{d}{Multinom}(x)
+\S4method{d}{Multinom,numeric}(distr, x)
 
-\S4method{r}{Multinom}(x)
+\S4method{r}{Multinom,numeric}(distr, n)
 
 \S4method{mean}{Multinom}(x)
 
@@ -32,11 +35,17 @@ Multinom(size = 1, prob = c(0.5, 0.5))
 
 \S4method{finf}{Multinom}(x)
 
-\S4method{ll}{matrix,numeric,Multinom}(x, prm, distr)
+llmultinom(x, size, prob)
 
-\S4method{mle}{matrix,Multinom}(x, distr)
+\S4method{ll}{Multinom,matrix}(distr, x)
 
-\S4method{me}{matrix,Multinom}(x, distr)
+emultinom(x, type = "mle", ...)
+
+\S4method{mle}{Multinom,matrix}(distr, x)
+
+\S4method{me}{Multinom,matrix}(distr, x)
+
+vmultinom(size, prob, type = "mle")
 
 \S4method{avar_mle}{Multinom}(distr)
 
@@ -45,27 +54,34 @@ Multinom(size = 1, prob = c(0.5, 0.5))
 \arguments{
 \item{size, prob}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Multinom}.}
+
 \item{x}{an object of class \code{Multinom}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Multinom}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Multinomial Distribution

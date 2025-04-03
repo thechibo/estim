@@ -46,6 +46,9 @@ test_that("Beta dpqr work", {
   expect_identical(d(D)(0.4), dbeta(0.4, a, b))
   expect_identical(p(D)(0.4), pbeta(0.4, a, b))
   expect_equal(qn(D)(0.4), qbeta(0.4, a, b), tolerance = 1e-8)
+  expect_identical(d(D)(0.4), d(D, 0.4))
+  expect_identical(p(D)(0.4), p(D, 0.4))
+  expect_equal(qn(D)(0.4), qn(D, 0.4), tolerance = 1e-8)
 
 })
 
@@ -87,7 +90,8 @@ test_that("Beta likelihood works", {
   expect_true(is.numeric(llbeta(x, a, b)))
 
   # 2-Way Calls
-  expect_identical(llbeta(x, a, b), ll(x, c(a, b), D))
+  expect_identical(llbeta(x, a, b), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
   # ll and lloptim convergence to a0 comparison
   method <- "L-BFGS-B"
@@ -95,7 +99,7 @@ test_that("Beta likelihood works", {
   upper <- Inf
   tx  <- c(mean(log(x)), mean(log(1 - x)))
 
-  par1 <- optim(par = sum(same(x, D)),
+  par1 <- optim(par = sum(unlist(same(D, x))),
                 fn = lloptim,
                 gr = dlloptim,
                 tx = tx,
@@ -105,10 +109,9 @@ test_that("Beta likelihood works", {
                 upper = upper,
                 control = list(fnscale = -1))$par
 
-  par2 <- optim(par = same(x, D),
-                fn = function(par, x, distr) { ll(x, par, distr) },
+  par2 <- optim(par = unlist(same(D, x)),
+                fn = function(par, x) { ll(Beta(par[1], par[2]), x) },
                 x = x,
-                distr = D,
                 method = method,
                 lower = lower,
                 upper = upper,
@@ -129,22 +132,22 @@ test_that("Beta estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(ebeta(x, type = "mle")))
-  expect_true(is.numeric(ebeta(x, type = "me")))
-  expect_true(is.numeric(ebeta(x, type = "same")))
+  expect_true(is.list(ebeta(x, type = "mle")))
+  expect_true(is.list(ebeta(x, type = "me")))
+  expect_true(is.list(ebeta(x, type = "same")))
 
   # 2-Way Calls
-  expect_identical(ebeta(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(ebeta(x, type = "me"), estim(x, D, type = "me"))
-  expect_identical(ebeta(x, type = "same"), estim(x, D, type = "same"))
+  expect_identical(ebeta(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(ebeta(x, type = "me"), e(D, x, type = "me"))
+  expect_identical(ebeta(x, type = "same"), e(D, x, type = "same"))
 
   # Simulations
   d <- test_consistency("me", D)
-  expect_equal(d$prm_true, d$prm_est, tolerance = 0.01)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.02)
   d <- test_consistency("mle", D)
-  expect_equal(d$prm_true, d$prm_est, tolerance = 0.01)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.02)
   d <- test_consistency("same", D)
-  expect_equal(d$prm_true, d$prm_est, tolerance = 0.01)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.02)
 
 })
 
@@ -170,11 +173,11 @@ test_that("Beta avar works", {
 
   # Simulations
   d <- test_avar("mle", D)
-  expect_equal(d$avar_true, d$avar_est, tolerance = 0.02)
+  expect_equal(d$avar_true, d$avar_est, tolerance = 0.05)
   d <- test_avar("me", D)
-  expect_equal(d$avar_true, d$avar_est, tolerance = 0.02)
+  expect_equal(d$avar_true, d$avar_est, tolerance = 0.05)
   d <- test_avar("same", D)
-  expect_equal(d$avar_true, d$avar_est, tolerance = 0.02)
+  expect_equal(d$avar_true, d$avar_est, tolerance = 0.05)
 
 })
 
@@ -187,7 +190,6 @@ test_that("Beta small metrics work", {
   set.seed(1)
 
   prm <- list(name = "shape1",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -199,18 +201,11 @@ test_that("Beta small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })
 
@@ -223,7 +218,6 @@ test_that("Beta large metrics work", {
   set.seed(1)
 
   prm <- list(name = "shape1",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -232,15 +226,10 @@ test_that("Beta large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
 })

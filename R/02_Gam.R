@@ -16,10 +16,12 @@ setClass("Gam",
 #'
 #' @param x an object of class `Gam`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Gam`.
 #' @param shape,scale numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
 #' @param par0,method,lower,upper arguments passed to optim.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -49,37 +51,27 @@ setValidity("Gam", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Gam
-setMethod("d", signature = c(x = "Gam"),
-          function(x) {
-            function(y, log = FALSE) {
-              dgamma(y, shape = x@shape, scale = x@scale, log = log)
-            }
+setMethod("d", signature = c(distr = "Gam", x = "numeric"),
+          function(distr, x) {
+            dgamma(x, shape = distr@shape, scale = distr@scale)
           })
 
 #' @rdname Gam
-setMethod("p", signature = c(x = "Gam"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pgamma(q, shape = x@shape, scale = x@scale,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Gam", x = "numeric"),
+          function(distr, x) {
+            pgamma(x, shape = distr@shape, scale = distr@scale)
           })
 
 #' @rdname Gam
-setMethod("qn", signature = c(x = "Gam"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qgamma(p, shape = x@shape, scale = x@scale,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Gam", x = "numeric"),
+          function(distr, x) {
+            qgamma(x, shape = distr@shape, scale = distr@scale)
           })
 
 #' @rdname Gam
-setMethod("r", signature = c(x = "Gam"),
-          function(x) {
-            function(n) {
-              rgamma(n, shape = x@shape, scale = x@scale)
-            }
+setMethod("r", signature = c(distr = "Gam", n = "numeric"),
+          function(distr, n) {
+            rgamma(n, shape = distr@shape, scale = distr@scale)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -188,19 +180,20 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Gam
 #' @export
 llgamma <- function(x, shape, scale) {
-  ll(x, prm = c(shape, scale), distr = Gam())
+  ll(Gam(shape, scale), x)
 }
 
 #' @rdname Gam
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Gam"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Gam", x = "numeric"),
+          definition = function(distr, x) {
 
-  - length(x) * (lgamma(prm[1]) + prm[1] * log(prm[2])) +
-  (prm[1] - 1) * sum(log(x)) - sum(x) / prm[2]
+  a <- distr@shape
+  b <- distr@scale
+  - length(x) * (lgamma(a) + a * log(b)) + (a - 1) * sum(log(x)) - sum(x) / b
 
 })
 
@@ -228,18 +221,18 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Gam
 #' @export
 egamma <- function(x, type = "mle", ...) {
 
-  estim(x, Gam(), type, ...)
+  e(Gam(), x, type, ...)
 
 }
 
 #' @rdname Gam
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Gam"),
-          definition = function(x, distr,
+          signature  = c(distr = "Gam", x = "numeric"),
+          definition = function(distr, x,
                                 par0 = "same",
                                 method = "L-BFGS-B",
                                 lower = 1e-5,
@@ -247,7 +240,7 @@ setMethod("mle",
 
   tx <- c(log(mean(x)), mean(log(x)))
 
-  par <- optim(par = do.call(par0, list(x = x, distr = distr))[1],
+  par <- optim(par = do.call(par0, list(distr = distr, x = x))$shape,
                fn = lloptim,
                gr = dlloptim,
                tx = tx,
@@ -257,36 +250,34 @@ setMethod("mle",
                upper = upper,
                control = list(fnscale = -1))$par
 
-  par <- c(par, mean(x) / par)
-
-  names(par) <- c("shape", "scale")
-  par
+  list(shape = par, scale = mean(x) / par)
 
 })
 
 #' @rdname Gam
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Gam"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Gam", x = "numeric"),
+          definition = function(distr, x) {
 
   m  <- mean(x)
   m2 <- mean(x ^ 2)
   s2 <- m2 - m ^ 2
-  c(shape = m ^ 2 / s2, scale = s2 / m)
+
+  list(shape = m ^ 2 / s2, scale = s2 / m)
 
 })
 
 #' @rdname Gam
 setMethod("same",
-          signature  = c(x = "numeric", distr = "Gam"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Gam", x = "numeric"),
+          definition = function(distr, x) {
 
   mx  <- mean(x)
   mlx <- mean(log(x))
   mxlx <- mean(x * log(x))
   cxlx <- mxlx - mx * mlx
 
-  c(shape = mx / cxlx, scale = cxlx)
+  list(shape = mx / cxlx, scale = cxlx)
 
 })
 
@@ -294,7 +285,7 @@ setMethod("same",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Gam
 #' @export
 vgamma <- function(shape, scale, type = "mle") {
 

@@ -16,9 +16,11 @@ setClass("Norm",
 #'
 #' @param x an object of class `Norm`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Norm`.
 #' @param mean,sd numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -45,37 +47,27 @@ setValidity("Norm", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Norm
-setMethod("d", signature = c(x = "Norm"),
-          function(x) {
-            function(y, log = FALSE) {
-              dnorm(y, mean = x@mean, sd = x@sd, log = log)
-            }
+setMethod("d", signature = c(distr = "Norm", x = "numeric"),
+          function(distr, x) {
+            dnorm(x, mean = distr@mean, sd = distr@sd)
           })
 
 #' @rdname Norm
-setMethod("p", signature = c(x = "Norm"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pnorm(q, mean = x@mean, sd = x@sd,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Norm", x = "numeric"),
+          function(distr, x) {
+            pnorm(x, mean = distr@mean, sd = distr@sd)
           })
 
 #' @rdname Norm
-setMethod("qn", signature = c(x = "Norm"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qnorm(p, mean = x@mean, sd = x@sd,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Norm", x = "numeric"),
+          function(distr, x) {
+            qnorm(x, mean = distr@mean, sd = distr@sd)
           })
 
 #' @rdname Norm
-setMethod("r", signature = c(x = "Norm"),
-          function(x) {
-            function(n) {
-              rnorm(n, mean = x@mean, sd = x@sd)
-            }
+setMethod("r", signature = c(distr = "Norm", n = "numeric"),
+          function(distr, n) {
+            rnorm(n, mean = distr@mean, sd = distr@sd)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -174,19 +166,22 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Norm
 #' @export
 llnorm <- function(x, mean, sd) {
-  ll(x, prm = c(mean, sd), distr = Norm())
+  ll(Norm(mean, sd), x)
 }
 
 #' @rdname Norm
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Norm"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Norm", x = "numeric"),
+          definition = function(distr, x) {
 
-  - 0.5 * length(x) * log(2 * pi * prm[2] ^ 2) -
-              0.5 * sum((x - prm[1]) ^ 2) / prm[2] ^ 2
+  m <- distr@mean
+  s <- distr@sd
+
+  - 0.5 * length(x) * log(2 * pi * s ^ 2) -
+              0.5 * sum((x - m) ^ 2) / s ^ 2
 
 })
 
@@ -194,29 +189,29 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Norm
 #' @export
 enorm <- function(x, type = "mle", ...) {
 
-  estim(x, Norm(), type, ...)
+  e(Norm(), x, type, ...)
 
 }
 
 #' @rdname Norm
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Norm"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Norm", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(mean = mean(x), sd = bsd(x))
+  list(mean = mean(x), sd = bsd(x))
 
 })
 
 #' @rdname Norm
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Norm"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Norm", x = "numeric"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -224,7 +219,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Norm
 #' @export
 vnorm <- function(mean, sd, type = "mle") {
 

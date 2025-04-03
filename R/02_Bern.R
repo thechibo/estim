@@ -16,15 +16,18 @@ setClass("Bern",
 #'
 #' @param x an object of class `Bern`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Bern`.
-#' @param prm,prob numeric. The distribution parameter.
+#' @param prob numeric. The distribution parameter.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
 #' @importFrom extraDistr dbern pbern qbern rbern
 #' @export
 #'
-#' @seealso [dpqr], [moments]
+#' @seealso [Distributions], [moments]
 Bern <- function(prob = 0.5) {
   new("Bern", prob = prob)
 }
@@ -44,37 +47,27 @@ setValidity("Bern", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Bern
-setMethod("d", signature = c(x = "Bern"),
-          function(x) {
-            function(y, log = FALSE) {
-              extraDistr::dbern(y, prob = x@prob, log = log)
-            }
+setMethod("d", signature = c(distr = "Bern", x = "numeric"),
+          function(distr, x) {
+            extraDistr::dbern(x, prob = distr@prob)
           })
 
 #' @rdname Bern
-setMethod("p", signature = c(x = "Bern"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              extraDistr::pbern(q, prob = x@prob,
-                     lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Bern", x = "numeric"),
+          function(distr, x) {
+            extraDistr::pbern(x, prob = distr@prob)
           })
 
 #' @rdname Bern
-setMethod("qn", signature = c(x = "Bern"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              extraDistr::qbern(p, prob = x@prob,
-                     lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Bern", x = "numeric"),
+          function(distr, x) {
+            extraDistr::qbern(x, prob = distr@prob)
           })
 
 #' @rdname Bern
-setMethod("r", signature = c(x = "Bern"),
-          function(x) {
-            function(n) {
-              extraDistr::rbern(n, prob = x@prob)
-            }
+setMethod("r", signature = c(distr = "Bern", n = "numeric"),
+          function(distr, n) {
+            extraDistr::rbern(n, prob = distr@prob)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -187,21 +180,22 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Bern
 #' @export
 llbern <- function(x, prob) {
-  ll(x, prm = prob, distr = Bern())
+  ll(distr = Bern(prob), x = x)
 }
 
 #' @rdname Bern
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Bern"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Bern", x = "numeric"),
+          definition = function(distr, x) {
 
+  p <- distr@prob
   n <- length(x)
   s <- sum(x)
 
-  log(prm) * s + log(1 - prm) * (n - s)
+  log(p) * s + log(1 - p) * (n - s)
 
 })
 
@@ -209,29 +203,29 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Bern
 #' @export
 ebern <- function(x, type = "mle", ...) {
 
-  estim(x, Bern(), type, ...)
+  e(Bern(), x = x, type = type, ...)
 
 }
 
 #' @rdname Bern
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Bern"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Bern", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(prob = mean(x))
+  list(prob = mean(x))
 
 })
 
 #' @rdname Bern
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Bern"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Bern", x = "numeric"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -239,11 +233,11 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Bern
 #' @export
 vbern <- function(prob, type = "mle") {
 
-  avar(Bern(prob = prob), type = type)
+  avar(Bern(prob), type = type)
 
 }
 
@@ -252,8 +246,8 @@ setMethod("avar_mle",
           signature  = c(distr = "Bern"),
           definition = function(distr) {
 
-  prob <- distr@prob
-  c(prob = prob * (1 - prob))
+  p <- distr@prob
+  c(prob = p * (1 - p))
 
 })
 

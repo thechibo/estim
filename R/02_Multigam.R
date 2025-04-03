@@ -16,12 +16,14 @@ setClass("Multigam",
 #'
 #' @param x an object of class `Multigam`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Multigam`.
 #' @param shape,scale numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
 #' @param par0,method,lower,upper arguments passed to optim.
 #' @param log logical. Should the log of the density be returned?
 #' @param n numeric. The sample size.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -85,27 +87,20 @@ rmultigam <- function(n, shape, scale) {
 }
 
 #' @rdname Multigam
-setMethod("d", signature = c(x = "Multigam"),
-          function(x) {
-            function(y, log = FALSE) {
-              dmultigam(y, shape = x@shape, scale = x@scale, log = log)
-            }
+setMethod("d", signature = c(distr = "Multigam", x = "numeric"),
+          function(distr, x) {
+            dmultigam(x, shape = distr@shape, scale = distr@scale)
           })
 
 #' @rdname Multigam
-setMethod("r", signature = c(x = "Multigam"),
-          function(x) {
-            function(n) {
-              rmultigam(n, shape = x@shape, scale = x@scale)
-            }
+setMethod("r", signature = c(distr = "Multigam", n = "numeric"),
+          function(distr, n) {
+            rmultigam(n, shape = distr@shape, scale = distr@scale)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Moments                ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-## ATTENTION: some moments were copy-pasted from Gam
-# mean is ok
 
 #' @rdname Multigam
 setMethod("mean",
@@ -121,17 +116,7 @@ setMethod("var",
           signature  = c(x = "Multigam"),
           definition = function(x) {
 
-  x@shape * x@scale ^ 2
-
-})
-
-#' @rdname Multigam
-setMethod("entro",
-          signature  = c(x = "Multigam"),
-          definition = function(x) {
-
-  a <- x@shape
-  a + log(x@scale) + lgamma(a) + (1 - a) * digamma(a)
+  cumsum(x@shape * x@scale ^ 2)
 
 })
 
@@ -161,20 +146,20 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Multigam
 #' @export
 llmultigam <- function(x, shape, scale) {
-  ll(x, prm = c(shape, scale), distr = Multigam())
+  ll(Multigam(shape, scale), x)
 }
 
 #' @rdname Multigam
 setMethod("ll",
-          signature  = c(x = "matrix", prm = "numeric", distr = "Multigam"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Multigam", x = "matrix"),
+          definition = function(distr, x) {
 
-  k <- length(prm)
+  k <- length(distr@shape)
   sum(apply(x, MARGIN = 1, FUN = dmultigam,
-            shape = prm[1:(k - 1)], scale = prm[k], log = TRUE))
+            shape = distr@shape, scale = distr@scale, log = TRUE))
 
 })
 
@@ -206,7 +191,7 @@ setMethod("dlloptim",
   xk <- tx[k + 1]
 
   b <- xk / par
-  a <- idigamma(logz -log(b))
+  a <- idigamma(logz - log(b))
 
   db <- - xk / par ^ 2
   da <- 1 / (par * trigamma(a))
@@ -220,18 +205,18 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Multigam
 #' @export
 emultigam <- function(x, type = "mle", ...) {
 
-  estim(x, Multigam(), type, ...)
+  e(Multigam(), x, type, ...)
 
 }
 
 #' @rdname Multigam
 setMethod("mle",
-          signature  = c(x = "matrix", distr = "Multigam"),
-          definition = function(x, distr,
+          signature  = c(distr = "Multigam", x = "matrix"),
+          definition = function(distr, x,
                                 par0 = "same",
                                 method = "L-BFGS-B",
                                 lower = 1e-5,
@@ -242,7 +227,7 @@ setMethod("mle",
   xk <- mean(x[, k])
   tx <- c(logz, xk)
 
-  par <- optim(par = sum(do.call(par0, list(x = x, distr = distr))[1:k]),
+  par <- optim(par = sum(do.call(par0, list(distr = distr, x = x))$shape),
                fn = lloptim,
                gr = dlloptim,
                tx = tx,
@@ -255,59 +240,56 @@ setMethod("mle",
   b <- xk / par
   a <- idigamma(logz - log(b))
 
-  par <- c(a, b)
-
-  names(par) <- c(paste0("shape", 1:k), "scale")
-  par
+  list(shape = a, scale = b)
 
 })
 
 #' @rdname Multigam
 setMethod("me",
-          signature  = c(x = "matrix", distr = "Multigam"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Multigam", x = "matrix"),
+          definition = function(distr, x) {
 
   z <- fd(x)
   mz <- colMeans(z)
   scale <- mean(colVar(z) / mz)
   shape <- mz / scale
 
-  c(shape = shape, scale = scale)
+  list(shape = shape, scale = scale)
 
 })
 
-me2 <- function(x, distr) {
+me2 <- function(distr, x) {
 
   w <- gendir(x)
-  shape <- unname(me(w, Dir()))
+  shape <- unname(me(Dir(), w))
   xk <- mean(x[, ncol(x)])
   scale <- xk / sum(shape)
 
-  c(shape = shape, scale = scale)
+  list(shape = shape, scale = scale)
 
 }
 
 #' @rdname Multigam
 setMethod("same",
-          signature  = c(x = "matrix", distr = "Multigam"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Multigam", x = "matrix"),
+          definition = function(distr, x) {
 
   z <- fd(x)
   scale <- mean(diag(stats::cov(z, log(z))))
   shape <- colMeans(z) / scale
 
-  c(shape = shape, scale = scale)
+  list(shape = shape, scale = scale)
 
 })
 
-same2 <- function(x, distr) {
+same2 <- function(distr, x) {
 
   w <- gendir(x)
-  shape <- unname(same(w, Dir()))
+  shape <- unname(same(Dir(), w))
   xk <- mean(x[, ncol(x)])
   scale <- xk / sum(shape)
 
-  c(shape = shape, scale = scale)
+  list(shape = shape, scale = scale)
 
 }
 
@@ -315,7 +297,7 @@ same2 <- function(x, distr) {
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Multigam
 #' @export
 vmultigam <- function(shape, scale, type = "mle") {
 

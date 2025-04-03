@@ -47,6 +47,10 @@ test_that("Nbinom dpqr work", {
   expect_identical(p(D)(1), pnbinom(1, k, p))
   expect_identical(qn(D)(1), qnbinom(1, k, p))
   expect_identical(qn(D)(0), qnbinom(0, k, p))
+  expect_identical(d(D)(1), d(D, 1))
+  expect_identical(p(D)(1), p(D, 1))
+  expect_identical(qn(D)(1), qn(D, 1))
+  expect_identical(qn(D)(0), qn(D, 0))
 
   # Special Case: Geom
   D1 <- Nbinom(1, 0.7)
@@ -94,7 +98,8 @@ test_that("Nbinom likelihood works", {
   expect_true(is.numeric(llnbinom(x, size = k, prob = p)))
 
   # 2-Way Calls
-  expect_identical(llnbinom(x, k, p), ll(x, c(k, p), D))
+  expect_identical(llnbinom(x, k, p), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })
 
@@ -109,18 +114,18 @@ test_that("Nbinom estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(enbinom(x, k, type = "mle")))
-  expect_true(is.numeric(enbinom(x, k, type = "me")))
+  expect_true(is.list(enbinom(x, k, type = "mle")))
+  expect_true(is.list(enbinom(x, k, type = "me")))
 
   # 2-Way Calls
-  expect_identical(enbinom(x, k, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(enbinom(x, k, type = "me"), estim(x, D, type = "me"))
+  expect_identical(enbinom(x, k, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(enbinom(x, k, type = "me"), e(D, x, type = "me"))
 
   # Simulations
   d <- test_consistency("me", D)
-  expect_equal(d$prm_true["prob"], d$prm_est, tolerance = 0.01)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.01)
   d <- test_consistency("mle", D)
-  expect_equal(d$prm_true["prob"], d$prm_est, tolerance = 0.02)
+  expect_equal(d$prm_true, d$prm_est, tolerance = 0.02)
 
 })
 
@@ -161,7 +166,6 @@ test_that("Nbinom small metrics work", {
   set.seed(1)
 
   prm <- list(name = "prob",
-              pos = NULL,
               val = seq(0.5, 0.8, by = 0.1))
 
   expect_no_error(
@@ -173,18 +177,11 @@ test_that("Nbinom small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })
 
@@ -197,7 +194,6 @@ test_that("Nbinom large metrics work", {
   set.seed(1)
 
   prm <- list(name = "prob",
-              pos = NULL,
               val = seq(0.5, 0.8, by = 0.1))
 
   expect_no_error(
@@ -206,15 +202,10 @@ test_that("Nbinom large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
 })

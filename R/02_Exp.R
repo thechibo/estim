@@ -16,9 +16,11 @@ setClass("Exp",
 #'
 #' @param x an object of class `Exp`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Exp`.
 #' @param rate numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -42,35 +44,27 @@ setValidity("Exp", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Exp
-setMethod("d", signature = c(x = "Exp"),
-          function(x) {
-            function(y, log = FALSE) {
-              dexp(y, rate = x@rate, log = log)
-            }
+setMethod("d", signature = c(distr = "Exp", x = "numeric"),
+          function(distr, x) {
+            dexp(x, rate = distr@rate)
           })
 
 #' @rdname Exp
-setMethod("p", signature = c(x = "Exp"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pexp(q, rate = x@rate, lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Exp", x = "numeric"),
+          function(distr, x) {
+            pexp(x, rate = distr@rate)
           })
 
 #' @rdname Exp
-setMethod("qn", signature = c(x = "Exp"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qexp(p, rate = x@rate, lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Exp", x = "numeric"),
+          function(distr, x) {
+            qexp(x, rate = distr@rate)
           })
 
 #' @rdname Exp
-setMethod("r", signature = c(x = "Exp"),
-          function(x) {
-            function(n) {
-              rexp(n, rate = x@rate)
-            }
+setMethod("r", signature = c(distr = "Exp", n = "numeric"),
+          function(distr, n) {
+            rexp(n, rate = distr@rate)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -162,18 +156,19 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Exp
 #' @export
 llexp <- function(x, rate) {
-  ll(x, prm = rate, distr = Exp())
+  ll(Exp(rate), x)
 }
 
 #' @rdname Exp
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Exp"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Exp", x = "numeric"),
+          definition = function(distr, x) {
 
-  length(x) * log(prm) - prm * sum(x)
+  rate <- distr@rate
+  length(x) * log(rate) - rate * sum(x)
 
 })
 
@@ -181,29 +176,29 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Exp
 #' @export
 eexp <- function(x, type = "mle", ...) {
 
-  estim(x, Exp(), type, ...)
+  e(Exp(), x, type, ...)
 
 }
 
 #' @rdname Exp
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Exp"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Exp", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(rate = 1 / mean(x))
+  list(rate = 1 / mean(x))
 
 })
 
 #' @rdname Exp
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Exp"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Exp", x = "numeric"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -211,7 +206,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Exp
 #' @export
 vexp <- function(rate, type = "mle") {
 

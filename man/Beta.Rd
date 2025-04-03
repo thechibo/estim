@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Beta.R
 \name{Beta}
 \alias{Beta}
-\alias{d,Beta-method}
-\alias{p,Beta-method}
-\alias{qn,Beta-method}
-\alias{r,Beta-method}
+\alias{d,Beta,numeric-method}
+\alias{p,Beta,numeric-method}
+\alias{qn,Beta,numeric-method}
+\alias{r,Beta,numeric-method}
 \alias{mean,Beta-method}
 \alias{median,Beta-method}
 \alias{mode,Beta-method}
@@ -16,10 +16,11 @@
 \alias{entro,Beta-method}
 \alias{finf,Beta-method}
 \alias{llbeta}
-\alias{ll,numeric,numeric,Beta-method}
-\alias{mle,numeric,Beta-method}
-\alias{me,numeric,Beta-method}
-\alias{same,numeric,Beta-method}
+\alias{ll,Beta,numeric-method}
+\alias{ebeta}
+\alias{mle,Beta,numeric-method}
+\alias{me,Beta,numeric-method}
+\alias{same,Beta,numeric-method}
 \alias{vbeta}
 \alias{avar_mle,Beta-method}
 \alias{avar_me,Beta-method}
@@ -28,13 +29,13 @@
 \usage{
 Beta(shape1 = 1, shape2 = 1)
 
-\S4method{d}{Beta}(x)
+\S4method{d}{Beta,numeric}(distr, x)
 
-\S4method{p}{Beta}(x)
+\S4method{p}{Beta,numeric}(distr, x)
 
-\S4method{qn}{Beta}(x)
+\S4method{qn}{Beta,numeric}(distr, x)
 
-\S4method{r}{Beta}(x)
+\S4method{r}{Beta,numeric}(distr, n)
 
 \S4method{mean}{Beta}(x)
 
@@ -56,13 +57,15 @@ Beta(shape1 = 1, shape2 = 1)
 
 llbeta(x, shape1, shape2)
 
-\S4method{ll}{numeric,numeric,Beta}(x, prm, distr)
+\S4method{ll}{Beta,numeric}(distr, x)
 
-\S4method{mle}{numeric,Beta}(x, distr, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+ebeta(x, type = "mle", ...)
 
-\S4method{me}{numeric,Beta}(x, distr)
+\S4method{mle}{Beta,numeric}(distr, x, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
 
-\S4method{same}{numeric,Beta}(x, distr)
+\S4method{me}{Beta,numeric}(distr, x)
+
+\S4method{same}{Beta,numeric}(distr, x)
 
 vbeta(shape1, shape2, type = "mle")
 
@@ -73,34 +76,163 @@ vbeta(shape1, shape2, type = "mle")
 \S4method{avar_same}{Beta}(distr)
 }
 \arguments{
-\item{shape1, shape2}{numeric. The distribution parameters.}
+\item{shape1, shape2}{numeric. The distribution parameters (positive real
+numbers).}
 
-\item{x}{an object of class \code{Beta}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Beta} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Beta} instead.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
-
-\item{distr}{an object of class \code{Beta}.}
-
-\item{par0, method, lower, upper}{arguments passed to optim.}
+\item{n}{numeric. The sample size.}
 
 \item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
+
+\item{par0, method, lower, upper}{arguments passed to optim for the mle
+optimization.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
-Beta Distribution
+The Beta distribution is a absolute continuous probability distribution with
+support \eqn{S = [0,1]}, parameterized by two shape parameters,
+\eqn{\alpha > 0} and \eqn{\beta > 0}.
+}
+\details{
+The probability density function (PDF) of the Beta distribution is given by:
+\deqn{ f(x; \alpha, \beta) = \frac{x^{\alpha - 1} (1 - x)^{\beta - 1}}{B(\alpha, \beta)},
+\quad \alpha\in\mathbb{R}_+, \, \beta\in\mathbb{R}_+}
+for \eqn{x \in S = [0, 1]}, where \eqn{B(\alpha, \beta)} is the Beta function:
+\deqn{ B(\alpha, \beta) = \int_0^1 t^{\alpha - 1} (1 - t)^{\beta - 1} dt.}
+}
+\section{Moments}{
+
+The Beta distribution has the following known moments:
+\itemize{
+\item \strong{Mean}: \eqn{E[X] = \frac{\alpha}{\alpha + \beta}.}
+\item \strong{Median}: Approximated by \eqn{\frac{\alpha - 1/3}{\alpha + \beta - 2/3}}, for \eqn{\alpha, \beta > 1}
+\item \strong{Mode}: \eqn{\frac{\alpha - 1}{\alpha + \beta - 2}}, for \eqn{\alpha, \beta > 1.}
+\item \strong{Variance}: \eqn{Var(X) = \frac{\alpha\beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}.}
+\item \strong{Skewness}: \eqn{\frac{2(\beta - \alpha)\sqrt{\alpha + \beta + 1}}{(\alpha + \beta + 2)\sqrt{\alpha\beta}}}
+\item \strong{Kurtosis}: \eqn{\frac{6[(\alpha - \beta)^2 (\alpha + \beta + 1) - \alpha\beta (\alpha + \beta + 2)]}{\alpha\beta (\alpha + \beta + 2) (\alpha + \beta + 3)}}
+\item \strong{Entropy}: \eqn{H(X) = \log B(\alpha, \beta) - (\alpha - 1)\psi(\alpha) - (\beta - 1)\psi(\beta) + (\alpha + \beta - 2)\psi(\alpha + \beta)}
+\item \strong{Fisher Information}: The Fisher information matrix for \eqn{(\alpha, \beta)} is given by:
+\deqn{ I(\alpha, \beta) = \begin{bmatrix} \psi' (\alpha) - \psi' (\alpha + \beta) & -\psi' (\alpha + \beta) \\ -\psi' (\alpha + \beta) & \psi' (\beta) - \psi' (\alpha + \beta) \end{bmatrix} }
+}
+}
+
+\section{Estimation}{
+
+The parameters \eqn{(\alpha, \beta)} can be estimated using:
+\itemize{
+\item \strong{Method of Moments}: Solving for \eqn{\alpha} and \eqn{\beta} using sample mean and variance.
+\item \strong{Maximum Likelihood Estimation (MLE)}: Numerical methods are typically used to maximize the log-likelihood function.
+}
+}
+
+\examples{
+# -----------------------------------------------------
+# Beta Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+a <- 3 ; b <- 5
+D <- Beta(a, b)
+x <- c(0.3, 0.8, 0.5)
+n <- 5
+
+# Density function
+df <- d(D) ; df(x) # df is a function itself
+d(D, x) # alternative way to use the function
+
+# Distribution function
+pf <- p(D) ; pf(x)
+p(D, x)
+
+# Inverse distribution function
+qf <- qn(D) ; qf(x)
+qn(D, x)
+
+# Random Generator function
+rf <- r(D) ; rf(n)
+r(D, n)
+
+# List of all available moments
+mom <- moments(D)
+
+# Expectation
+mean(D)
+mom$mean
+
+# Variance and Standard Deviation
+var(D)
+sd(D)
+
+# Skewness and Excess Kurtosis
+skew(D)
+kurt(D)
+
+# Entropy
+entro(D)
+
+# Fisher Information Matrix
+finf(D)
+
+# Point Estimation - The e Functions
+
+ebeta(x, type = "mle")
+ebeta(x, type = "me")
+ebeta(x, type = "same")
+
+mle(D, x)
+me(D, x)
+same(D, x)
+e(D, x, type = "mle")
+
+mle("beta", x) # the distr argument can be a character
+
+# Asymptotic Variance - The v Functions
+
+vbeta(a, b, type = "mle")
+vbeta(a, b, type = "me")
+vbeta(a, b, type = "same")
+
+avar_mle(D)
+avar_me(D)
+avar_same(D)
+
+avar(D, type = "mle")
+}
+\references{
+\itemize{
+\item Tamae, H., Irie, K. & Kubokawa, T. (2020), A score-adjusted approach to
+closed-form estimators for the gamma and beta distributions, Japanese Journal
+of Statistics and Data Science 3, 543–561.
+\item Papadatos, N. (2022), On point estimators for gamma and beta distributions,
+arXiv preprint arXiv:2205.10799.
+\item Oikonomidis, I. & Trevezas, S. (2025), Moment-Type Estimators for the
+Dirichlet and the Multivariate Gamma Distributions, arXiv,
+https://arxiv.org/abs/2311.15025
+}
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dbeta]{dbeta()}}, \code{\link[=pbeta]{pbeta()}}, \code{\link[=qbeta]{qbeta()}}, \code{\link[=rbeta]{rbeta()}}
 }

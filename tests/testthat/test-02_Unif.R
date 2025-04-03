@@ -46,6 +46,9 @@ test_that("Unif dpqr work", {
   expect_identical(d(D)(2.5), dunif(2.5, a, b))
   expect_identical(p(D)(2.5), punif(2.5, a, b))
   expect_equal(qn(D)(0.4), qunif(0.4, a, b), tolerance = 1e-8)
+  expect_identical(d(D)(2.5), d(D, 2.5))
+  expect_identical(p(D)(2.5), p(D, 2.5))
+  expect_equal(qn(D)(0.4), qn(D, 0.4), tolerance = 1e-8)
 
 })
 
@@ -89,7 +92,8 @@ test_that("Unif likelihood works", {
   expect_true(is.numeric(llunif(x, a, b)))
 
   # 2-Way Calls
-  expect_identical(llunif(x, a, b), ll(x, c(a, b), D))
+  expect_identical(llunif(x, a, b), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })
 
@@ -104,12 +108,12 @@ test_that("Unif estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(eunif(x, type = "mle")))
-  expect_true(is.numeric(eunif(x, type = "me")))
+  expect_true(is.list(eunif(x, type = "mle")))
+  expect_true(is.list(eunif(x, type = "me")))
 
   # 2-Way Calls
-  expect_identical(eunif(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(eunif(x, type = "me"), estim(x, D, type = "me"))
+  expect_identical(eunif(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(eunif(x, type = "me"), e(D, x, type = "me"))
 
   # Simulations
   d <- test_consistency("me", D)
@@ -128,7 +132,6 @@ test_that("Unif small metrics work", {
   set.seed(1)
 
   prm <- list(name = "min",
-              pos = NULL,
               val = seq(0.5, 2, by = 0.5))
 
   expect_no_error(
@@ -140,17 +143,10 @@ test_that("Unif small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })

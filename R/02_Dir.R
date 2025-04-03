@@ -16,10 +16,12 @@ setClass("Dir",
 #'
 #' @param x an object of class `Dir`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Dir`.
 #' @param alpha numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
 #' @param par0,method,lower,upper arguments passed to optim.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -44,19 +46,15 @@ setValidity("Dir", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Dir
-setMethod("d", signature = c(x = "Dir"),
-          function(x) {
-            function(y, log = FALSE) {
-              extraDistr::ddirichlet(y, alpha = x@alpha, log = log)
-            }
+setMethod("d", signature = c(distr = "Dir", x = "numeric"),
+          function(distr, x) {
+            extraDistr::ddirichlet(x, alpha = distr@alpha)
           })
 
 #' @rdname Dir
-setMethod("r", signature = c(x = "Dir"),
-          function(x) {
-            function(n) {
-              extraDistr::rdirichlet(n, alpha = x@alpha)
-            }
+setMethod("r", signature = c(distr = "Dir", n = "numeric"),
+          function(distr, n) {
+            extraDistr::rdirichlet(n, alpha = distr@alpha)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,18 +131,19 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Dir
 #' @export
 lldirichlet <- function(x, alpha) {
-  ll(x, prm = alpha, distr = Dir())
+  ll(distr = Dir(alpha), x)
 }
 
 #' @rdname Dir
 setMethod("ll",
-          signature  = c(x = "matrix", prm = "numeric", distr = "Dir"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Dir", x = "matrix"),
+          definition = function(distr, x) {
 
-  nrow(x) * (lgamma(sum(prm)) - sum(lgamma(prm))) + sum(log(x) %*% diag(prm - 1))
+  a <- distr@alpha
+  nrow(x) * (lgamma(sum(a)) - sum(lgamma(a))) + sum(log(x) %*% diag(a - 1))
 
 })
 
@@ -157,6 +156,7 @@ setMethod("lloptim",
           definition = function(par, tx, distr) {
 
   a <- idigamma(digamma(par) + tx)
+
   lgamma(sum(a)) - sum(lgamma(a)) + sum((a - 1) * tx)
 
 })
@@ -180,18 +180,18 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Dir
 #' @export
 edirichlet <- function(x, type = "mle", ...) {
 
-  estim(x, Dir(), type, ...)
+  e(Dir(), x, type, ...)
 
 }
 
 #' @rdname Dir
 setMethod("mle",
-          signature  = c(x = "matrix", distr = "Dir"),
-          definition = function(x, distr,
+          signature  = c(distr = "Dir", x = "matrix"),
+          definition = function(distr, x,
                                 par0 = "same",
                                 method = "L-BFGS-B",
                                 lower = 1e-5,
@@ -199,7 +199,7 @@ setMethod("mle",
 
   tx  <- colMeans(log(x))
 
-  par <- optim(par = sum(do.call(par0, list(x = x, distr = distr))),
+  par <- optim(par = sum(unlist(do.call(par0, list(distr = distr, x = x)))),
                fn = lloptim,
                gr = dlloptim,
                tx = tx,
@@ -209,62 +209,51 @@ setMethod("mle",
                upper = upper,
                control = list(fnscale = -1))$par
 
-  alpha <- idigamma(digamma(par) + tx)
-
-  names(alpha) <- paste0("alpha", seq_along(alpha))
-  alpha
+  list(alpha = idigamma(digamma(par) + tx))
 
 })
 
 #' @rdname Dir
 setMethod("me",
-          signature  = c(x = "matrix", distr = "Dir"),
-          definition = function(x, distr) {
-
-  m  <- colMeans(x)
-  m2 <- colMeans(x ^ 2)
-  alpha  <- m * (m - m2) / (m2 - m ^ 2)
-
-  names(alpha) <- paste0("alpha", seq_along(alpha))
-  alpha
-
-})
-
-#' @rdname Dir
-setMethod("same",
-          signature  = c(x = "matrix", distr = "Dir"),
-          definition = function(x, distr) {
-
-  m  <- colMeans(x)
-  logm  <- colMeans(log(x))
-  mlogm <- colMeans(x * log(x))
-
-  alpha  <- (length(m) - 1) * m / sum(mlogm - m * logm)
-
-  names(alpha) <- paste0("alpha", seq_along(alpha))
-  alpha
-
-})
-
-me2dir <- function(x) {
+          signature  = c(distr = "Dir", x = "matrix"),
+          definition = function(distr, x) {
 
   m  <- colMeans(x)
   m2  <- colMeans(x ^ 2)
 
   a0 <- (1 - sum(m2)) / (sum(m2) - sum(m ^ 2))
-  alpha <- a0 * m
 
-  names(alpha) <- paste0("alpha", seq_along(alpha))
-  alpha
+  list(alpha = a0 * m)
+
+})
+
+#' @rdname Dir
+setMethod("same",
+          signature  = c(distr = "Dir", x = "matrix"),
+          definition = function(distr, x) {
+
+  m  <- colMeans(x)
+  logm  <- colMeans(log(x))
+  mlogm <- colMeans(x * log(x))
+
+  list(alpha  = (length(m) - 1) * m / sum(mlogm - m * logm))
+
+})
+
+me1dir <- function(x) {
+
+  m  <- colMeans(x)
+  m2 <- colMeans(x ^ 2)
+
+  list(alpha = m * (m - m2) / (m2 - m ^ 2))
 
 }
-
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Dir
 #' @export
 vdirichlet <- function(alpha, type = "mle") {
 
@@ -297,21 +286,24 @@ setMethod("avar_me",
           signature  = c(distr = "Dir"),
           definition = function(distr) {
 
+  # Preliminaries
   a <- distr@alpha
-  k <- length(a)
   a0 <- sum(a)
-  b <- a0 - a
+  k <- length(a)
+  dn <- a0 ^ 2 - sum(a ^ 2)
+  a1 <- a0 + 1
+  a2 <- a0 + 2
+  a3 <- a0 + 3
+  s2 <- sum(a^2)
+  s3 <- sum(a^3)
 
-  matai <- Matrix(a, k, 1) %*% Matrix(1, 1, k)
-  mataj <- Matrix(1, k, 1) %*% Matrix(a, 1, k)
+  c0 <- ((- 4 * a0 * (a0 - 1) * a1 ^ 2 * s3 +
+         (2 * a0 ^ 3 + a0 ^ 2 + a0) * s2 ^ 2 +
+         (2 * a0 ^ 5 + 2 * a0 ^ 4 - 6 * a0 ^ 3 - 4 * a0 ^ 2 - 2 * a0) * s2 +
+         a0 ^ 6 + a0 ^ 5 + 2 * a0 ^ 3) / (dn ^ 2 * a1 * a2 * a3))
 
-  com <- (Matrix((a + 1) / b, k, 1) %*% Matrix((a + 1) / b, 1, k)) *
-    (diag(a0, k, k) - matai) * mataj * a0 / (a0 + 2)
-
-  A <- diag(1 / (a + 1)) * 2 * (a0 + 1) ^ 2 / (a0 + 3)
-  B <- (2 * a0 ^ 2 + a0 + 1) / ((a0 + 1) * (a0 + 3))
-
-  D <- com * (A - B)
+  D <- (a0 / a1) * diag(a) + 2*a0 / (dn*a2) * (a %*% t(a^2) + a^2 %*% t(a)) +
+    c0 * a %*% t(a)
 
   D <- as.matrix(nearPD(D))
   rownames(D) <- paste0("alpha", seq_along(a))
@@ -350,22 +342,27 @@ setMethod("avar_same",
 
 })
 
-avar_me2dir <- function(distr) {
+avar_me1dir <- function(distr) {
 
-  # Preliminaries
   a <- distr@alpha
-  a0 <- sum(a)
   k <- length(a)
-  dn <- a0 ^ 2 - sum(a ^ 2)
-  a1 <- a0 + 1
-  a2 <- a0 + 2
-  a3 <- a0 + 3
-  s2 <- sum(a^2)
-  s3 <- sum(a^3)
+  a0 <- sum(a)
+  b <- a0 - a
 
-  # Matrix
-  (a0 / a1) * diag(a) + 2*a0 / (dn*a2) * (a %*% t(a^2) + a^2 %*% t(a)) +
-    ((-4*a0*(a0-1)*a1^2*s3+(2*a0^3+a0^2+a0)*s2^2+(2*a0^5+2*a0^4-6*a0^3-4*a0^2-2*a0)*s2+a0^6+a0^5+2*a0^3)/(dn^2*a1*a2*a3))* a %*% t(a)
+  matai <- Matrix(a, k, 1) %*% Matrix(1, 1, k)
+  mataj <- Matrix(1, k, 1) %*% Matrix(a, 1, k)
 
+  com <- (Matrix((a + 1) / b, k, 1) %*% Matrix((a + 1) / b, 1, k)) *
+    (diag(a0, k, k) - matai) * mataj * a0 / (a0 + 2)
+
+  A <- diag(1 / (a + 1)) * 2 * (a0 + 1) ^ 2 / (a0 + 3)
+  B <- (2 * a0 ^ 2 + a0 + 1) / ((a0 + 1) * (a0 + 3))
+
+  D <- com * (A - B)
+
+  D <- as.matrix(nearPD(D))
+  rownames(D) <- paste0("alpha", seq_along(a))
+  colnames(D) <- paste0("alpha", seq_along(a))
+  D
 
 }

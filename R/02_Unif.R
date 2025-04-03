@@ -16,9 +16,11 @@ setClass("Unif",
 #'
 #' @param x an object of class `Unif`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Unif`.
 #' @param min,max numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -45,37 +47,27 @@ setValidity("Unif", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Unif
-setMethod("d", signature = c(x = "Unif"),
-          function(x) {
-            function(y, log = FALSE) {
-              dunif(y, min = x@min, max = x@max, log = log)
-            }
+setMethod("d", signature = c(distr = "Unif", x = "numeric"),
+          function(distr, x) {
+            dunif(x, min = distr@min, max = distr@max)
           })
 
 #' @rdname Unif
-setMethod("p", signature = c(x = "Unif"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              punif(q, min = x@min, max = x@max,
-                     lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Unif", x = "numeric"),
+          function(distr, x) {
+            punif(x, min = distr@min, max = distr@max)
           })
 
 #' @rdname Unif
-setMethod("qn", signature = c(x = "Unif"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qunif(p, min = x@min, max = x@max,
-                     lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Unif", x = "numeric"),
+          function(distr, x) {
+            qunif(x, min = distr@min, max = distr@max)
           })
 
 #' @rdname Unif
-setMethod("r", signature = c(x = "Unif"),
-          function(x) {
-            function(n) {
-              runif(n, min = x@min, max = x@max)
-            }
+setMethod("r", signature = c(distr = "Unif", n = "numeric"),
+          function(distr, n) {
+            runif(n, min = distr@min, max = distr@max)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -161,21 +153,23 @@ setMethod("entro",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Unif
 #' @export
 llunif <- function(x, min, max) {
-  ll(x, prm = c(min, max), distr = Unif())
+  ll(Unif(min, max), x)
 }
 
 #' @rdname Unif
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Unif"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Unif", x = "numeric"),
+          definition = function(distr, x) {
 
-  if (max(x) > prm[2] || min(x) < prm[1]) {
+  m <- distr@min
+  M <- distr@max
+  if (max(x) > M || min(x) < m) {
     return(0)
   } else {
-    return(- length(x) * log(prm[2] - prm[1]))
+    return(- length(x) * log(M - m))
   }
 
 })
@@ -184,30 +178,31 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Unif
 #' @export
 eunif <- function(x, type = "mle", ...) {
 
-  estim(x, Unif(), type, ...)
+  e(Unif(), x, type, ...)
 
 }
 
 #' @rdname Unif
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Unif"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Unif", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(min = min(x), max = max(x))
+  list(min = min(x), max = max(x))
 
 })
 
 #' @rdname Unif
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Unif"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Unif", x = "numeric"),
+          definition = function(distr, x) {
 
   m <- mean(x)
   s <- sqrt(3) * bsd(x)
-  c(min = m - s, max = m + s)
+
+  list(min = m - s, max = m + s)
 
 })

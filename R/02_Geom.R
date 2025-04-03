@@ -16,9 +16,11 @@ setClass("Geom",
 #'
 #' @param x an object of class `Geom`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Geom`.
 #' @param prob numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -42,37 +44,27 @@ setValidity("Geom", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Geom
-setMethod("d", signature = c(x = "Geom"),
-          function(x) {
-            function(y, log = FALSE) {
-              dgeom(y, prob = x@prob, log = log)
-            }
+setMethod("d", signature = c(distr = "Geom", x = "numeric"),
+          function(distr, x) {
+            dgeom(x, prob = distr@prob)
           })
 
 #' @rdname Geom
-setMethod("p", signature = c(x = "Geom"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pgeom(q, prob = x@prob,
-                      lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Geom", x = "numeric"),
+          function(distr, x) {
+            pgeom(x, prob = distr@prob)
           })
 
 #' @rdname Geom
-setMethod("qn", signature = c(x = "Geom"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qgeom(p, prob = x@prob,
-                      lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Geom", x = "numeric"),
+          function(distr, x) {
+            qgeom(x, prob = distr@prob)
           })
 
 #' @rdname Geom
-setMethod("r", signature = c(x = "Geom"),
-          function(x) {
-            function(n) {
-              rgeom(n, prob = x@prob)
-            }
+setMethod("r", signature = c(distr = "Geom", n = "numeric"),
+          function(distr, n) {
+            rgeom(n, prob = distr@prob)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -170,18 +162,19 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Geom
 #' @export
 llgeom <- function(x, prob) {
-  ll(x, prm = prob, distr = Geom())
+  ll(Geom(prob), x)
 }
 
 #' @rdname Geom
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Geom"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Geom", x = "numeric"),
+          definition = function(distr, x) {
 
-  log(1 - prm) * sum(x) + log(prm) * length(x)
+  p <- distr@prob
+  log(1 - p) * sum(x) + log(p) * length(x)
 
 })
 
@@ -189,29 +182,29 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Geom
 #' @export
 egeom <- function(x, type = "mle", ...) {
 
-  estim(x, Geom(), type, ...)
+  e(Geom(), x, type, ...)
 
 }
 
 #' @rdname Geom
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Geom"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Geom", x = "numeric"),
+          definition = function(distr, x) {
 
-  c(prob = 1 / (1 + mean(x)))
+  list(prob = 1 / (1 + mean(x)))
 
 })
 
 #' @rdname Geom
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Geom"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Geom", x = "numeric"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -219,7 +212,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Geom
 #' @export
 vgeom <- function(prob, type = "mle") {
 

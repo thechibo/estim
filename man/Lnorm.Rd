@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Lnorm.R
 \name{Lnorm}
 \alias{Lnorm}
-\alias{d,Lnorm-method}
-\alias{p,Lnorm-method}
-\alias{qn,Lnorm-method}
-\alias{r,Lnorm-method}
+\alias{d,Lnorm,numeric-method}
+\alias{p,Lnorm,numeric-method}
+\alias{qn,Lnorm,numeric-method}
+\alias{r,Lnorm,numeric-method}
 \alias{mean,Lnorm-method}
 \alias{median,Lnorm-method}
 \alias{mode,Lnorm-method}
@@ -15,22 +15,25 @@
 \alias{kurt,Lnorm-method}
 \alias{entro,Lnorm-method}
 \alias{finf,Lnorm-method}
-\alias{ll,numeric,numeric,Lnorm-method}
-\alias{mle,numeric,Lnorm-method}
-\alias{me,numeric,Lnorm-method}
+\alias{lllnorm}
+\alias{ll,Lnorm,numeric-method}
+\alias{elnorm}
+\alias{mle,Lnorm,numeric-method}
+\alias{me,Lnorm,numeric-method}
+\alias{vlnorm}
 \alias{avar_mle,Lnorm-method}
 \alias{avar_me,Lnorm-method}
 \title{Lnorm Distribution}
 \usage{
 Lnorm(meanlog = 0, sdlog = 1)
 
-\S4method{d}{Lnorm}(x)
+\S4method{d}{Lnorm,numeric}(distr, x)
 
-\S4method{p}{Lnorm}(x)
+\S4method{p}{Lnorm,numeric}(distr, x)
 
-\S4method{qn}{Lnorm}(x)
+\S4method{qn}{Lnorm,numeric}(distr, x)
 
-\S4method{r}{Lnorm}(x)
+\S4method{r}{Lnorm,numeric}(distr, n)
 
 \S4method{mean}{Lnorm}(x)
 
@@ -50,11 +53,17 @@ Lnorm(meanlog = 0, sdlog = 1)
 
 \S4method{finf}{Lnorm}(x)
 
-\S4method{ll}{numeric,numeric,Lnorm}(x, prm, distr)
+lllnorm(x, meanlog, sdlog)
 
-\S4method{mle}{numeric,Lnorm}(x, distr)
+\S4method{ll}{Lnorm,numeric}(distr, x)
 
-\S4method{me}{numeric,Lnorm}(x, distr)
+elnorm(x, type = "mle", ...)
+
+\S4method{mle}{Lnorm,numeric}(distr, x)
+
+\S4method{me}{Lnorm,numeric}(distr, x)
+
+vlnorm(meanlog, sdlog, type = "mle")
 
 \S4method{avar_mle}{Lnorm}(distr)
 
@@ -63,27 +72,34 @@ Lnorm(meanlog = 0, sdlog = 1)
 \arguments{
 \item{meanlog, sdlog}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Lnorm}.}
+
 \item{x}{an object of class \code{Lnorm}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Lnorm}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Lnorm Distribution

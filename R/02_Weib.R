@@ -16,10 +16,12 @@ setClass("Weib",
 #'
 #' @param x an object of class `Weib`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Weib`.
 #' @param shape,scale numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
 #' @param par0,method,lower,upper arguments passed to optim.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -49,37 +51,27 @@ setValidity("Weib", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Weib
-setMethod("d", signature = c(x = "Weib"),
-          function(x) {
-            function(y, log = FALSE) {
-              dweibull(y, shape = x@shape, scale = x@scale, log = log)
-            }
+setMethod("d", signature = c(distr = "Weib", x = "numeric"),
+          function(distr, x) {
+            dweibull(x, shape = distr@shape, scale = distr@scale)
           })
 
 #' @rdname Weib
-setMethod("p", signature = c(x = "Weib"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pweibull(q, shape = x@shape, scale = x@scale,
-                     lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Weib", x = "numeric"),
+          function(distr, x) {
+            pweibull(x, shape = distr@shape, scale = distr@scale)
           })
 
 #' @rdname Weib
-setMethod("qn", signature = c(x = "Weib"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qweibull(p, shape = x@shape, scale = x@scale,
-                     lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Weib", x = "numeric"),
+          function(distr, x) {
+            qweibull(x, shape = distr@shape, scale = distr@scale)
           })
 
 #' @rdname Weib
-setMethod("r", signature = c(x = "Weib"),
-          function(x) {
-            function(n) {
-              rweibull(n, shape = x@shape, scale = x@scale)
-            }
+setMethod("r", signature = c(distr = "Weib", n = "numeric"),
+          function(distr, n) {
+            rweibull(n, shape = distr@shape, scale = distr@scale)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -175,16 +167,16 @@ setMethod("entro",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Weib
 #' @export
 llweib <- function(x, shape, scale) {
-  ll(x, prm = c(shape, scale), distr = Weib())
+  ll(distr = Weib(shape, scale), x)
 }
 
 #' @rdname Weib
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Weib"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Weib", x = "numeric"),
+          definition = function(distr, x) {
 
 
 })
@@ -211,18 +203,18 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Weib
 #' @export
 eweib <- function(x, type = "mle", ...) {
 
-  estim(x, Weib(), type, ...)
+  e(Weib(), x, type, ...)
 
 }
 
 #' @rdname Weib
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Weib"),
-          definition = function(x, distr,
+          signature  = c(distr = "Weib", x = "numeric"),
+          definition = function(distr, x,
                                 par0 = "same",
                                 method = "L-BFGS-B",
                                 lower = 1e-5,
@@ -230,7 +222,7 @@ setMethod("mle",
 
             tx <- c(log(mean(x)), mean(log(x)))
 
-            par <- optim(par = do.call(par0, list(x = x, distr = distr))[1],
+            par <- optim(par = do.call(par0, list(distr = distr, x = x))[1],
                          fn = lloptim,
                          gr = dlloptim,
                          tx = tx,
@@ -249,8 +241,16 @@ setMethod("mle",
 
 #' @rdname Weib
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Weib"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Weib", x = "numeric"),
+          definition = function(distr, x) {
+
+
+          })
+
+#' @rdname Weib
+setMethod("same",
+          signature  = c(distr = "Weib", x = "numeric"),
+          definition = function(distr, x) {
 
 
           })
@@ -259,7 +259,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Weib
 #' @export
 vweib <- function(shape, scale, type = "mle") {
 
@@ -277,6 +277,14 @@ setMethod("avar_mle",
 
 #' @rdname Weib
 setMethod("avar_me",
+          signature  = c(distr = "Weib"),
+          definition = function(distr) {
+
+
+          })
+
+#' @rdname Weib
+setMethod("avar_same",
           signature  = c(distr = "Weib"),
           definition = function(distr) {
 

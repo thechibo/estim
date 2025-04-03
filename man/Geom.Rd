@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Geom.R
 \name{Geom}
 \alias{Geom}
-\alias{d,Geom-method}
-\alias{p,Geom-method}
-\alias{qn,Geom-method}
-\alias{r,Geom-method}
+\alias{d,Geom,numeric-method}
+\alias{p,Geom,numeric-method}
+\alias{qn,Geom,numeric-method}
+\alias{r,Geom,numeric-method}
 \alias{mean,Geom-method}
 \alias{median,Geom-method}
 \alias{mode,Geom-method}
@@ -15,22 +15,25 @@
 \alias{kurt,Geom-method}
 \alias{entro,Geom-method}
 \alias{finf,Geom-method}
-\alias{ll,numeric,numeric,Geom-method}
-\alias{mle,numeric,Geom-method}
-\alias{me,numeric,Geom-method}
+\alias{llgeom}
+\alias{ll,Geom,numeric-method}
+\alias{egeom}
+\alias{mle,Geom,numeric-method}
+\alias{me,Geom,numeric-method}
+\alias{vgeom}
 \alias{avar_mle,Geom-method}
 \alias{avar_me,Geom-method}
 \title{Geometric Distribution}
 \usage{
 Geom(prob = 0.5)
 
-\S4method{d}{Geom}(x)
+\S4method{d}{Geom,numeric}(distr, x)
 
-\S4method{p}{Geom}(x)
+\S4method{p}{Geom,numeric}(distr, x)
 
-\S4method{qn}{Geom}(x)
+\S4method{qn}{Geom,numeric}(distr, x)
 
-\S4method{r}{Geom}(x)
+\S4method{r}{Geom,numeric}(distr, n)
 
 \S4method{mean}{Geom}(x)
 
@@ -50,11 +53,17 @@ Geom(prob = 0.5)
 
 \S4method{finf}{Geom}(x)
 
-\S4method{ll}{numeric,numeric,Geom}(x, prm, distr)
+llgeom(x, prob)
 
-\S4method{mle}{numeric,Geom}(x, distr)
+\S4method{ll}{Geom,numeric}(distr, x)
 
-\S4method{me}{numeric,Geom}(x, distr)
+egeom(x, type = "mle", ...)
+
+\S4method{mle}{Geom,numeric}(distr, x)
+
+\S4method{me}{Geom,numeric}(distr, x)
+
+vgeom(prob, type = "mle")
 
 \S4method{avar_mle}{Geom}(distr)
 
@@ -63,27 +72,34 @@ Geom(prob = 0.5)
 \arguments{
 \item{prob}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Geom}.}
+
 \item{x}{an object of class \code{Geom}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Geom}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Geometric Distribution

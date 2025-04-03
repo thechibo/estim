@@ -16,10 +16,13 @@ setClass("Cat",
 #'
 #' @param x an object of class `Cat`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Cat`.
 #' @param prob numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
 #' @param dim numeric. The parameter dimension. See details.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
+#'
 #' @inherit Distributions return
 #'
 #' @details
@@ -56,19 +59,15 @@ setValidity("Cat", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Cat
-setMethod("d", signature = c(x = "Cat"),
-          function(x) {
-            function(y, log = FALSE) {
-              dcat(y, prob = x@prob, log = log)
-            }
+setMethod("d", signature = c(distr = "Cat", x = "numeric"),
+          function(distr, x) {
+            dcat(x, prob = distr@prob)
           })
 
 #' @rdname Cat
-setMethod("r", signature = c(x = "Cat"),
-          function(x) {
-            function(n) {
-              rcat(n, prob = x@prob)
-            }
+setMethod("r", signature = c(distr = "Cat", n = "numeric"),
+          function(distr, n) {
+            rcat(n, prob = distr@prob)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -135,18 +134,18 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Cat
 #' @export
 llcat <- function(x, prob) {
-  ll(x, prm = prob, distr = Cat())
+  ll(Cat(prob), x)
 }
 
 #' @rdname Cat
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Cat"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Cat", x = "numeric"),
+          definition = function(distr, x) {
 
-  sum(log(prm[x]))
+  sum(log(distr@prob[x]))
 
 })
 
@@ -154,18 +153,18 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Cat
 #' @export
 ecat <- function(x, type = "mle", ...) {
 
-  estim(x, Cat(), type, ...)
+  e(Cat(), x, type, ...)
 
 }
 
 #' @rdname Cat
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Cat"),
-          definition = function(x, distr, dim = NULL) {
+          signature  = c(distr = "Cat", x = "numeric"),
+          definition = function(distr, x, dim = NULL) {
 
   if (is.null(dim)) {
     dim <- length(distr@prob)
@@ -180,16 +179,16 @@ setMethod("mle",
 
   p <- c(p, rep(0, length = dim - length(p)))
 
-  c(prob = p)
+  list(prob = p)
 
 })
 
 #' @rdname Cat
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Cat"),
-          definition = function(x, distr, dim = NULL) {
+          signature  = c(distr = "Cat", x = "numeric"),
+          definition = function(distr, x, dim = NULL) {
 
-  mle(x, distr, dim)
+  mle(distr, x, dim)
 
 })
 
@@ -197,7 +196,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Cat
 #' @export
 vcat <- function(prob, type = "mle") {
 

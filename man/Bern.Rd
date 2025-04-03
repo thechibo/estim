@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Bern.R
 \name{Bern}
 \alias{Bern}
-\alias{d,Bern-method}
-\alias{p,Bern-method}
-\alias{qn,Bern-method}
-\alias{r,Bern-method}
+\alias{d,Bern,numeric-method}
+\alias{p,Bern,numeric-method}
+\alias{qn,Bern,numeric-method}
+\alias{r,Bern,numeric-method}
 \alias{mean,Bern-method}
 \alias{median,Bern-method}
 \alias{mode,Bern-method}
@@ -15,22 +15,25 @@
 \alias{kurt,Bern-method}
 \alias{entro,Bern-method}
 \alias{finf,Bern-method}
-\alias{ll,numeric,numeric,Bern-method}
-\alias{mle,numeric,Bern-method}
-\alias{me,numeric,Bern-method}
+\alias{llbern}
+\alias{ll,Bern,numeric-method}
+\alias{ebern}
+\alias{mle,Bern,numeric-method}
+\alias{me,Bern,numeric-method}
+\alias{vbern}
 \alias{avar_mle,Bern-method}
 \alias{avar_me,Bern-method}
 \title{Bernoulli Distribution}
 \usage{
 Bern(prob = 0.5)
 
-\S4method{d}{Bern}(x)
+\S4method{d}{Bern,numeric}(distr, x)
 
-\S4method{p}{Bern}(x)
+\S4method{p}{Bern,numeric}(distr, x)
 
-\S4method{qn}{Bern}(x)
+\S4method{qn}{Bern,numeric}(distr, x)
 
-\S4method{r}{Bern}(x)
+\S4method{r}{Bern,numeric}(distr, n)
 
 \S4method{mean}{Bern}(x)
 
@@ -50,42 +53,57 @@ Bern(prob = 0.5)
 
 \S4method{finf}{Bern}(x)
 
-\S4method{ll}{numeric,numeric,Bern}(x, prm, distr)
+llbern(x, prob)
 
-\S4method{mle}{numeric,Bern}(x, distr)
+\S4method{ll}{Bern,numeric}(distr, x)
 
-\S4method{me}{numeric,Bern}(x, distr)
+ebern(x, type = "mle", ...)
+
+\S4method{mle}{Bern,numeric}(distr, x)
+
+\S4method{me}{Bern,numeric}(distr, x)
+
+vbern(prob, type = "mle")
 
 \S4method{avar_mle}{Bern}(distr)
 
 \S4method{avar_me}{Bern}(distr)
 }
 \arguments{
+\item{prob}{numeric. The distribution parameter.}
+
+\item{distr}{an object of class \code{Bern}.}
+
 \item{x}{an object of class \code{Bern}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm, prob}{numeric. The distribution parameter.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Bern}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Bernoulli Distribution
 }
 \seealso{
-\link{dpqr}, \link{moments}
+\link{Distributions}, \link{moments}
 }

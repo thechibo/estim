@@ -16,10 +16,12 @@ setClass("Cauchy",
 #'
 #' @param x an object of class `Cauchy`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Cauchy`.
 #' @param location,scale numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
 #' @param par0,method,lower,upper arguments passed to optim.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -46,37 +48,27 @@ setValidity("Cauchy", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Cauchy
-setMethod("d", signature = c(x = "Cauchy"),
-          function(x) {
-            function(y, log = FALSE) {
-              dcauchy(y, location = x@location, scale = x@scale, log = log)
-            }
+setMethod("d", signature = c(distr = "Cauchy", x = "numeric"),
+          function(distr, x) {
+          dcauchy(x, location = distr@location, scale = distr@scale)
           })
 
 #' @rdname Cauchy
-setMethod("p", signature = c(x = "Cauchy"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pcauchy(q, location = x@location, scale = x@scale,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Cauchy", x = "numeric"),
+          function(distr, x) {
+            pcauchy(x, location = distr@location, scale = distr@scale)
           })
 
 #' @rdname Cauchy
-setMethod("qn", signature = c(x = "Cauchy"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qcauchy(p, location = x@location, scale = x@scale,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Cauchy", x = "numeric"),
+          function(distr, x) {
+            qcauchy(x, location = distr@location, scale = distr@scale)
           })
 
 #' @rdname Cauchy
-setMethod("r", signature = c(x = "Cauchy"),
-          function(x) {
-            function(n) {
-              rcauchy(n, location = x@location, scale = x@scale)
-            }
+setMethod("r", signature = c(distr = "Cauchy", n = "numeric"),
+          function(distr, n) {
+            rcauchy(n, location = distr@location, scale = distr@scale)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -178,24 +170,24 @@ setMethod("finf",
 
 })
 
-
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Cauchy
 #' @export
 llcauchy <- function(x, location, scale) {
-  ll(x, prm = c(location, scale), distr = Cauchy())
+  ll(distr = Cauchy(location, scale), x)
 }
 
 #' @rdname Cauchy
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Cauchy"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Cauchy", x = "numeric"),
+          definition = function(distr, x) {
 
-  - length(x) * log(pi * prm[2]) -
-      sum(log (1 + ((x - prm[1]) / prm[2]) ^ 2))
+
+  - length(x) * log(pi * distr@scale) -
+      sum(log (1 + ((x - distr@location) / distr@scale) ^ 2))
 
 })
 
@@ -224,24 +216,24 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Cauchy
 #' @export
 ecauchy <- function(x, type = "mle", ...) {
 
-  estim(x, Cauchy(), type, ...)
+  e(Cauchy(), x, type, ...)
 
 }
 
 #' @rdname Cauchy
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Cauchy"),
-          definition = function(x, distr,
+          signature  = c(distr = "Cauchy", x = "numeric"),
+          definition = function(distr, x,
                                 par0 = "me",
                                 method = "L-BFGS-B",
                                 lower = c(-Inf, 1e-5),
                                 upper = c(Inf, Inf)) {
 
-  par <- optim(par = do.call(par0, list(x = x, distr = distr)),
+  par <- optim(par = unlist(do.call(par0, list(distr = distr, x = x))),
                fn = lloptim,
                gr = dlloptim,
                tx = x,
@@ -251,20 +243,20 @@ setMethod("mle",
                upper = upper,
                control = list(fnscale = -1))$par
 
-  names(par) <- c("location", "scale")
-  par
+  par <- unname(par)
+  list(location = par[1], scale = par[2])
 
 })
 
 #' @rdname Cauchy
 #' @export
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Cauchy"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Cauchy", x = "numeric"),
+          definition = function(distr, x) {
 
   x0 <- median(x)
 
-  c(location = x0, scale = median(abs(x - x0)))
+  list(location = x0, scale = median(abs(x - x0)))
 
 })
 
@@ -272,7 +264,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Cauchy
 #' @export
 vcauchy <- function(location, scale, type = "mle") {
 

@@ -4,16 +4,18 @@
 \alias{Multigam}
 \alias{dmultigam}
 \alias{rmultigam}
-\alias{d,Multigam-method}
-\alias{r,Multigam-method}
+\alias{d,Multigam,numeric-method}
+\alias{r,Multigam,numeric-method}
 \alias{mean,Multigam-method}
 \alias{var,Multigam-method}
-\alias{entro,Multigam-method}
 \alias{finf,Multigam-method}
-\alias{ll,matrix,numeric,Multigam-method}
-\alias{mle,matrix,Multigam-method}
-\alias{me,matrix,Multigam-method}
-\alias{same,matrix,Multigam-method}
+\alias{llmultigam}
+\alias{ll,Multigam,matrix-method}
+\alias{emultigam}
+\alias{mle,Multigam,matrix-method}
+\alias{me,Multigam,matrix-method}
+\alias{same,Multigam,matrix-method}
+\alias{vmultigam}
 \alias{avar_mle,Multigam-method}
 \alias{avar_me,Multigam-method}
 \alias{avar_same,Multigam-method}
@@ -25,25 +27,29 @@ dmultigam(x, shape, scale, log = FALSE)
 
 rmultigam(n, shape, scale)
 
-\S4method{d}{Multigam}(x)
+\S4method{d}{Multigam,numeric}(distr, x)
 
-\S4method{r}{Multigam}(x)
+\S4method{r}{Multigam,numeric}(distr, n)
 
 \S4method{mean}{Multigam}(x)
 
 \S4method{var}{Multigam}(x)
 
-\S4method{entro}{Multigam}(x)
-
 \S4method{finf}{Multigam}(x)
 
-\S4method{ll}{matrix,numeric,Multigam}(x, prm, distr)
+llmultigam(x, shape, scale)
 
-\S4method{mle}{matrix,Multigam}(x, distr, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+\S4method{ll}{Multigam,matrix}(distr, x)
 
-\S4method{me}{matrix,Multigam}(x, distr)
+emultigam(x, type = "mle", ...)
 
-\S4method{same}{matrix,Multigam}(x, distr)
+\S4method{mle}{Multigam,matrix}(distr, x, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+
+\S4method{me}{Multigam,matrix}(distr, x)
+
+\S4method{same}{Multigam,matrix}(distr, x)
+
+vmultigam(shape, scale, type = "mle")
 
 \S4method{avar_mle}{Multigam}(distr)
 
@@ -61,26 +67,31 @@ argument, \code{x} is a numeric vector, a sample of observations.}
 
 \item{n}{numeric. The sample size.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
-
 \item{distr}{an object of class \code{Multigam}.}
+
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 
 \item{par0, method, lower, upper}{arguments passed to optim.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Gamma Distribution

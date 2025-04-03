@@ -2,10 +2,10 @@
 % Please edit documentation in R/02_Pois.R
 \name{Pois}
 \alias{Pois}
-\alias{d,Pois-method}
-\alias{p,Pois-method}
-\alias{qn,Pois-method}
-\alias{r,Pois-method}
+\alias{d,Pois,numeric-method}
+\alias{p,Pois,numeric-method}
+\alias{qn,Pois,numeric-method}
+\alias{r,Pois,numeric-method}
 \alias{mean,Pois-method}
 \alias{median,Pois-method}
 \alias{mode,Pois-method}
@@ -15,22 +15,25 @@
 \alias{kurt,Pois-method}
 \alias{entro,Pois-method}
 \alias{finf,Pois-method}
-\alias{ll,numeric,numeric,Pois-method}
-\alias{mle,numeric,Pois-method}
-\alias{me,numeric,Pois-method}
+\alias{llpois}
+\alias{ll,Pois,numeric-method}
+\alias{epois}
+\alias{mle,Pois,numeric-method}
+\alias{me,Pois,numeric-method}
+\alias{vpois}
 \alias{avar_mle,Pois-method}
 \alias{avar_me,Pois-method}
 \title{Poisson Distribution}
 \usage{
 Pois(lambda = 1)
 
-\S4method{d}{Pois}(x)
+\S4method{d}{Pois,numeric}(distr, x)
 
-\S4method{p}{Pois}(x)
+\S4method{p}{Pois,numeric}(distr, x)
 
-\S4method{qn}{Pois}(x)
+\S4method{qn}{Pois,numeric}(distr, x)
 
-\S4method{r}{Pois}(x)
+\S4method{r}{Pois,numeric}(distr, n)
 
 \S4method{mean}{Pois}(x)
 
@@ -50,11 +53,17 @@ Pois(lambda = 1)
 
 \S4method{finf}{Pois}(x)
 
-\S4method{ll}{numeric,numeric,Pois}(x, prm, distr)
+llpois(x, lambda)
 
-\S4method{mle}{numeric,Pois}(x, distr)
+\S4method{ll}{Pois,numeric}(distr, x)
 
-\S4method{me}{numeric,Pois}(x, distr)
+epois(x, type = "mle", ...)
+
+\S4method{mle}{Pois,numeric}(distr, x)
+
+\S4method{me}{Pois,numeric}(distr, x)
+
+vpois(lambda, type = "mle")
 
 \S4method{avar_mle}{Pois}(distr)
 
@@ -63,27 +72,34 @@ Pois(lambda = 1)
 \arguments{
 \item{lambda}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Pois}.}
+
 \item{x}{an object of class \code{Pois}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Pois}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Poisson Distribution

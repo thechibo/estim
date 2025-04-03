@@ -14,17 +14,139 @@ setClass("Beta",
 #' @title Beta Distribution
 #' @name Beta
 #'
-#' @param x an object of class `Beta`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
-#' @param distr an object of class `Beta`.
-#' @param shape1,shape2 numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @description
+#' The Beta distribution is a absolute continuous probability distribution with
+#' support \eqn{S = [0,1]}, parameterized by two shape parameters,
+#' \eqn{\alpha > 0} and \eqn{\beta > 0}.
+#'
+#' @param n numeric. The sample size.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Beta` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Beta` instead.
+#' @param shape1,shape2 numeric. The distribution parameters (positive real
+#' numbers).
 #' @param type character, case ignored. The estimator type (mle, me, or same).
-#' @param par0,method,lower,upper arguments passed to optim.
+#' @param ... extra arguments.
+#' @param par0,method,lower,upper arguments passed to optim for the mle
+#' optimization.
+#'
+#' @details
+#' The probability density function (PDF) of the Beta distribution is given by:
+#' \deqn{ f(x; \alpha, \beta) = \frac{x^{\alpha - 1} (1 - x)^{\beta - 1}}{B(\alpha, \beta)},
+#' \quad \alpha\in\mathbb{R}_+, \, \beta\in\mathbb{R}_+}
+#' for \eqn{x \in S = [0, 1]}, where \eqn{B(\alpha, \beta)} is the Beta function:
+#' \deqn{ B(\alpha, \beta) = \int_0^1 t^{\alpha - 1} (1 - t)^{\beta - 1} dt.}
+#'
+#' @section Moments:
+#' The Beta distribution has the following known moments:
+#' - **Mean**: \eqn{E[X] = \frac{\alpha}{\alpha + \beta}.}
+#' - **Median**: Approximated by \eqn{\frac{\alpha - 1/3}{\alpha + \beta - 2/3}}, for \eqn{\alpha, \beta > 1}
+#' - **Mode**: \eqn{\frac{\alpha - 1}{\alpha + \beta - 2}}, for \eqn{\alpha, \beta > 1.}
+#' - **Variance**: \eqn{Var(X) = \frac{\alpha\beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}.}
+#' - **Skewness**: \eqn{\frac{2(\beta - \alpha)\sqrt{\alpha + \beta + 1}}{(\alpha + \beta + 2)\sqrt{\alpha\beta}}}
+#' - **Kurtosis**: \eqn{\frac{6[(\alpha - \beta)^2 (\alpha + \beta + 1) - \alpha\beta (\alpha + \beta + 2)]}{\alpha\beta (\alpha + \beta + 2) (\alpha + \beta + 3)}}
+#' - **Entropy**: \eqn{H(X) = \log B(\alpha, \beta) - (\alpha - 1)\psi(\alpha) - (\beta - 1)\psi(\beta) + (\alpha + \beta - 2)\psi(\alpha + \beta)}
+#' - **Fisher Information**: The Fisher information matrix for \eqn{(\alpha, \beta)} is given by:
+#'   \deqn{ I(\alpha, \beta) = \begin{bmatrix} \psi' (\alpha) - \psi' (\alpha + \beta) & -\psi' (\alpha + \beta) \\ -\psi' (\alpha + \beta) & \psi' (\beta) - \psi' (\alpha + \beta) \end{bmatrix} }
+#'
+#' @section Estimation:
+#' The parameters \eqn{(\alpha, \beta)} can be estimated using:
+#' - **Method of Moments**: Solving for \eqn{\alpha} and \eqn{\beta} using sample mean and variance.
+#' - **Maximum Likelihood Estimation (MLE)**: Numerical methods are typically used to maximize the log-likelihood function.
 #'
 #' @inherit Distributions return
 #'
+#' @references
+#'
+#' - Tamae, H., Irie, K. & Kubokawa, T. (2020), A score-adjusted approach to
+#' closed-form estimators for the gamma and beta distributions, Japanese Journal
+#' of Statistics and Data Science 3, 543–561.
+#'
+#' - Papadatos, N. (2022), On point estimators for gamma and beta distributions,
+#' arXiv preprint arXiv:2205.10799.
+#'
+#' - Oikonomidis, I. & Trevezas, S. (2025), Moment-Type Estimators for the
+#' Dirichlet and the Multivariate Gamma Distributions, arXiv,
+#' https://arxiv.org/abs/2311.15025
+#'
+#' @seealso
+#' Functions from the `stats` package: [dbeta()], [pbeta()], [qbeta()], [rbeta()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Beta Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' a <- 3 ; b <- 5
+#' D <- Beta(a, b)
+#' x <- c(0.3, 0.8, 0.5)
+#' n <- 5
+#'
+#' # Density function
+#' df <- d(D) ; df(x) # df is a function itself
+#' d(D, x) # alternative way to use the function
+#'
+#' # Distribution function
+#' pf <- p(D) ; pf(x)
+#' p(D, x)
+#'
+#' # Inverse distribution function
+#' qf <- qn(D) ; qf(x)
+#' qn(D, x)
+#'
+#' # Random Generator function
+#' rf <- r(D) ; rf(n)
+#' r(D, n)
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#'
+#' # Expectation
+#' mean(D)
+#' mom$mean
+#'
+#' # Variance and Standard Deviation
+#' var(D)
+#' sd(D)
+#'
+#' # Skewness and Excess Kurtosis
+#' skew(D)
+#' kurt(D)
+#'
+#' # Entropy
+#' entro(D)
+#'
+#' # Fisher Information Matrix
+#' finf(D)
+#'
+#' # Point Estimation - The e Functions
+#'
+#' ebeta(x, type = "mle")
+#' ebeta(x, type = "me")
+#' ebeta(x, type = "same")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' same(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("beta", x) # the distr argument can be a character
+#'
+#' # Asymptotic Variance - The v Functions
+#'
+#' vbeta(a, b, type = "mle")
+#' vbeta(a, b, type = "me")
+#' vbeta(a, b, type = "same")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#' avar_same(D)
+#'
+#' avar(D, type = "mle")
 Beta <- function(shape1 = 1, shape2 = 1) {
   new("Beta", shape1 = shape1, shape2 = shape2)
 }
@@ -51,41 +173,30 @@ setValidity("Beta", function(object) {
 
 #' @rdname Beta
 #' @export
-setMethod("d", signature = c(x = "Beta"),
-          function(x) {
-            function(y, log = FALSE) {
-              dbeta(y, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
-                    log = log)
-            }
+setMethod("d", signature = c(distr = "Beta", x = "numeric"),
+          function(distr, x) {
+            dbeta(x, shape1 = distr@shape1, shape2 = distr@shape2)
           })
 
 #' @rdname Beta
 #' @export
-setMethod("p", signature = c(x = "Beta"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pbeta(q, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Beta", x = "numeric"),
+          function(distr, x) {
+            pbeta(x, shape1 = distr@shape1, shape2 = distr@shape2)
           })
 
 #' @rdname Beta
 #' @export
-setMethod("qn", signature = c(x = "Beta"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qbeta(p, shape1 = x@shape1, shape2 = x@shape2, ncp = 0,
-                    lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Beta", x = "numeric"),
+          function(distr, x) {
+            qbeta(x, shape1 = distr@shape1, shape2 = distr@shape2)
           })
 
 #' @rdname Beta
 #' @export
-setMethod("r", signature = c(x = "Beta"),
-          function(x) {
-            function(n) {
-              rbeta(n, shape1 = x@shape1, shape2 = x@shape2, ncp = 0)
-            }
+setMethod("r", signature = c(distr = "Beta", n = "numeric"),
+          function(distr, n) {
+            rbeta(n, shape1 = distr@shape1, shape2 = distr@shape2)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -230,17 +341,21 @@ setMethod("finf",
 #' @rdname Beta
 #' @export
 llbeta <- function(x, shape1, shape2) {
-  ll(x, prm = c(shape1, shape2), distr = Beta())
+  ll(distr = Beta(shape1, shape2), x = x)
 }
 
 #' @rdname Beta
 #' @export
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Beta"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Beta", x = "numeric"),
+          definition = function(distr, x) {
 
-  length(x) * (lgamma(sum(prm)) - lgamma(prm[1]) - lgamma(prm[2])) +
-   (prm[1] - 1) * sum(log(x)) + (prm[2] - 1) * sum(log(1 - x))
+  a <- distr@shape1
+  b <- distr@shape2
+  a0 <- a + b
+
+  length(x) * (lgamma(a0) - lgamma(a) - lgamma(b)) +
+   (a - 1) * sum(log(x)) + (b - 1) * sum(log(1 - x))
 
 })
 
@@ -289,19 +404,19 @@ setMethod("dlloptim",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Beta
 #' @export
 ebeta <- function(x, type = "mle", ...) {
 
-  estim(x, Beta(), type, ...)
+  e(Beta(), x = x, type = type, ...)
 
 }
 
 #' @rdname Beta
 #' @export
 setMethod("mle",
-          signature  = c(x = "numeric", distr = "Beta"),
-          definition = function(x, distr,
+          signature  = c(distr = "Beta", x = "numeric"),
+          definition = function(distr, x,
                                 par0 = "same",
                                 method = "L-BFGS-B",
                                 lower = 1e-5,
@@ -309,7 +424,7 @@ setMethod("mle",
 
   tx  <- c(mean(log(x)), mean(log(1 - x)))
 
-  par <- optim(par = sum(do.call(par0, list(x = x, distr = distr))),
+  par <- optim(par = sum(unlist(do.call(par0, list(distr = distr, x = x)))),
                fn = lloptim,
                gr = dlloptim,
                tx = tx,
@@ -321,30 +436,29 @@ setMethod("mle",
 
   shape <- idigamma(digamma(par) + tx)
 
-  names(shape) <- paste0("shape", seq_along(shape))
-  shape
+  list(shape1 = shape[1], shape2 = shape[2])
 
 })
 
 #' @rdname Beta
 #' @export
 setMethod("me",
-          signature  = c(x = "numeric", distr = "Beta"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Beta", x = "numeric"),
+          definition = function(distr, x) {
 
   m  <- mean(x)
   m2 <- mean(x ^ 2)
   d  <- (m - m2) / (m2 - m ^ 2)
 
-  c(shape1 = d * m, shape2 = d * (1 - m))
+  list(shape1 = d * m, shape2 = d * (1 - m))
 
 })
 
 #' @rdname Beta
 #' @export
 setMethod("same",
-          signature  = c(x = "numeric", distr = "Beta"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Beta", x = "numeric"),
+          definition = function(distr, x) {
 
   mx <- mean(x)
   mlx <- mean(log(x))
@@ -354,7 +468,7 @@ setMethod("same",
   myly <- mean((1 - x) * log(1 - x))
   s <- mxlx - mx * mlx + myly - my * mly
 
-  c(shape1 = mx / s, shape2 = my / s)
+  list(shape1 = mx / s, shape2 = my / s)
 
 })
 

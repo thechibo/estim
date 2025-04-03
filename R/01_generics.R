@@ -2,32 +2,87 @@
 # Generics & Classes                                                        ----
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-## Distribution           ----
-## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 #' @title Distribution S4 Classes
 #' @name Distributions
+#' @aliases d p q r
 #'
 #' @description
-#' A collection of classes that provide a flexible and structured way to work
+#' A collection of S4 classes that provide a flexible and structured way to work
 #' with probability distributions.
 #'
-#' @return
-#' The dpqr family of functions return the evaluated density, cumulative
-#' probability, quantile, and random sample, respectively.
-#' The moments family of functions return the appropriate theoretical moment,
-#' as calculated by the distribution true parameters.
-#' The ll function returns the evaluated log-likelihood, given a sample and the
-#' theoretical parameters.
-#' The estim family of functions return the estimated parameters of the
-#' distribution, given a sample.
-#' The avar family of functions return the asymptotic variance or variance -
-#' covariance matrix (if there are two or more parameters) of the corresponding
-#' estimation method.
-#' Calculus performed on Distribution objects returns a Distribution object of
-#' the appropriate class and with the appropriate parameters.
+#' @param distr a `Distribution` object.
+#' @param x numeric. The point to evaluate the function.
+#' @param n numeric. The sample size.
+#' @param ... extra arguments.
 #'
+#' @details
+#' These S4 generic methods can work both as functions and as functionals
+#' (functions that return functions). The available distribution families are
+#' coded as S4 classes, specifically subclasses of the `Distribution`
+#' superclass. The methods can be used in two ways:
+#'
+#' Option 1: If both the `distr` argument and `x` or `n` are supplied, then the
+#' function is evaluated directly, as usual.
+#'
+#' Option 2: If only the `distr` argument is supplied, the method returns a
+#' function that takes as input the missing argument `x` or `n`, allowing the
+#' user to work with the function object itself. See examples.
+#'
+#' Looking for a specific distribution family?
+#' This help page is general. Use the help page of each distribution to see the
+#' available methods for the class, details, and examples. Check the See Also
+#' section.
+#'
+#' @return
+#' Each type of function returns a different type of object:
+#'
+#' - Distribution Functions: When supplied with one argument (`distr`), the
+#' `d()`, `p()`, `q()`, `r()`, `ll()` functions return the density, cumulative
+#' probability, quantile, random sample generator, and log-likelihood functions,
+#' respectively. When supplied with both arguments (`distr` and `x`), they
+#' evaluate the aforementioned functions directly.
+#'
+#' - Moments: Returns a numeric, either vector or matrix depending on the moment
+#' and the distribution. The `moments()` function returns a list with all the
+#' available methods.
+#'
+#' - Estimation: Returns a list. The estimator of the unknown parameters. Note
+#' that in distribution families like the binomial, multinomial, and negative
+#' binomial, the size is not returned, since it is considered known.
+#'
+#' - Variance: Returns a named matrix. The asymptotic covariance matrix of the
+#' estimator.
+#'
+#' @seealso [moments], [loglikelihood], [estimation], [Bern],
+#' [Beta], [Binom], [Cat], [Cauchy], [Chisq], [Dir], [Exp],
+#' [Fisher], [Gam], [Geom], [Laplace], [Lnorm], [Multigam], [Multinom],
+#' [Nbinom], [Norm], [Pois], [Stud], [Unif], [Weib]
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Beta Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' D <- Beta(3, 5)
+#' x <- c(0.3, 0.8, 0.5)
+#' n <- 5
+#'
+#' # Density function
+#' df <- d(D) ; df(x) # df is a function itself
+#' d(D, x) # alternative way to use the function
+#'
+#' # Distribution function
+#' pf <- p(D) ; pf(x)
+#' p(D, x)
+#'
+#' # Inverse distribution function
+#' qf <- qn(D) ; qf(x)
+#' qn(D, x)
+#'
+#' # Random Generator function
+#' rf <- r(D) ; rf(n)
+#' r(D, n)
 NULL
 
 setClass("Distribution")
@@ -36,68 +91,68 @@ setClass("Distribution")
 ## d, p, q, r             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @title The d p q r Functions
-#' @name dpqr
-#' @aliases d p q r
-#'
-#' @description
-#' Four generic functions that take a distribution object (e.g. `Bern`) and
-#' return the density, cumulative probability, quantile, and random generator
-#' functions, respectively.
-#'
-#' @param x an object of subclass `Distribution`.
-#' @param ... extra arguments.
-#'
-#' @return The d p q r functions return the density, cumulative probability,
-#' quantile, and random generator functions, respectively.
-#'
-#' @export
-#'
-#' @examples
-#' # -----------------------------------------------------
-#' # Beta Distribution Example
-#' # -----------------------------------------------------
-#'
-#' library(estim)
-#'
-#' # Create the distribution
-#' x <- Beta(3, 5)
-#'
-#' # Density function
-#' df <- d(x)
-#' df(c(0.3, 0.8, 0.5))
-#'
-#' # Probability function
-#' pf <- p(x)
-#' pf(c(0.3, 0.8, 0.5))
-#'
-#' # Density function
-#' qf <- qn(x)
-#' qf(c(0.3, 0.8, 0.5))
-#'
-#' # Random Generator function
-#' rf <- r(x)
-#' rf(5)
-setGeneric("d", function(x, ...) {
+#' @describeIn Distributions density function
+setGeneric("d", function(distr, x, ...) {
   standardGeneric("d")
 })
 
-#' @rdname dpqr
-#' @export
-setGeneric("p", function(x, ...) {
+#' @describeIn Distributions cumulative distribution function
+setGeneric("p", function(distr, x, ...) {
   standardGeneric("p")
 })
 
-#' @rdname dpqr
-#' @export
-setGeneric("qn", function(x, ...)
+#' @describeIn Distributions generalized inverse distribution function
+setGeneric("qn", function(distr, x, ...)
   standardGeneric("qn"))
 
-#' @rdname dpqr
-#' @export
-setGeneric("r", function(x, ...) {
+#' @describeIn Distributions random sample generator function
+setGeneric("r", function(distr, n, ...) {
   standardGeneric("r")
 })
+
+#' @title Distribution Functionals
+#' @name DistrFunctionals
+#'
+#' @param distr a `Distribution` object.
+#' @param x,n missing. Agruments not supplied.
+#' @param ... extra arguments.
+#'
+#' @details
+#' When `x` or `n` are missing, the methods return a function that takes as
+#' input the missing argument, allowing the user to work with the function
+#' object itself. See examples.
+#'
+#' @return
+#' When supplied with one argument, the `d()`, `p()`, `q()`, `r()` `ll()`
+#' functions return the density, cumulative probability, quantile, random sample
+#' generator, and log-likelihood functions, respectively.
+#'
+#' @inherit Distributions description seealso examples
+NULL
+
+#' @rdname DistrFunctionals
+setMethod("d", signature = c(distr = "Distribution", x = "missing"),
+          function(distr, x, ...) {
+            function(x) {d(distr, x, ...)}
+          })
+
+#' @rdname DistrFunctionals
+setMethod("p", signature = c(distr = "Distribution", x = "missing"),
+          function(distr, x, ...) {
+            function(x) {p(distr, x, ...)}
+          })
+
+#' @rdname DistrFunctionals
+setMethod("qn", signature = c(distr = "Distribution", x = "missing"),
+          function(distr, x, ...) {
+            function(x) {qn(distr, x, ...)}
+          })
+
+#' @rdname DistrFunctionals
+setMethod("r", signature = c(distr = "Distribution", n = "missing"),
+          function(distr, n, ...) {
+            function(n) {r(distr, n, ...)}
+          })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## Moments                ----
@@ -111,52 +166,63 @@ setGeneric("r", function(x, ...) {
 #' parametric functions (median, mode, entropy, Fisher information) of a
 #' distribution.
 #'
-#' @param x an object of a `Distribution` subclass.
+#' @param x a `Distribution` object.
 #' @param y,use,na.rm arguments in `mean` and `var` standard methods from the
 #' `stats` package not used here.
 #' @param ... extra arguments.
 #'
 #' @details
+#' Given a distribution, these functions calculate the theoretical moments and
+#' other parametric quantities of interest. Some distribution-function
+#' combinations are not available; for example, the `sd()` function is
+#' available only for univariate distributions.
+#'
 #' The `moments()` function automatically finds the available methods for a
 #' given distribution and results all of the results in a list.
 #'
-#' Not all functions are available for distributions; for example, the `sd()`
-#' is available only for univariate distributions.
+#' Technical Note:
+#' The argument of the moment functions does not follow the naming convention of
+#' the package, i.e. the `Distribution` object is names `x` rather than `distr`.
+#' This is due to the fact that most of the generics are already defined in the
+#' `stats` package (`mean`, `median`, `mode`, `var`, `sd`), therefore the first
+#' argument was already named `x` and could not change.
 #'
 #' @return Numeric, either vector or matrix depending on the moment and the
-#' distribution. Function `moments()` returns a list of all available methods.
+#' distribution. The `moments()` function returns a list with all the available
+#' methods.
+#'
 #' @export
+#'
+#' @seealso [Distributions], [loglikelihood], [estimation]
 #'
 #' @examples
 #' # -----------------------------------------------------
 #' # Beta Distribution Example
 #' # -----------------------------------------------------
 #'
-#' library(estim)
-#'
 #' # Create the distribution
-#' x <- Beta(3, 5)
+#' D <- Beta(3, 5)
 #'
 #' # List of all available moments
-#' mom <- moments(x)
+#' mom <- moments(D)
 #'
 #' # Expectation
-#' mean(x)
+#' mean(D)
 #' mom$mean
 #'
 #' # Variance and Standard Deviation
-#' var(x)
-#' sd(x)
+#' var(D)
+#' sd(D)
 #'
 #' # Skewness and Excess Kurtosis
-#' skew(x)
-#' kurt(x)
+#' skew(D)
+#' kurt(D)
 #'
 #' # Entropy
-#' entro(x)
+#' entro(D)
 #'
 #' # Fisher Information Matrix
-#' finf(x)
+#' finf(D)
 moments <- function(x) {
   mom <- get_moment_methods(x)
   y <- lapply(mom, FUN = function(m) { do.call(m, list(x = x)) })
@@ -169,34 +235,34 @@ moments <- function(x) {
 #' @usage mean(x, ...)
 NULL
 
-#' @rdname moments
+#' @describeIn moments Median
 setGeneric("median")
 
-#' @rdname moments
+#' @describeIn moments Mode
 setGeneric("mode")
 
-#' @rdname moments
+#' @describeIn moments Variance
 setGeneric("var")
 
-#' @rdname moments
+#' @describeIn moments Standard Deviation
 setGeneric("sd")
 
-#' @rdname moments
+#' @describeIn moments Skewness
 setGeneric("skew", function(x, ...) {
   standardGeneric("skew")
 })
 
-#' @rdname moments
+#' @describeIn moments Kurtosis
 setGeneric("kurt", function(x, ...) {
   standardGeneric("kurt")
 })
 
-#' @rdname moments
+#' @describeIn moments Entropy
 setGeneric("entro", function(x, ...) {
   standardGeneric("entro")
 })
 
-#' @rdname moments
+#' @describeIn moments Fisher Information (numeric or matrix)
 setGeneric("finf", function(x, ...) {
   standardGeneric("finf")
 })
@@ -205,35 +271,88 @@ setGeneric("finf", function(x, ...) {
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @title Log-Likelihood
+#' @title Log-Likelihood Function
+#' @name loglikelihood
+#' @aliases ll
 #'
 #' @description
-#' These functions calculate the log-likelihood of an IID sample for specific
-#' values of the distribution parameters. See Details.
+#' This function calculates the log-likelihood of an independent and
+#' identically distributed (iid) sample from a distribution. See Details.
 #'
+#' @param distr A `Distribution` object
 #' @param x numeric. A sample under estimation.
-#' @param prm numeric. A vector of the distribution parameters.
-#' @param distr A subclass of `Distribution`. The distribution family assumed.
-#' @param location,alpha,mu,sigma,meanlog,sdlog,min,max,size,prob,shape,rate,scale,mean,sd,lambda,df,df1,df2 numeric.
-#' Distribution parameters.
 #' @param ... extra arguments.
 #'
 #' @details
 #' The log-likelihood functions are provided in two forms: the `ll<name>`
-#' distribution-specific version that follows the base R conventions, and the
-#' S4 generic `ll`.
+#' distribution-specific version that follows the stats package conventions, and
+#' the S4 generic `ll`. Examples for the `ll<name>` version are included in the
+#' distribution-specific help pages, e.g. `?Beta` (all distributions can be
+#' found in the See Also section of the `Distributions` help page).
 #'
-#' @return Numeric. The value of the log-likelihood function.
+#' As with the `d()`, `p()`, `q()`, `r()` methods, `ll()` can be supplied only
+#' with `distr` to return the log-likelihood function (i.e. it can be used as a
+#' functional), or with both `distr` and `x` to be evaluated directly.
+#'
+#' In some distribution families like beta and gamma, the MLE cannot be
+#' explicitly derived and numerical optimization algorithms have to be employed.
+#' Even in ``good" scenarios, with plenty of observations and a smooth
+#' optimization function, extra care should be taken to ensure a fast and right
+#' convergence if possible. Two important steps are taken in package in this
+#' direction:
+#'
+#' 1. The log-likelihood function is analytically calculated for each
+#' distribution family, so that constant terms with respect to the parameters
+#' can be removed, leaving only the sufficient statistics as a requirement for
+#' the function evaluation.
+#'
+#' 2. Multidimensional problems are reduced to unidimensional ones by utilizing
+#' the score equations.
+#'
+#' The resulting function that is inserted in the optimization algorithm is
+#' called `lloptim()`, and is not to be confused with the actual log-likelihood
+#' function `ll()`. The corresponding derivative is called `dlloptim()`. These
+#' functions are used internally and are not exported.
+#'
+#' Therefore, whenever numerical computation of the MLE is required, `optim()`
+#' is called to optimize `lloptim()`, using the ME or SAME as the starting point
+#' (user's choice), and the L-BFGS-U optimization algorithm, with lower and
+#' upper limits defined by default as the parameter space boundary. Illustrative
+#' examples can be found in the package vignette.
+#'
+#' @return If only the `distr` argument is supplied, `ll()` returns a function.
+#' If both `distr` and `x` are supplied, `ll()` returns a numeric, the value of
+#' the log-likelihood function.
+#'
 #' @export
-setGeneric("ll", signature = c("x", "prm", "distr"),
-           function(x, prm, distr, ...) { standardGeneric("ll") })
+#'
+#' @seealso [Distributions], [moments], [estimation]
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Beta Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' D <- Beta(3, 5)
+#'
+#' # Simulate a random sample from D
+#' set.seed(932)
+#' x <- r(D)(100)
+#'
+#' f <- ll(D) ; f(x) # used as a functional
+#' ll(D, x)
+setGeneric("ll", signature = c("distr", "x"),
+           function(distr, x, ...) { standardGeneric("ll") })
 
-#' @rdname ll
+#' @rdname DistrFunctionals
 setMethod("ll",
-          signature  = c(x = "ANY", "prm" = "ANY", distr = "character"),
-          definition = function(x, prm, distr, ...) {
+          signature  = c(distr = "Distribution", x = "missing"),
+          definition = function(distr, x, ...) {
 
-            ll(x, prm, get_distr_class(distr), ...)
+            function(x) {
+              ll(distr, x, ...)
+            }
 
           })
 
@@ -255,36 +374,59 @@ setGeneric("dlloptim", signature = c("par", "tx", "distr"),
 #' @name estimation
 #'
 #' @description
-#' Estimates the parameters of a random sample according to a
-#' specified family of distributions.
+#' This set of functions estimates the parameters of a random sample according
+#' to a specified family of distributions. See details.
 #'
+#' @param distr A `Distribution` object or a `character`. The distribution family assumed.
 #' @param x numeric. A sample under estimation.
-#' @param distr A subclass of `Distribution`. The distribution family assumed.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
-#' @param size the size parameter, needs to be specified for some distributions (Binom, Nbinom, etc).
 #' @param ... extra arguments.
 #'
-#' @return numeric. The estimator produced by the sample.
+#' @details
+#' The package covers three major estimation methods: maximum likelihood
+#' estimation (MLE), moment estimation (ME), and score-adjusted estimation
+#' (SAME).
+#'
+#' In order to perform parameter estimation, a new `e<name>()` member is added
+#' to the `d()`, `p()`, `q()`, `r()` family, following the standard `stats` name
+#' convention. These functions take two arguments, the observations `x` (an
+#' atomic vector for univariate or a matrix for multivariate distibutions) and
+#' the `type` of estimation method to use (a character with possible values
+#' `"mle"`, `"me"`, and `"same"`.)
+#'
+#' Point estimation functions are available in two versions, the distribution
+#' specific one, e.g. `ebeta()`, and the S4 generic ones, namely `mle()`,
+#' `me()`, and `same()`. A general function called `e()` is also implemented,
+#' covering all distributions and estimators.
+#'
+#' @return list. The estimator of the unknown parameters. Note that in
+#' distribution families like the binomial, multinomial, and negative binomial,
+#' the size is not returned, since it is considered known.
 #'
 #' @importFrom Matrix Matrix nearPD Cholesky
 #' @export
 #'
 #' @references
-#' Ye, Z.-S. & Chen, N. (2017), Closed-form estimators for the gamma
+#'
+#' General Textbooks
+#'
+#' - Van der Vaart, A. W. (2000), Asymptotic statistics, Vol. 3,
+#' Cambridge university press.
+#'
+#' Beta and gamma distribution families
+#'
+#' - Ye, Z.-S. & Chen, N. (2017), Closed-form estimators for the gamma
 #' distribution derived from likelihood equations, The American Statistician
 #' 71(2), 177–181.
 #'
-#' Van der Vaart, A. W. (2000), Asymptotic statistics, Vol. 3,
-#' Cambridge university press.
-#'
-#' Tamae, H., Irie, K. & Kubokawa, T. (2020), A score-adjusted approach to
+#' - Tamae, H., Irie, K. & Kubokawa, T. (2020), A score-adjusted approach to
 #' closed-form estimators for the gamma and beta distributions, Japanese Journal
 #' of Statistics and Data Science 3, 543–561.
 #'
-#' Mathal, A. & Moschopoulos, P. (1992), A form of multivariate gamma
+#' - Mathal, A. & Moschopoulos, P. (1992), A form of multivariate gamma
 #' distribution, Annals of the Institute of Statistical Mathematics 44, 97–106.
 #'
-#' Oikonomidis, I. & Trevezas, S. (2023), Moment-Type Estimators for the
+#' - Oikonomidis, I. & Trevezas, S. (2023), Moment-Type Estimators for the
 #' Dirichlet and the Multivariate Gamma Distributions, arXiv,
 #' https://arxiv.org/abs/2311.15025
 #'
@@ -297,16 +439,10 @@ setGeneric("dlloptim", signature = c("par", "tx", "distr"),
 #'
 #' # Simulation
 #' set.seed(1)
-#' shape1 <- 1
-#' shape2 <- 2
-#' D <- Beta(shape1, shape2)
+#' a <- 1
+#' b <- 2
+#' D <- Beta(a, b)
 #' x <- r(D)(100)
-#'
-#' # Likelihood - The ll Functions
-#'
-#' llbeta(x, shape1, shape2)
-#' ll(x, c(shape1, shape2), D)
-#' ll(x, c(shape1, shape2), "beta")
 #'
 #' # Point Estimation - The e Functions
 #'
@@ -314,117 +450,91 @@ setGeneric("dlloptim", signature = c("par", "tx", "distr"),
 #' ebeta(x, type = "me")
 #' ebeta(x, type = "same")
 #'
-#' mle(x, D)
-#' me(x, D)
-#' same(x, D)
+#' mle(D, x)
+#' me(D, x)
+#' same(D, x)
+#' e(D, x, type = "mle")
 #'
-#' estim(x, D, type = "mle")
+#' mle("beta", x) # the distr argument can be a character
 #'
 #' # Asymptotic Variance - The v Functions
 #'
-#' vbeta(shape1, shape2, type = "mle")
-#' vbeta(shape1, shape2, type = "me")
-#' vbeta(shape1, shape2, type = "same")
+#' vbeta(a, b, type = "mle")
+#' vbeta(a, b, type = "me")
+#' vbeta(a, b, type = "same")
 #'
 #' avar_mle(D)
 #' avar_me(D)
 #' avar_same(D)
 #'
 #' avar(D, type = "mle")
-estim <- function(x, distr, type = "mle", ...) {
+e <- function(distr, x, type = "mle", ...) {
   type <- tolower(type)
   if (type %in% c("mle", "me", "same")) {
-    return(do.call(type, list(x = x, distr = distr, ...)))
+    return(do.call(type, list(distr = distr, x = x, ...)))
   } else {
     stop("Type must be one of mle, me, or same, case ignored. Instead got",
          type)
   }
 }
 
-#' @title Maximum Likelihood Estimation
-#'
-#' @description
-#' Calculates the MLE under the assumption the sample observations are
-#' independent and identically distributed (iid) according to a
-#' specified family of distributions.
-#'
-#' @param x numeric. A sample under estimation.
-#' @param distr A subclass of `Distribution`. The distribution family assumed.
-#' @param ... extra arguments.
-#'
-#' @return numeric. The estimator produced by the sample.
-#' @export
-#'
-#' @seealso [estim], [me], [same]
-#'
-#' @inherit estimation references examples
-setGeneric("mle", signature = c("x", "distr"),
-           function(x, distr, ...) { standardGeneric("mle") })
+#' @describeIn estimation Maximum Likelihood Estimator
+setGeneric("mle", signature = c("distr", "x"),
+           function(distr, x, ...) { standardGeneric("mle") })
 
-#' @rdname mle
+#' @rdname DistrFunctionals
 setMethod("mle",
-          signature  = c(x = "ANY", distr = "character"),
-          definition = function(x, distr, ...) {
+          signature  = c(distr = "Distribution", x = "missing"),
+          definition = function(distr, x, ...) {
+            function(x) {mle(distr, x, ...)}
+          })
 
-            mle(x, get_distr_class(distr), ...)
+#' @rdname estimation
+setMethod("mle",
+          signature  = c(distr = "character", x = "ANY"),
+          definition = function(distr, x, ...) {
+
+            mle(get_distr_class(distr), x, ...)
 
           })
 
-#' @title Moment Estimation
-#'
-#' @description
-#' Calculates the ME under the assumption the sample observations are
-#' independent and identically distributed (iid) according to a
-#' specified family of distributions.
-#'
-#' @param x numeric. A sample under estimation.
-#' @param distr A subclass of `Distribution`. The distribution family assumed.
-#' @param ... extra arguments.
-#'
-#' @return numeric. The estimator produced by the sample.
-#' @export
-#'
-#' @seealso [estim], [mle], [same]
-#'
-#' @inherit estimation references examples
-setGeneric("me", signature = c("x", "distr"),
-           function(x, distr, ...) { standardGeneric("me") })
+#' @describeIn estimation Moment Estimator
+setGeneric("me", signature = c("distr", "x"),
+           function(distr, x, ...) { standardGeneric("me") })
 
-#' @rdname me
+#' @rdname DistrFunctionals
 setMethod("me",
-          signature  = c(x = "ANY", distr = "character"),
-          definition = function(x, distr, ...) {
+          signature  = c(distr = "Distribution", x = "missing"),
+          definition = function(distr, x, ...) {
+            function(x) {me(distr, x, ...)}
+          })
 
-            me(x, get_distr_class(distr), ...)
+#' @rdname estimation
+setMethod("me",
+          signature  = c(distr = "character", x = "ANY"),
+          definition = function(distr, x, ...) {
+
+            me(get_distr_class(distr), x, ...)
 
           })
 
-#' @title Score - Adjusted Moment Estimation
-#'
-#' @description
-#' Calculates the SAME under the assumption the sample observations are
-#' independent and identically distributed (iid) according to a
-#' specified family of distributions.
-#'
-#' @param x numeric. A sample under estimation.
-#' @param distr A subclass of `Distribution`. The distribution family assumed.
-#' @param ... extra arguments.
-#'
-#' @return numeric. The estimator produced by the sample.
-#' @export
-#'
-#' @seealso [estim], [mle], [me]
-#'
-#' @inherit estimation references examples
-setGeneric("same", signature = c("x", "distr"),
-           function(x, distr, ...) { standardGeneric("same") })
+#' @describeIn estimation Score - Adjusted Moment Estimation
+setGeneric("same", signature = c("distr", "x"),
+           function(distr, x, ...) { standardGeneric("same") })
 
-#' @rdname same
+#' @rdname DistrFunctionals
 setMethod("same",
-          signature  = c(x = "ANY", distr = "character"),
-          definition = function(x, distr, ...) {
+          signature  = c(distr = "Distribution", x = "missing"),
+          definition = function(distr, x, ...) {
+            function(x) {same(distr, x, ...)}
+          })
 
-            same(x, get_distr_class(distr), ...)
+#' @rdname estimation
+setMethod("same",
+          signature  = c(distr = "character", x = "ANY"),
+          definition = function(distr, x, ...) {
+
+            same(get_distr_class(distr), x, ...)
 
           })
 
@@ -433,16 +543,15 @@ setMethod("same",
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @title Asymptotic Variance
+#' @name avar
 #'
 #' @description
-#' Calculates the asymptotic variance (or variance - covariance matrix in the
-#' multidimensional case) of an estimator, given a specified family of
-#' distributions and the true parameter values.
+#' These functions calculate the asymptotic variance (or variance - covariance
+#' matrix in the multidimensional case) of an estimator, given a specified
+#' family of distributions and the true parameter values.
 #'
-#' @param distr A subclass of `Distribution`. The distribution family assumed.
-#' @param type character, case ignored. The estimator type (mle, me, or same).
-#' @param alpha,mu,sigma,size,prob,shape,rate,scale,mean,sd,lambda,location,df,meanlog,sdlog numeric.
-#' Distribution parameters.
+#' @param distr A `Distribution` object.
+#' @param type character, case ignored. The estimator type (`"mle"`, `"me"`, or `"same"`).
 #' @param ... extra arguments.
 #'
 #' @return A named matrix. The asymptotic covariance matrix of the estimator.
@@ -462,47 +571,14 @@ avar <- function(distr, type, ...) {
   }
 }
 
-#' @title MLE Asymptotic Variance
-#'
-#' @description
-#' Calculates the asymptotic variance (or variance - covariance matrix in the
-#' multidimensional case) of the MLE, given a specified family of
-#' distributions and the true parameter values.
-#'
-#' @export
-#'
-#' @seealso [avar], [avar_me], [avar_same]
-#'
-#' @inherit avar params return examples
+#' @describeIn avar Asymptotic Variance of the Maximum Likelihood Estimator
 setGeneric("avar_mle", signature = c("distr"),
            function(distr, ...) { standardGeneric("avar_mle") })
 
-#' @title ME Asymptotic Variance
-#'
-#' @description
-#' Calculates the asymptotic variance (or variance - covariance matrix in the
-#' multidimensional case) of the ME, given a specified family of
-#' distributions and the true parameter values.
-#'
-#' @export
-#'
-#' @seealso [avar], [avar_mle], [avar_same]
-#'
-#' @inherit avar params return references examples
+#' @describeIn avar Asymptotic Variance of the Moment Estimator
 setGeneric("avar_me", signature = c("distr"),
            function(distr, ...) { standardGeneric("avar_me") })
 
-#' @title SAME Asymptotic Variance
-#'
-#' @description
-#' Calculates the asymptotic variance (or variance - covariance matrix in the
-#' multidimensional case) of the SAME, given a specified family of
-#' distributions and the true parameter values.
-#'
-#' @export
-#'
-#' @seealso [avar], [avar_mle], [avar_me]
-#'
-#' @inherit avar params return references examples
+#' @describeIn avar Asymptotic Variance of the Score-Adjusted Moment Estimator
 setGeneric("avar_same", signature = c("distr"),
            function(distr, ...) { standardGeneric("avar_same") })

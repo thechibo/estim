@@ -16,9 +16,11 @@ setClass("Multinom",
 #'
 #' @param x an object of class `Multinom`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Multinom`.
 #' @param size,prob numeric. The distribution parameters.
-#' @param prm numeric. A vector including the distribution parameters.
+#' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param ... extra arguments.
 #'
 #' @inherit Distributions return
 #'
@@ -48,19 +50,15 @@ setValidity("Multinom", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Multinom
-setMethod("d", signature = c(x = "Multinom"),
-          function(x) {
-            function(y, log = FALSE) {
-              dmultinom(y, size = x@size, prob = x@prob, log = log)
-            }
+setMethod("d", signature = c(distr = "Multinom", x = "numeric"),
+          function(distr, x) {
+            dmultinom(x, size = distr@size, prob = distr@prob)
           })
 
 #' @rdname Multinom
-setMethod("r", signature = c(x = "Multinom"),
-          function(x) {
-            function(n) {
-              rmultinom(n, size = x@size, prob = x@prob)
-            }
+setMethod("r", signature = c(distr = "Multinom", n = "numeric"),
+          function(distr, n) {
+            rmultinom(n, size = distr@size, prob = distr@prob)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -133,24 +131,24 @@ setMethod("finf",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Multinom
 #' @export
 llmultinom <- function(x, size, prob) {
-  ll(x, prm = c(size, prob), distr = Multinom())
+  ll(distr = Multinom(size, prob), x)
 }
 
 #' @rdname Multinom
 setMethod("ll",
-          signature  = c(x = "matrix", prm = "numeric", distr = "Multinom"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Multinom", x = "matrix"),
+          definition = function(distr, x) {
 
   N <- unique(colSums(x))
   if (length(N) != 1) {
     stop("ColSums of x need to be equal. Found multiple values: ", paste(N, " "))
   }
 
-  ncol(x) * lfactorial(prm[1]) - sum(lfactorial(x)) +
-  sum(t(x) %*% diag(log(prm[-1])))
+  ncol(x) * lfactorial(distr@size) - sum(lfactorial(x)) +
+  sum(t(x) %*% diag(log(distr@prob)))
 
 })
 
@@ -158,33 +156,34 @@ setMethod("ll",
 ## Estimation             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname estimation
+#' @rdname Multinom
 #' @export
 emultinom <- function(x, type = "mle", ...) {
 
-  estim(x, Multinom(), type, ...)
+  e(Multinom(), x, type, ...)
 
 }
 
 #' @rdname Multinom
 setMethod("mle",
-          signature  = c(x = "matrix", distr = "Multinom"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Multinom", x = "matrix"),
+          definition = function(distr, x) {
 
   N <- unique(colSums(x))
   if (length(N) != 1) {
     stop("ColSums of x need to be equal. Found multiple values: ", paste(N, " "))
   }
-  c(prob = rowMeans(x) / N)
+
+  list(prob = rowMeans(x) / N)
 
 })
 
 #' @rdname Multinom
 setMethod("me",
-          signature  = c(x = "matrix", distr = "Multinom"),
-          definition = function(x, distr) {
+          signature  = c(distr = "Multinom", x = "matrix"),
+          definition = function(distr, x) {
 
-  mle(x, distr)
+  mle(distr, x)
 
 })
 
@@ -192,7 +191,7 @@ setMethod("me",
 ## Avar                   ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname avar
+#' @rdname Multinom
 #' @export
 vmultinom <- function(size, prob, type = "mle") {
 

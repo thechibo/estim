@@ -16,9 +16,9 @@ setClass("Stud",
 #'
 #' @param x an object of class `Stud`. If the function also has a `distr`
 #' argument, `x` is a numeric vector, a sample of observations.
+#' @param n numeric. The sample size.
 #' @param distr an object of class `Stud`.
 #' @param df numeric. The distribution parameter.
-#' @param prm numeric. A vector including the distribution parameters.
 #'
 #' @inherit Distributions return
 #'
@@ -42,35 +42,27 @@ setValidity("Stud", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Stud
-setMethod("d", signature = c(x = "Stud"),
-          function(x) {
-            function(y, log = FALSE) {
-              dt(y, df = x@df, log = log)
-            }
+setMethod("d", signature = c(distr = "Stud", x = "numeric"),
+          function(distr, x) {
+            dt(x, df = distr@df)
           })
 
 #' @rdname Stud
-setMethod("p", signature = c(x = "Stud"),
-          function(x) {
-            function(q, lower.tail = TRUE, log.p = FALSE) {
-              pt(q, df = x@df, lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("p", signature = c(distr = "Stud", x = "numeric"),
+          function(distr, x) {
+            pt(x, df = distr@df)
           })
 
 #' @rdname Stud
-setMethod("qn", signature = c(x = "Stud"),
-          function(x) {
-            function(p, lower.tail = TRUE, log.p = FALSE) {
-              qt(p, df = x@df, lower.tail = lower.tail, log.p = log.p)
-            }
+setMethod("qn", signature = c(distr = "Stud", x = "numeric"),
+          function(distr, x) {
+            qt(x, df = distr@df)
           })
 
 #' @rdname Stud
-setMethod("r", signature = c(x = "Stud"),
-          function(x) {
-            function(n) {
-              rt(n, df = x@df)
-            }
+setMethod("r", signature = c(distr = "Stud", n = "numeric"),
+          function(distr, n) {
+            rt(n, df = distr@df)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -181,21 +173,22 @@ setMethod("entro",
 ## Likelihood             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @rdname ll
+#' @rdname Stud
 #' @export
 llt <- function(x, df) {
-  ll(x, prm = df, distr = Stud())
+  ll(Stud(df), x)
 }
 
 #' @rdname Stud
 setMethod("ll",
-          signature  = c(x = "numeric", prm = "numeric", distr = "Stud"),
-          definition = function(x, prm, distr) {
+          signature  = c(distr = "Stud", x = "numeric"),
+          definition = function(distr, x) {
 
+  df <- distr@df
   n <- length(x)
-  s <- sum(log(1 + x ^ 2 / prm))
+  s <- sum(log(1 + x ^ 2 / df))
 
-  n * lgamma((prm + 1) / 2) - n * lgamma(prm / 2) - n * log(pi * prm) / 2 -
-    (prm + 1) * s / 2
+  n * lgamma((df + 1) / 2) - n * lgamma(df / 2) - n * log(pi * df) / 2 -
+    (df + 1) * s / 2
 
 })

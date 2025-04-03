@@ -2,17 +2,20 @@
 % Please edit documentation in R/02_Dir.R
 \name{Dir}
 \alias{Dir}
-\alias{d,Dir-method}
-\alias{r,Dir-method}
+\alias{d,Dir,numeric-method}
+\alias{r,Dir,numeric-method}
 \alias{mean,Dir-method}
 \alias{mode,Dir-method}
 \alias{var,Dir-method}
 \alias{entro,Dir-method}
 \alias{finf,Dir-method}
-\alias{ll,matrix,numeric,Dir-method}
-\alias{mle,matrix,Dir-method}
-\alias{me,matrix,Dir-method}
-\alias{same,matrix,Dir-method}
+\alias{lldirichlet}
+\alias{ll,Dir,matrix-method}
+\alias{edirichlet}
+\alias{mle,Dir,matrix-method}
+\alias{me,Dir,matrix-method}
+\alias{same,Dir,matrix-method}
+\alias{vdirichlet}
 \alias{avar_mle,Dir-method}
 \alias{avar_me,Dir-method}
 \alias{avar_same,Dir-method}
@@ -20,9 +23,9 @@
 \usage{
 Dir(alpha = c(1, 1))
 
-\S4method{d}{Dir}(x)
+\S4method{d}{Dir,numeric}(distr, x)
 
-\S4method{r}{Dir}(x)
+\S4method{r}{Dir,numeric}(distr, n)
 
 \S4method{mean}{Dir}(x)
 
@@ -34,13 +37,19 @@ Dir(alpha = c(1, 1))
 
 \S4method{finf}{Dir}(x)
 
-\S4method{ll}{matrix,numeric,Dir}(x, prm, distr)
+lldirichlet(x, alpha)
 
-\S4method{mle}{matrix,Dir}(x, distr, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+\S4method{ll}{Dir,matrix}(distr, x)
 
-\S4method{me}{matrix,Dir}(x, distr)
+edirichlet(x, type = "mle", ...)
 
-\S4method{same}{matrix,Dir}(x, distr)
+\S4method{mle}{Dir,matrix}(distr, x, par0 = "same", method = "L-BFGS-B", lower = 1e-05, upper = Inf)
+
+\S4method{me}{Dir,matrix}(distr, x)
+
+\S4method{same}{Dir,matrix}(distr, x)
+
+vdirichlet(alpha, type = "mle")
 
 \S4method{avar_mle}{Dir}(distr)
 
@@ -51,29 +60,36 @@ Dir(alpha = c(1, 1))
 \arguments{
 \item{alpha}{numeric. The distribution parameters.}
 
+\item{distr}{an object of class \code{Dir}.}
+
 \item{x}{an object of class \code{Dir}. If the function also has a \code{distr}
 argument, \code{x} is a numeric vector, a sample of observations.}
 
-\item{prm}{numeric. A vector including the distribution parameters.}
+\item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Dir}.}
+\item{type}{character, case ignored. The estimator type (mle, me, or same).}
+
+\item{...}{extra arguments.}
 
 \item{par0, method, lower, upper}{arguments passed to optim.}
 }
 \value{
-The dpqr family of functions return the evaluated density, cumulative
-probability, quantile, and random sample, respectively.
-The moments family of functions return the appropriate theoretical moment,
-as calculated by the distribution true parameters.
-The ll function returns the evaluated log-likelihood, given a sample and the
-theoretical parameters.
-The estim family of functions return the estimated parameters of the
-distribution, given a sample.
-The avar family of functions return the asymptotic variance or variance -
-covariance matrix (if there are two or more parameters) of the corresponding
-estimation method.
-Calculus performed on Distribution objects returns a Distribution object of
-the appropriate class and with the appropriate parameters.
+Each type of function returns a different type of object:
+\itemize{
+\item Distribution Functions: When supplied with one argument (\code{distr}), the
+\code{d()}, \code{p()}, \code{q()}, \code{r()}, \code{ll()} functions return the density, cumulative
+probability, quantile, random sample generator, and log-likelihood functions,
+respectively. When supplied with both arguments (\code{distr} and \code{x}), they
+evaluate the aforementioned functions directly.
+\item Moments: Returns a numeric, either vector or matrix depending on the moment
+and the distribution. The \code{moments()} function returns a list with all the
+available methods.
+\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+that in distribution families like the binomial, multinomial, and negative
+binomial, the size is not returned, since it is considered known.
+\item Variance: Returns a named matrix. The asymptotic covariance matrix of the
+estimator.
+}
 }
 \description{
 Dirichlet Distribution

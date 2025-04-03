@@ -1,6 +1,6 @@
 Package: estim
 Title: Parameter Estimation
-Version: 0.10.2
+Version: 0.11.0
 Authors@R: c(
     person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr",
            role = c("aut", "cre"),
@@ -16,7 +16,7 @@ Description: Implements estimation methods for parameters of common
     variance - covariance matrix, respectively. Parameter estimation is
     performed analytically whenever possible.
 License: GPL (>= 3)
-URL: https://thechibo.github.io/estim/
+URL: https://thechibo.github.io/estim
 BugReports: https://github.com/thechibo/estim/issues
 Depends: 
     R (>= 4.0.0)

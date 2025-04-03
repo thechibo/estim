@@ -5,8 +5,8 @@ test_consistency <- function(est, D0, n = 1e4, seed = 1, ...) {
   sam <- r(D0)(n)
 
   # Return
-  list(prm_true = get_params(D0),
-       prm_est = do.call(est, list(x = sam, distr = D0, ...)))
+  list(prm_true = get_unknown_params(D0),
+       prm_est = do.call(est, list(distr = D0, x = sam, ...)))
 
 }
 
@@ -14,7 +14,7 @@ test_avar <- function(est, D0, n = 1e4, m = 1e3, seed = 1, bar = FALSE, ...) {
 
   # Preliminaries
   set.seed(seed)
-  params <- get_unknown_params(D0)
+  params <- get_unknown_params(D0, list = FALSE)
   y <- matrix(nrow = m, ncol = length(params))
 
   # Loading bar
@@ -32,13 +32,14 @@ test_avar <- function(est, D0, n = 1e4, m = 1e3, seed = 1, bar = FALSE, ...) {
 
     # CLT
     sam <- r(D0)(n)
-    y[i, ] <- sqrt(n) * (params - do.call(est, list(x = sam, distr = D0, ...)))
+    params_est <- unlist(do.call(est, list(x = sam, distr = D0, ...)))
+    y[i, ] <- sqrt(n) * (params - params_est)
 
   }
 
   # Calculate avar
   avar_est <- var(y)
-  prm_names <- names(get_unknown_params(D0))
+  prm_names <- names(get_unknown_params(D0, list = FALSE))
 
   if (nrow(avar_est) == 1) {
     avar_est <- as.vector(avar_est)

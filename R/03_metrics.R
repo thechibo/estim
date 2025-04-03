@@ -6,12 +6,45 @@
 ## Calculation            ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+setClass("SmallMetrics", slots = list(D = "Distribution",
+                                      est = "character",
+                                      df = "data.frame"))
+
+setValidity("SmallMetrics", function(object) {
+  if(!all(names(object@df) %in% c("Parameter", "Observations", "Estimator",
+                                "Metric", "Value"))) {
+    stop("df must have columns 'Parameter, 'Observations', 'Estimator',
+                           'Metric', 'Value'")
+  }
+  if(!("data.frame" %in% class(object@df))) {
+    stop("df has to be a data.frame")
+  }
+  if(!is.numeric(object@df$Parameter)) {
+    stop("Column 'Parameter' has to be numeric")
+  }
+  if(!is.factor(object@df$Observations)) {
+    stop("Column 'Observations' has to be a factor")
+  }
+  if(!is.factor(object@df$Estimator)) {
+    stop("Column 'Estimator' has to be factor")
+  }
+  if(!is.factor(object@df$Metric)) {
+    stop("Column 'Metric' has to be factor")
+  }
+  if(!is.numeric(object@df$Value)) {
+    stop("Column 'Value' has to be numeric")
+  }
+  TRUE
+})
+
 #' @title Small Sample Metrics
+#' @name SmallMetrics
+#' @aliases small_metrics
 #'
 #' @description
 #' This function performs Monte Carlo simulations to estimate the main metrics
-#' (bias, variance, and RMSE) characterizing the small sample behavior of an
-#' estimator. The function evaluates the metrics as a function of a single
+#' (bias, variance, and RMSE) characterizing the small (finite) sample behavior
+#' of an estimator. The function evaluates the metrics as a function of a single
 #' parameter, keeping the other ones constant. See Details.
 #'
 #' @param D A subclass of `Distribution`. The distribution family of interest.
@@ -21,6 +54,8 @@
 #' @param sam numeric. The number of Monte Carlo samples used to estimate the
 #' metrics.
 #' @param seed numeric. Passed to `set.seed()` for reproducibility.
+#' @param df data.frame. a data.frame with columns named "Row", "Col",
+#' "Parameter", "Estimator", and "Value".
 #' @param ... extra arguments.
 #'
 #' @details
@@ -29,29 +64,30 @@
 #' change values. The quantity of interest is evaluated as a function of this
 #' parameter.
 #'
-#' Specifically, `prm` includes three elements named "name", "pos", and "val".
-#' The first two elements determine the exact parameter that changes, while the
-#' third one is a numeric vector holding the values it takes. For example,
-#' in the case of the Multivariate Gamma distribution,
-#' `D <- MGamma(shape = c(1, 2), scale = 3)` and
-#' `prm <- list(name = "shape", pos = 2, val = seq(1, 1.5, by = 0.1))`
-#' means that the evaluation will be performed for the MGamma distributions with
-#' shape parameters `(1, 1)`, `(1, 1.1)`, ..., `(1, 1.5)` and scale `3`. Notice
-#' that the initial shape parameter `2` in `D` is not utilized in the function.
+#' The `prm` list includes two elements named "name" and "val". The first one
+#' specifies the parameter that changes, and the second one is a numeric vector
+#' holding the values it takes.
 #'
-#' @return For the small sample, a data.frame with columns named "Parameter",
-#' "Observations", "Estimator", "Metric", and "Value". For the large sample, a
-#' data.frame with columns "Row", "Col", "Parameter", "Estimator", and "Value".
+#' In case the parameter of interest is a vector, a third element named "pos"
+#' can be specified to indicate the exact paramater that changes. In the example
+#' shown below, the evaluation will be performed for the Dirichlet distributions
+#' with shape parameters `(0.5, 1)`, `(0.6, 1)`, ..., `(2, 1)`. Notice that the
+#' initial shape parameter value (`1`) is not utilized in the function.
+#'
+#' @return An object of class `SmallMetrics` with slots `D`, `est`, and `df`.
 #'
 #' @export
 #'
-#' @seealso [plot_small_metrics] [large_metrics], [plot_large_metrics]
+#' @seealso [LargeMetrics], [PlotMetrics]
 #' @examples \donttest{
+#' # -----------------------------------------------------
+#' # Beta Distribution Example
+#' # -----------------------------------------------------
+#'
 #' D <- Beta(shape1 = 1, shape2 = 2)
 #'
 #' prm <- list(name = "shape1",
-#'             pos = NULL,
-#'             val = seq(0.5, 2, by = 0.5))
+#'             val = seq(0.5, 2, by = 0.1))
 #'
 #' x <- small_metrics(D, prm,
 #'                    est = c("mle", "me", "same"),
@@ -59,8 +95,32 @@
 #'                    sam = 1e2,
 #'                    seed = 1)
 #'
-#' plot_small_metrics(x)
+#' plot(x)
+#'
+#' # -----------------------------------------------------
+#' # Dirichlet Distribution Example
+#' # -----------------------------------------------------
+#'
+#' D <- Dir(alpha = 1:2)
+#'
+#' prm <- list(name = "alpha",
+#'             pos = 1,
+#'             val = seq(0.5, 2, by = 0.1))
+#'
+#' x <- small_metrics(D, prm,
+#'                    est = c("mle", "me", "same"),
+#'                    obs = c(20, 50),
+#'                    sam = 1e2,
+#'                    seed = 1)
+#'
+#' plot(x)
 #' }
+SmallMetrics <- function(D, est, df) {
+  new("SmallMetrics", D = D, est = est, df = df)
+}
+
+#' @rdname SmallMetrics
+#' @export
 small_metrics <- function(D,
                           prm,
                           est = c("same", "me", "mle"),
@@ -70,9 +130,9 @@ small_metrics <- function(D,
                           ...) {
 
   if (class(D) %in% c("Cat", "Multinom")) {
-    stop("This function is not implemented for the Multinomial distribution,
-           since changing the probability value of one category forces the rest
-           to change as well.")
+    stop("This function is not implemented for the Categorical and Multinomial
+    distributions, since changing the probability value of one category forces
+    the rest to change as well.")
   }
 
   # Preliminaries
@@ -123,11 +183,16 @@ small_metrics <- function(D,
         pb$tick()
 
         # Estimate
-        y[i, j, k, ] <- setd(apply(setk(x, 1:obs[j]),
-                                   MARGIN = mar,
-                                   FUN = k,
-                                   distr = D,
-                                   ...), prm_name) - prm$val[i]
+
+        list_estim <- apply(setk(x, 1:obs[j]),
+                            MARGIN = mar,
+                            FUN = k,
+                            distr = D,
+                            ...)
+
+        mat_estim <- do.call(cbind, lapply(list_estim, unlist))
+
+        y[i, j, k, ] <- setd(mat_estim, prm_name) - prm$val[i]
 
       }
     }
@@ -151,59 +216,118 @@ small_metrics <- function(D,
   z$Observations <- factor(z$Observations, ordered = TRUE)
 
   # Return the object
-  z
+  SmallMetrics(D = D, est = est, df = z)
 
 }
 
+setClass("LargeMetrics", slots = list(D = "Distribution",
+                                      est = "character",
+                                      df = "data.frame"))
+
 #' @title Large Sample Metrics
+#' @name LargeMetrics
+#' @aliases large_metrics
 #'
 #' @description
-#' This function performs Monte Carlo simulations to estimate the asymptotic
-#' variance - covariance matrix, characterizing the large sample behavior of an
-#' estimator. The function evaluates the metrics as a function of a single
-#' parameter, keeping the other ones constant. See Details.
+#' This function calculates the asymptotic variance - covariance matrix
+#' characterizing the large sample (asymptotic) behavior of an estimator. The
+#' function evaluates the metrics as a function of a single parameter, keeping
+#' the other ones constant. See Details.
 #'
 #' @param D A subclass of `Distribution`. The distribution family of interest.
 #' @param prm A list containing three elements (name, pos, val). See Details.
 #' @param est character. The estimator of interest. Can be a vector.
+#' @param df data.frame. a data.frame with columns named "Row", "Col",
+#' "Parameter", "Estimator", and "Value".
 #' @param ... extra arguments.
 #'
 #' @inherit small_metrics details
 #'
-#' @return A data.frame with columns "Row", "Col", "Parameter", "Estimator",
-#' and "Value".
+#' @return An object of class `LargeMetrics` with slots `D`, `est`, and `df`.
 #'
 #' @export
 #'
-#' @seealso [small_metrics], [plot_small_metrics], [plot_large_metrics]
+#' @seealso [SmallMetrics], [PlotMetrics]
 #' @examples \donttest{
+#' # -----------------------------------------------------
+#' # Beta Distribution Example
+#' # -----------------------------------------------------
+#'
 #' D <- Beta(shape1 = 1, shape2 = 2)
 #'
 #' prm <- list(name = "shape1",
-#'             pos = NULL,
-#'             val = seq(0.5, 2, by = 0.5))
+#'             val = seq(0.5, 2, by = 0.1))
 #'
 #' x <- large_metrics(D, prm,
 #'                    est = c("mle", "me", "same"))
 #'
-#' plot_large_metrics(x)
+#' plot(x)
+#'
+#' # -----------------------------------------------------
+#' # Dirichlet Distribution Example
+#' # -----------------------------------------------------
+#'
+#' D <- Dir(alpha = 1:2)
+#'
+#' prm <- list(name = "alpha",
+#'             pos = 1,
+#'             val = seq(0.5, 2, by = 0.1))
+#'
+#' x <- large_metrics(D, prm,
+#'                    est = c("mle", "me", "same"))
+#'
+#' plot(x)
 #' }
+LargeMetrics <- function(D, est, df) {
+  new("LargeMetrics", D = D, est = est, df = df)
+}
+
+setValidity("LargeMetrics", function(object) {
+  if(!all(names(object@df) %in% c("Row", "Col", "Parameter", "Estimator", "Value"))) {
+    stop("df must have columns 'Row', 'Col', 'Parameter, 'Estimator', 'Value'")
+  }
+  if(!("data.frame" %in% class(object@df))) {
+    stop("df has to be a data.frame")
+  }
+  if (any(c("Row", "Col") %in% names(object@df))) {
+    if(!is.factor(object@df$Row)) {
+      stop("Column 'Row' has to be factor")
+    }
+    if(!is.factor(object@df$Col)) {
+      stop("Column 'Col' has to be factor")
+    }
+
+  }
+  if(!is.numeric(object@df$Parameter)) {
+    stop("Column 'Parameter' has to be numeric")
+  }
+  if(!is.factor(object@df$Estimator)) {
+    stop("Column 'Estimator' has to be factor")
+  }
+  if(!is.numeric(object@df$Value)) {
+    stop("Column 'Value' has to be numeric")
+  }
+  TRUE
+})
+
+#' @rdname LargeMetrics
+#' @export
 large_metrics <- function(D,
                           prm,
                           est = c("same", "me", "mle"),
                           ...) {
 
   if (class(D) %in% c("Cat", "Multinom")) {
-    stop("This function is not implemented for the Multinomial distribution,
-           since changing the probability value of one category forces the rest
-           to change as well.")
+    stop("This function is not implemented for the Categorical and Multinomial
+    distributions, since changing the probability value of one category forces
+    the rest to change as well.")
   }
 
   # Preliminaries
   Row <- Col <- Parameter <- Estimator <- NULL
   distr <- class(D)[1]
   prm_name <- paste0(prm$name, prm$pos)
-  d <- length(get_unknown_params(D))
+  d <- length(get_unknown_params(D, list = FALSE))
   y <- list()
 
   # Get the distributions
@@ -246,7 +370,7 @@ large_metrics <- function(D,
   z$Estimator <- factor(z$Estimator)
 
   # Return the object
-  z
+  LargeMetrics(D = D, est = est, df = z)
 
 }
 
@@ -254,15 +378,15 @@ large_metrics <- function(D,
 ## Plots                  ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-#' @title Plot Small Sample Metrics
+#' @title Plot Metrics
+#' @aliases PlotMetrics
 #'
 #' @description
-#' This function provides an easy way to illustrate the output of
-#' `small_metrics()`, using the `ggplot2` package. A grid of line charts is
-#' created for each metric and sample size. Each estimator is plotted with a
-#' different color and linetype. The plot can be saved in pdf format.
+#' This function provides an easy way to illustrate objects of class
+#' `SmallMetrics` and `LargeMetrics`, using the `ggplot2` package. See details.
 #'
-#' @param x A data.frame. The result of `small_metrics()`.
+#' @param x An object of class `SmallMetrics` or `LargeMetrics`.
+#' @param y NULL.
 #' @param colors character. The colors to be used in the plot.
 #' @param title character. The plot title.
 #' @param save logical. Should the plot be saved?
@@ -270,6 +394,18 @@ large_metrics <- function(D,
 #' @param name character. The name of the output pdf file.
 #' @param width numeric. The plot width in inches.
 #' @param height numeric. The plot height in inches.
+#' @param ... extra arguments.
+#'
+#' @details
+#' Objects of class `SmallMetrics` and `LargeMetrics` are returned by the
+#' `small_metrics()` and `large_metrics()` functions, respectively.
+#'
+#' For the `SmallMetrics`, a grid of line charts is created for each metric and
+#' sample size. For the `LargeMetrics`, a grid of line charts is created for
+#' each element of the asymptotic variance - covariance matrix.
+#'
+#' Each estimator is plotted with a different color and line type. The plot can
+#' be saved in pdf format.
 #'
 #' @return The plot is returned invisibly in the form of a `ggplot` object.
 #'
@@ -278,23 +414,32 @@ large_metrics <- function(D,
 #' @importFrom ggh4x facet_grid2
 #' @export
 #'
-#' @seealso [small_metrics], [large_metrics], [plot_large_metrics]
-#' @inherit small_metrics examples
-plot_small_metrics <- function(x,
-                               colors = NULL,
-                               title = NULL,
-                               save = FALSE,
-                               path = NULL,
-                               name = "myplot.pdf",
-                               width = 15,
-                               height = 8) {
+#' @method plot SmallMetrics,missing
+#' @method plot LargeMetrics,missing
+#'
+#' @seealso [SmallMetrics], [LargeMetrics]
+#' @inherit SmallMetrics examples
+setGeneric("plot")
+
+#' @rdname plot
+setMethod("plot",
+          signature(x = "SmallMetrics", y = "missing"),
+          function(x,
+                   y = NULL,
+                   colors = NULL,
+                   title = NULL,
+                   save = FALSE,
+                   path = NULL,
+                   name = "myplot.pdf",
+                   width = 15,
+                   height = 8) {
 
   # Colors
   if (is.null(colors)) {
     colors <- c("#0073C2", "#CD534C", "#EFC000", "#868686", "#003C67",
                 "#7AA6DC", "#A73030", "#8F7700", "#3B3B3B", "#4A6990")
 
-    colors <- colors[seq_along(unique(x$Estimator))]
+    colors <- colors[seq_along(unique(x@est))]
   }
 
   # Title
@@ -312,7 +457,7 @@ plot_small_metrics <- function(x,
   }
 
   # Create the plot
-  p <- ggplot2::ggplot(x) +
+  p <- ggplot2::ggplot(x@df) +
     ggplot2::geom_line(ggplot2::aes(x = Parameter,
                                     y = Value,
                                     col = Estimator,
@@ -340,37 +485,27 @@ plot_small_metrics <- function(x,
   # Return the plot
   invisible(p)
 
-}
+})
 
-#' @title Plot Large Sample Metrics
-#'
-#' @description
-#' This function provides an easy way to illustrate the output of
-#' `large_metrics()`, using the `ggplot2` package. A grid of line charts is
-#' created for each element of the asymptotic variance - covariance matrix.
-#' Each estimator is plotted with a different color and linetype. The plot can
-#' be saved in pdf format.
-#'
-#' @inherit plot_small_metrics params return examples
-#'
-#' @export
-#'
-#' @seealso [small_metrics], [large_metrics], [plot_small_metrics]
-plot_large_metrics <- function(x,
-                               colors = NULL,
-                               title = NULL,
-                               save = FALSE,
-                               path = NULL,
-                               name = "myplot.pdf",
-                               width = 15,
-                               height = 8) {
+#' @rdname plot
+setMethod("plot",
+          signature(x = "LargeMetrics", y = "missing"),
+          function(x,
+                   y = NULL,
+                   colors = NULL,
+                   title = NULL,
+                   save = FALSE,
+                   path = NULL,
+                   name = "myplot.pdf",
+                   width = 15,
+                   height = 8) {
 
   # Colors
   if (is.null(colors)) {
     colors <- c("#0073C2", "#CD534C", "#EFC000", "#868686", "#003C67",
                 "#7AA6DC", "#A73030", "#8F7700", "#3B3B3B", "#4A6990")
 
-    colors <- colors[seq_along(unique(x$Estimator))]
+    colors <- colors[seq_along(unique(x@est))]
   }
 
   # Title
@@ -388,7 +523,7 @@ plot_large_metrics <- function(x,
   }
 
   # Create the plot
-  p <- ggplot2::ggplot(x) +
+  p <- ggplot2::ggplot(x@df) +
     ggplot2::geom_line(ggplot2::aes(x = Parameter,
                                     y = Value,
                                     col = Estimator,
@@ -403,7 +538,7 @@ plot_large_metrics <- function(x,
                    legend.key.size = ggplot2::unit(2, 'cm'),
                    plot.title = ggplot2::element_text(hjust = 0.5))
 
-  if ("Row" %in% names(x)) {
+  if ("Row" %in% names(x@df)) {
     p <- p + ggh4x::facet_grid2(rows = ggplot2::vars(Row),
                                 cols = ggplot2::vars(Col),
                                 scales = "free",
@@ -420,4 +555,4 @@ plot_large_metrics <- function(x,
   # Return the plot
   invisible(p)
 
-}
+})

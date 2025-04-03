@@ -42,6 +42,9 @@ test_that("Pois dpqr work", {
   expect_identical(d(D)(1), dpois(1, lambda))
   expect_identical(p(D)(1), ppois(1, lambda))
   expect_equal(qn(D)(0.5), qpois(0.5, lambda), tolerance = 0.01)
+  expect_identical(d(D)(1), d(D, 1))
+  expect_identical(p(D)(1), p(D, 1))
+  expect_equal(qn(D)(0.5), qn(D, 0.5), tolerance = 0.01)
 
 })
 
@@ -77,7 +80,8 @@ test_that("Pois likelihood works", {
   expect_true(is.numeric(llpois(x, lambda)))
 
   # 2-Way Calls
-  expect_identical(llpois(x, lambda), ll(x, lambda, D))
+  expect_identical(llpois(x, lambda), ll(D, x))
+  expect_identical(ll(D)(x), ll(D, x))
 
 })
 
@@ -91,12 +95,12 @@ test_that("Pois estim works", {
   x <- r(D)(n)
 
   # Types
-  expect_true(is.numeric(epois(x, type = "mle")))
-  expect_true(is.numeric(epois(x, type = "me")))
+  expect_true(is.list(epois(x, type = "mle")))
+  expect_true(is.list(epois(x, type = "me")))
 
   # 2-Way Calls
-  expect_identical(epois(x, type = "mle"), estim(x, D, type = "mle"))
-  expect_identical(epois(x, type = "me"), estim(x, D, type = "me"))
+  expect_identical(epois(x, type = "mle"), e(D, x, type = "mle"))
+  expect_identical(epois(x, type = "me"), e(D, x, type = "me"))
 
   # Simulations
   d <- test_consistency("me", D)
@@ -138,7 +142,6 @@ test_that("Pois small metrics work", {
   set.seed(1)
 
   prm <- list(name = "lambda",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -150,18 +153,11 @@ test_that("Pois small metrics work", {
   )
 
   expect_no_error(
-    plot_small_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Observations, "factor")
-  expect_s3_class(x$Estimator, "factor")
-  expect_s3_class(x$Metric, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "SmallMetrics")
 
 })
 
@@ -172,7 +168,6 @@ test_that("Pois large metrics work", {
   D <- Pois(lambda)
 
   prm <- list(name = "lambda",
-              pos = NULL,
               val = seq(0.5, 5, by = 0.5))
 
   expect_no_error(
@@ -181,15 +176,10 @@ test_that("Pois large metrics work", {
   )
 
   expect_no_error(
-    plot_large_metrics(x,
-                       save = TRUE,
-                       path = tempdir())
+    plot(x, save = TRUE, path = tempdir())
   )
 
   # Types
-  expect_s3_class(x, "data.frame")
-  expect_true(is.numeric(x$Parameter))
-  expect_s3_class(x$Estimator, "factor")
-  expect_true(is.numeric(x$Value))
+  expect_s4_class(x, "LargeMetrics")
 
 })
