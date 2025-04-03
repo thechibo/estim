@@ -5,7 +5,7 @@ parametric functions (median, mode, entropy, Fisher information) of a
 distribution."><meta property="og:description" content="A set of functions that calculate the theoretical moments
 (expectation, variance, skewness, excess kurtosis) and other important
 parametric functions (median, mode, entropy, Fisher information) of a
-distribution."><meta property="og:image" content="/logo.svg"></head><body>
+distribution."><meta property="og:image" content="https:///thechibo.github.io/estim/logo.svg"></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
 
 
@@ -13,7 +13,7 @@ distribution."><meta property="og:image" content="/logo.svg"></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">estim</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.10.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.11.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -22,10 +22,7 @@ distribution."><meta property="og:image" content="/logo.svg"></head><body>
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
-      </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
- <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
-<li class="nav-item"><a class="external-link nav-link" href="https://github.com/thechibo/estim/" aria-label="GitHub"><span class="fa fab fa-github fa-lg"></span></a></li>
+      </ul><ul class="navbar-nav"><li class="nav-item"><a class="external-link nav-link" href="https://github.com/thechibo/estim" aria-label="GitHub repository"><span class="fa fa-github"></span></a></li>
       </ul></div>
 
 
@@ -73,7 +70,7 @@ distribution.</p>
 
 
 <dl><dt id="arg-x">x<a class="anchor" aria-label="anchor" href="#arg-x"></a></dt>
-<dd><p>an object of a <code>Distribution</code> subclass.</p></dd>
+<dd><p>a <code>Distribution</code> object.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -88,14 +85,39 @@ distribution.</p>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>Numeric, either vector or matrix depending on the moment and the
-distribution. Function <code>moments()</code> returns a list of all available methods.</p>
+distribution. The <code>moments()</code> function returns a list with all the available
+methods.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>The <code>moments()</code> function automatically finds the available methods for a
+    <p>Given a distribution, these functions calculate the theoretical moments and
+other parametric quantities of interest. Some distribution-function
+combinations are not available; for example, the <code>sd()</code> function is
+available only for univariate distributions.</p>
+<p>The <code>moments()</code> function automatically finds the available methods for a
 given distribution and results all of the results in a list.</p>
-<p>Not all functions are available for distributions; for example, the <code>sd()</code>
-is available only for univariate distributions.</p>
+<p>Technical Note:
+The argument of the moment functions does not follow the naming convention of
+the package, i.e. the <code>Distribution</code> object is names <code>x</code> rather than <code>distr</code>.
+This is due to the fact that most of the generics are already defined in the
+<code>stats</code> package (<code>mean</code>, <code>median</code>, <code>mode</code>, <code>var</code>, <code>sd</code>), therefore the first
+argument was already named <code>x</code> and could not change.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="functions">Functions<a class="anchor" aria-label="anchor" href="#functions"></a></h2>
+
+<ul><li><p><code>median()</code>: Median</p></li>
+<li><p><code>mode()</code>: Mode</p></li>
+<li><p><code>var()</code>: Variance</p></li>
+<li><p><code>sd()</code>: Standard Deviation</p></li>
+<li><p><code>skew()</code>: Skewness</p></li>
+<li><p><code>kurt()</code>: Kurtosis</p></li>
+<li><p><code>entro()</code>: Entropy</p></li>
+<li><p><code>finf()</code>: Fisher Information (numeric or matrix)</p></li>
+</ul></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><a href="Distributions.html">Distributions</a>, <a href="loglikelihood.html">loglikelihood</a>, <a href="estimation.html">estimation</a></p></div>
     </div>
 
     <div class="section level2">
@@ -104,38 +126,36 @@ is available only for univariate distributions.</p>
 <span class="r-in"><span><span class="co"># Beta Distribution Example</span></span></span>
 <span class="r-in"><span><span class="co"># -----------------------------------------------------</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://thechibo.github.io/estim/" class="external-link">estim</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Create the distribution</span></span></span>
-<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="Beta.html">Beta</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">D</span> <span class="op">&lt;-</span> <span class="fu"><a href="Beta.html">Beta</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># List of all available moments</span></span></span>
-<span class="r-in"><span><span class="va">mom</span> <span class="op">&lt;-</span> <span class="fu">moments</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">mom</span> <span class="op">&lt;-</span> <span class="fu">moments</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Expectation</span></span></span>
-<span class="r-in"><span><span class="fu">mean</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">mean</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.375</span>
 <span class="r-in"><span><span class="va">mom</span><span class="op">$</span><span class="va">mean</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.375</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Variance and Standard Deviation</span></span></span>
-<span class="r-in"><span><span class="fu">var</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">var</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.02604167</span>
-<span class="r-in"><span><span class="fu">sd</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">sd</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.1613743</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Skewness and Excess Kurtosis</span></span></span>
-<span class="r-in"><span><span class="fu">skew</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">skew</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.3098387</span>
-<span class="r-in"><span><span class="fu">kurt</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">kurt</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] 0.04</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Entropy</span></span></span>
-<span class="r-in"><span><span class="fu">entro</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">entro</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] -0.4301508</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Fisher Information Matrix</span></span></span>
-<span class="r-in"><span><span class="fu">finf</span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">finf</span><span class="op">(</span><span class="va">D</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>            shape1      shape2</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> shape1  0.2617971 -0.13313701</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> shape2 -0.1331370  0.08818594</span>
