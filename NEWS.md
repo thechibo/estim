@@ -1,3 +1,7 @@
+# estim 0.11.3
+- This package is now deprecated and will be archived.
+- Please migrate to [joker](https://github.com/thechibo/joker)
+
 # estim 0.11.2
 
 * Added distribution-specific documentation.

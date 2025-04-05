@@ -12,6 +12,11 @@ status](https://www.r-pkg.org/badges/version/estim)](https://CRAN.R-project.org/
 coverage](https://codecov.io/gh/thechibo/estim/branch/main/graph/badge.svg)](https://app.codecov.io/gh/thechibo/estim?branch=main)
 <!-- badges: end -->
 
+**Notice**: This package is no longer maintained and will be archived on
+the 1st of May 2025.  
+Please switch to the new package:
+[`joker`](https://github.com/thechibo/joker).
+
 ## Introduction
 
 The `estim` R package develops an S4 distribution system and performs
