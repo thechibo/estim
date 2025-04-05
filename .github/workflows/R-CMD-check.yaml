@@ -54,6 +54,7 @@ jobs:
       - name: Install dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
+          build_vignettes: false
           extra-packages: any::rcmdcheck
           needs: check
 
