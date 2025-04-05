@@ -2,6 +2,7 @@
 % Please edit documentation in R/02_Laplace.R
 \name{Laplace}
 \alias{Laplace}
+\alias{dlaplace}
 \alias{d,Laplace,numeric-method}
 \alias{p,Laplace,numeric-method}
 \alias{qn,Laplace,numeric-method}
@@ -26,6 +27,8 @@
 \title{Laplace Distribution}
 \usage{
 Laplace(mu = 0, sigma = 1)
+
+dlaplace(x, mu, sigma)
 
 \S4method{d}{Laplace,numeric}(distr, x)
 
@@ -72,10 +75,10 @@ vlaplace(mu, sigma, type = "mle")
 \arguments{
 \item{mu, sigma}{numeric. The distribution parameters.}
 
-\item{distr}{an object of class \code{Laplace}.}
-
-\item{x}{an object of class \code{Laplace}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Laplace} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Laplace} instead.}
 
 \item{n}{numeric. The sample size.}
 
@@ -94,7 +97,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -102,5 +105,78 @@ estimator.
 }
 }
 \description{
-Laplace Distribution
+The Laplace distribution, also known as the double exponential distribution,
+is a continuous probability distribution that is often used to model data
+with sharp peaks and heavy tails. It is parameterized by a location parameter
+\eqn{\mu} and a scale parameter \eqn{b > 0}.
+}
+\details{
+The probability density function (PDF) of the Laplace distribution is:
+\deqn{ f(x; \mu, b) = \frac{1}{2b} \exp\left(-\frac{|x - \mu|}{b}\right) .}
+}
+\examples{
+# -----------------------------------------------------
+# Laplace Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+m <- 3 ; s <- 5
+D <- Laplace(m, s)
+x <- c(0.3, 2, 10)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+median(D) # Median
+mode(D) # Mode
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+elaplace(x, type = "mle")
+elaplace(x, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+mle("laplace", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vlaplace(m, s, type = "mle")
+vlaplace(m, s, type = "me")
+
+avar_mle(D)
+avar_me(D)
+
+avar(D, type = "mle")
 }

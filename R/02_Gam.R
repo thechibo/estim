@@ -14,18 +14,114 @@ setClass("Gam",
 #' @title Gamma Distribution
 #' @name Gam
 #'
-#' @param x an object of class `Gam`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Gamma distribution is an absolute continuous probability distribution
+#' with two parameters: shape \eqn{\alpha > 0} and scale \eqn{\beta > 0}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Gam`.
-#' @param shape,scale numeric. The distribution parameters.
-#' @param par0,method,lower,upper arguments passed to optim.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Gamma` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Gamma` instead.
+#' @param shape,scale numeric. The distribution parameters (positive real
+#' numbers).
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
+#' @param par0,method,lower,upper arguments passed to optim for the mle
+#' optimization.
+#'
+#' @details
+#' The probability density function (PDF) of the Gamma distribution is given by:
+#' \deqn{ f(x; \alpha, \beta) = \frac{\beta^{-\alpha} x^{\alpha-1} e^{-x/\beta}}{\Gamma(\alpha)}, \quad x > 0. }
 #'
 #' @inherit Distributions return
 #'
+#' @references
+#'
+#' - Tamae, H., Irie, K. & Kubokawa, T. (2020), A score-adjusted approach to
+#' closed-form estimators for the gamma and beta distributions, Japanese Journal
+#' of Statistics and Data Science 3, 543–561.
+#'
+#' - Papadatos, N. (2022), On point estimators for gamma and beta distributions,
+#' arXiv preprint arXiv:2205.10799.
+#'
+#' @seealso
+#' Functions from the `stats` package: [dgamma()], [pgamma()], [qgamma()], [rgamma()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Gamma Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' a <- 3 ; b <- 5
+#' D <- Gam(a, b)
+#' x <- c(0.3, 2, 10)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llgamma(x, a, b)
+#'
+#' egamma(x, type = "mle")
+#' egamma(x, type = "me")
+#' egamma(x, type = "same")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' same(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("gam", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vgamma(a, b, type = "mle")
+#' vgamma(a, b, type = "me")
+#' vgamma(a, b, type = "same")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#' avar_same(D)
+#'
+#' avar(D, type = "mle")
 Gam <- function(shape = 1, scale = 1) {
   new("Gam", shape = shape, scale = scale)
 }

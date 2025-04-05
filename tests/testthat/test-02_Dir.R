@@ -33,7 +33,7 @@ test_that("Dir dpqr work", {
   expect_identical(sum(x >= 0), 4L * n)
 
   # 2-Way Calls
-  expect_identical(d(D)(1:4 / 10), ddirichlet(1:4 / 10, a))
+  expect_identical(d(D)(1:4 / 10), ddir(1:4 / 10, a))
   expect_identical(d(D)(1:4 / 10), d(D, 1:4 / 10))
 
 })

@@ -133,9 +133,9 @@ test_that("Laplace avar works", {
   expect_identical(vlaplace(mu, sigma, type = "me"), avar_me(D))
 
   # Simulations
-  d <- test_avar("mle", D)
+  d <- test_avar("mle", D, n = 2e4, m = 2e3)
   expect_equal(d$avar_true, d$avar_est, tolerance = 0.05)
-  d <- test_avar("me", D)
+  d <- test_avar("me", D, n = 2e4, m = 2e3)
   expect_equal(d$avar_true, d$avar_est, tolerance = 0.05)
 
 })

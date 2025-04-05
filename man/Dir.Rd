@@ -2,7 +2,10 @@
 % Please edit documentation in R/02_Dir.R
 \name{Dir}
 \alias{Dir}
+\alias{ddir}
+\alias{rdir}
 \alias{d,Dir,numeric-method}
+\alias{d,Dir,matrix-method}
 \alias{r,Dir,numeric-method}
 \alias{mean,Dir-method}
 \alias{mode,Dir-method}
@@ -23,7 +26,13 @@
 \usage{
 Dir(alpha = c(1, 1))
 
+ddir(x, alpha, log = FALSE)
+
+rdir(n, alpha)
+
 \S4method{d}{Dir,numeric}(distr, x)
+
+\S4method{d}{Dir,matrix}(distr, x)
 
 \S4method{r}{Dir,numeric}(distr, n)
 
@@ -58,20 +67,23 @@ vdirichlet(alpha, type = "mle")
 \S4method{avar_same}{Dir}(distr)
 }
 \arguments{
-\item{alpha}{numeric. The distribution parameters.}
+\item{alpha}{numeric. The distribution parameter vector.}
 
-\item{distr}{an object of class \code{Dir}.}
-
-\item{x}{an object of class \code{Dir}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{log}{logical. Should the logarithm of the density be returned?}
 
 \item{n}{numeric. The sample size.}
+
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Dir} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Dir} instead.}
 
 \item{type}{character, case ignored. The estimator type (mle, me, or same).}
 
 \item{...}{extra arguments.}
 
-\item{par0, method, lower, upper}{arguments passed to optim.}
+\item{par0, method, lower, upper}{arguments passed to optim for the mle
+optimization.}
 }
 \value{
 Each type of function returns a different type of object:
@@ -84,7 +96,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -92,5 +104,86 @@ estimator.
 }
 }
 \description{
-Dirichlet Distribution
+The Dirichlet distribution is an absolute continuous probability,
+specifically a multivariate generalization of the beta distribution,
+parameterized by a vector \eqn{\boldsymbol{\alpha} =
+(\alpha_1, \alpha_2, ..., \alpha_k)} with \eqn{\alpha_i > 0}.
+}
+\details{
+The probability density function (PDF) of the Dirichlet distribution is given
+by:
+\deqn{ f(x_1, ..., x_k; \alpha_1, ..., \alpha_k) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^k x_i^{\alpha_i - 1}, }
+where \eqn{B(\boldsymbol{\alpha})} is the multivariate Beta function:
+\deqn{ B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^k \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^k \alpha_i\right)} }
+and \eqn{\sum_{i=1}^k x_i = 1}, \eqn{x_i > 0}.
+}
+\examples{
+# -----------------------------------------------------
+# Dir Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+a <- c(0.5, 2, 5)
+D <- Dir(a)
+x <- c(0.3, 0.2, 0.5)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+mode(D) # Mode
+var(D) # Variance
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+lldirichlet(x, a)
+
+edirichlet(x, type = "mle")
+edirichlet(x, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+mle("dir", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vdirichlet(a, type = "mle")
+vdirichlet(a, type = "me")
+
+avar_mle(D)
+avar_me(D)
+
+avar(D, type = "mle")
+}
+\references{
+\itemize{
+\item Oikonomidis, I. & Trevezas, S. (2025), Moment-Type Estimators for the
+Dirichlet and the Multivariate Gamma Distributions, arXiv,
+https://arxiv.org/abs/2311.15025
+}
 }

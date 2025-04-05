@@ -60,10 +60,10 @@ eunif(x, type = "mle", ...)
 \arguments{
 \item{min, max}{numeric. The distribution parameters.}
 
-\item{distr}{an object of class \code{Unif}.}
-
-\item{x}{an object of class \code{Unif}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Unif} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Unif} instead.}
 
 \item{n}{numeric. The sample size.}
 
@@ -82,7 +82,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -90,5 +90,69 @@ estimator.
 }
 }
 \description{
-Uniform Distribution
+The Uniform distribution is an absolute continuous probability distribution
+where all intervals of the same length within the distribution's support are
+equally probable. It is defined by two parameters: the lower bound \eqn{a}
+and the upper bound \eqn{b}, with \eqn{a < b}.
+}
+\details{
+The probability density function (PDF) of the Uniform distribution is:
+\deqn{ f(x; a, b) = \frac{1}{b - a}, \quad a \le x \le b .}
+}
+\examples{
+# -----------------------------------------------------
+# Uniform Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+a <- 3 ; b <- 5
+D <- Unif(a, b)
+x <- c(0.3, 0.8, 0.5)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, x) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llunif(x, a, b)
+
+eunif(x, type = "mle")
+eunif(x, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+mle("unif", x) # the distr argument can be a character
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dunif]{dunif()}}, \code{\link[=punif]{punif()}}, \code{\link[=qunif]{qunif()}}, \code{\link[=runif]{runif()}}
 }

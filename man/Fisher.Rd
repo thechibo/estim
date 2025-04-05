@@ -51,10 +51,10 @@ llf(x, df1, df2)
 \arguments{
 \item{df1, df2}{numeric. The distribution parameters.}
 
-\item{distr}{an object of class \code{Fisher}.}
-
-\item{x}{an object of class \code{Fisher}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Fisher} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Fisher} instead.}
 
 \item{n}{numeric. The sample size.}
 }
@@ -69,7 +69,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -77,5 +77,63 @@ estimator.
 }
 }
 \description{
-Fisher Distribution
+The Fisher (F) distribution is an absolute continuous probability
+distribution that arises frequently in the analysis of variance (ANOVA) and
+in hypothesis testing. It is defined by two degrees of freedom parameters
+\eqn{d_1 > 0} and \eqn{d_2 > 0}.
+}
+\details{
+The probability density function (PDF) of the F-distribution is given by:
+\deqn{ f(x; d_1, d_2) = \frac{\sqrt{\left(\frac{d_1 x}{d_1 x + d_2}\right)^{d_1} \left(\frac{d_2}{d_1 x + d_2}\right)^{d_2}}}{x B(d_1/2, d_2/2)}, \quad x > 0 .}
+}
+\examples{
+# -----------------------------------------------------
+# Fisher Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+df1 <- 14 ; df2 <- 20
+D <- Fisher(df1, df2)
+x <- c(0.3, 2, 10)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+median(D) # Median
+mode(D) # Mode
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llf(x, df1, df2)
+
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=df]{df()}}, \code{\link[=pf]{pf()}}, \code{\link[=qf]{qf()}}, \code{\link[=rf]{rf()}}
 }

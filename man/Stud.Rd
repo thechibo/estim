@@ -51,10 +51,10 @@ llt(x, df)
 \arguments{
 \item{df}{numeric. The distribution parameter.}
 
-\item{distr}{an object of class \code{Stud}.}
-
-\item{x}{an object of class \code{Stud}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Stud} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Stud} instead.}
 
 \item{n}{numeric. The sample size.}
 }
@@ -69,7 +69,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -77,5 +77,63 @@ estimator.
 }
 }
 \description{
-Student Distribution
+The Student's t-distribution is a continuous probability distribution used
+primarily in hypothesis testing and in constructing confidence intervals for
+small sample sizes. It is defined by one parameter: the degrees of freedom
+\eqn{\nu > 0}.
+}
+\details{
+The probability density function (PDF) of the Student's t-distribution is:
+\deqn{ f(x; \nu) = \frac{\Gamma\left(\frac{\nu + 1}{2}\right)}{\sqrt{\nu\pi}\ \Gamma\left(\frac{\nu}{2}\right)}\left(1 + \frac{x^2}{\nu}\right)^{-\frac{\nu + 1}{2}} .}
+}
+\examples{
+# -----------------------------------------------------
+# Student Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+df <- 12
+D <- Stud(df)
+x <- c(-3, 0, 3)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+d1 <- d(D) ; d1(x) # d1 is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+median(D) # Median
+mode(D) # Mode
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llt(x, df)
+
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dt]{dt()}}, \code{\link[=pt]{pt()}}, \code{\link[=qt]{qt()}}, \code{\link[=rt]{rt()}}
 }

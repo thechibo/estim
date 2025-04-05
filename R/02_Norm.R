@@ -14,17 +14,96 @@ setClass("Norm",
 #' @title Normal Distribution
 #' @name Norm
 #'
-#' @param x an object of class `Norm`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Normal or Gaussian distribution, is an absolute continuous probability
+#' distribution characterized by two parameters: the mean \eqn{\mu} and the
+#' standard deviation \eqn{\sigma > 0}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Norm`.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Norm` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Norm` instead.
 #' @param mean,sd numeric. The distribution parameters.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
 #'
+#' @details
+#' The probability density function (PDF) of the Normal distribution is:
+#' \deqn{ f(x; \mu, \sigma) = \frac{1}{\sigma \sqrt{2\pi}} e^{-\frac{1}{2} \left(\frac{x - \mu}{\sigma}\right)^2} .}
+#'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [dnorm()], [pnorm()], [qnorm()], [rnorm()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Normal Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' m <- 3 ; s <- 5
+#' D <- Norm(m, s)
+#' x <- c(0.3, 2, 10)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' enorm(x, type = "mle")
+#' enorm(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("norm", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vnorm(m, s, type = "mle")
+#' vnorm(m, s, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Norm <- function(mean = 0, sd = 1) {
   new("Norm", mean = mean, sd = sd)
 }

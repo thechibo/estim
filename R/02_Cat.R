@@ -11,21 +11,30 @@ setClass("Cat",
          slots = c(prob = "numeric"),
          prototype = list(prob = c(0.5, 0.5)))
 
-#' @title Categorical Distribution
+#' @title Cat Distribution
 #' @name Cat
 #'
-#' @param x an object of class `Cat`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Categorical distribution is a discrete probability distribution that
+#' describes the probability of a single trial resulting in one of \eqn{k}
+#' possible categories. It is a generalization of the Bernoulli distribution
+#' and a special case of the multinomial distribution with \eqn{n = 1}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Cat`.
-#' @param prob numeric. The distribution parameters.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Cat` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Cat` instead.
+#' @param prob numeric. The distribution parameter, a probability vector.
 #' @param dim numeric. The parameter dimension. See details.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
 #'
-#' @inherit Distributions return
-#'
 #' @details
+#' The probability mass function (PMF) of the categorical distribution is given
+#' by: \deqn{ f(x; p) = \prod_{i=1}^k p_i^{x_i},}
+#' subject to \eqn{ \sum_{i=1}^{k} x_i = n }.
+#'
 #' The estimation of `prob` from a sample would by default return a vector of
 #' probabilities corresponding to the categories that appeared in the sample and
 #' 0 for the rest. However, the parameter dimension cannot be uncovered by the
@@ -38,8 +47,75 @@ setClass("Cat",
 #' therefore the Fisher information matrix and the asymptotic variance -
 #' covariance matrix of the estimators is of dimension `(k-1)x(k-1)`.
 #'
-#' @importFrom extraDistr dcat rcat
+#' @inherit Distributions return
+#'
+#' @seealso
+#' [dmultinom()], [rmultinom()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Categorical Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' p <- c(0.1, 0.2, 0.7)
+#' D <- Cat(p)
+#' x <- 2
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' mode(D) # Mode
+#' var(D) # Variance
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llcat(x, p)
+#'
+#' ecat(x, dim = 3, type = "mle")
+#' ecat(x, dim = 3, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("cat", dim = 3, x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vcat(p, type = "mle")
+#' vcat(p, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Cat <- function(prob = c(0.5, 0.5)) {
   new("Cat", prob = prob)
 }
@@ -57,6 +133,30 @@ setValidity("Cat", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## d, p, q, r             ----
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#' @rdname Cat
+#' @export
+dcat <- function(x, prob) {
+
+  if (any(prob < 0) || abs(sum(prob) - 1) > 1e-8) {
+    stop("prob must be a valid probability vector")
+  }
+
+  unlist(lapply(x, function(x) {
+    if (x %in% seq_along(prob)) {
+      return(prob[x])
+    } else {
+      return(0)
+    }
+  }))
+
+}
+
+#' @rdname Cat
+#' @export
+rcat <- function(n, prob) {
+  sample(seq_along(prob), n, prob = prob, replace = TRUE)
+}
 
 #' @rdname Cat
 setMethod("d", signature = c(distr = "Cat", x = "numeric"),
@@ -121,7 +221,12 @@ setMethod("finf",
 
   k <- length(x@prob)
 
-  D <- diag(1 / x@prob[-k]) + matrix(1, k - 1, 1) %*% matrix(1, 1, k - 1) /
+  if (k == 1) {
+    y <- 1 / x@prob[-k]
+  } else {
+    y <- diag(1 / x@prob[-k])
+  }
+  D <- y + matrix(1, k - 1, 1) %*% matrix(1, 1, k - 1) /
     x@prob[k]
 
   rownames(D) <- paste0("prob", seq_along(x@prob[-k]))

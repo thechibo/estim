@@ -14,17 +14,100 @@ setClass("Pois",
 #' @title Poisson Distribution
 #' @name Pois
 #'
-#' @param x an object of class `Pois`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Poisson distribution is a discrete probability distribution that models
+#' the number of events occurring in a fixed interval of time or space, given
+#' that the events occur with a constant rate \eqn{\lambda > 0} and
+#' independently of the time since the last event.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Pois`.
-#' @param lambda numeric. The distribution parameters.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Pois` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Pois` instead.
+#' @param lambda numeric. The distribution parameter.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
 #'
+#' @details
+#'The probability mass function (PMF) of the Poisson distribution is:
+#' \deqn{ P(X = k) = \frac{\lambda^k e^{-\lambda}}{k!}, \quad k \in \mathbb{N}_0. }
+#'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [dpois()], [ppois()], [qpois()], [rpois()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Pois Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' lambda <- 5
+#' D <- Pois(lambda)
+#' x <- 0:10
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llpois(x, lambda)
+#'
+#' epois(x, type = "mle")
+#' epois(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("pois", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vpois(lambda, type = "mle")
+#' vpois(lambda, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Pois <- function(lambda = 1) {
   new("Pois", lambda = lambda)
 }

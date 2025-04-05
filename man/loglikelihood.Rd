@@ -66,14 +66,70 @@ examples can be found in the package vignette.
 # -----------------------------------------------------
 
 # Create the distribution
-D <- Beta(3, 5)
+a <- 3 ; b <- 5
+D <- Beta(a, b)
+x <- c(0.3, 0.8, 0.5)
+n <- 100
 
-# Simulate a random sample from D
-set.seed(932)
-x <- r(D)(100)
+# ------------------
+# dpqr Functions
+# ------------------
 
-f <- ll(D) ; f(x) # used as a functional
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
 ll(D, x)
+llbeta(x, a, b)
+
+ebeta(x, type = "mle")
+ebeta(x, type = "me")
+ebeta(x, type = "same")
+
+mle(D, x)
+me(D, x)
+same(D, x)
+e(D, x, type = "mle")
+
+mle("beta", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vbeta(a, b, type = "mle")
+vbeta(a, b, type = "me")
+vbeta(a, b, type = "same")
+
+avar_mle(D)
+avar_me(D)
+avar_same(D)
+
+avar(D, type = "mle")
 }
 \seealso{
 \link{Distributions}, \link{moments}, \link{estimation}

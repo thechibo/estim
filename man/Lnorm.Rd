@@ -23,7 +23,7 @@
 \alias{vlnorm}
 \alias{avar_mle,Lnorm-method}
 \alias{avar_me,Lnorm-method}
-\title{Lnorm Distribution}
+\title{Log-Normal Distribution}
 \usage{
 Lnorm(meanlog = 0, sdlog = 1)
 
@@ -72,10 +72,10 @@ vlnorm(meanlog, sdlog, type = "mle")
 \arguments{
 \item{meanlog, sdlog}{numeric. The distribution parameters.}
 
-\item{distr}{an object of class \code{Lnorm}.}
-
-\item{x}{an object of class \code{Lnorm}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Lnorm} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Lnorm} instead.}
 
 \item{n}{numeric. The sample size.}
 
@@ -94,7 +94,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -102,5 +102,81 @@ estimator.
 }
 }
 \description{
-Lnorm Distribution
+The Lognormal distribution is an absolute continuous probability distribution
+of a random variable whose logarithm is normally distributed. It is defined
+by parameters \eqn{\mu} and \eqn{\sigma > 0}, which are the mean and standard
+deviation of the underlying normal distribution.
+}
+\details{
+The probability density function (PDF) of the Lognormal distribution is:
+\deqn{ f(x; \mu, \sigma) = \frac{1}{x \sigma \sqrt{2\pi}} e^{-\frac{(\log x - \mu)^2}{2 \sigma^2}}, \quad x > 0 .}
+}
+\examples{
+# -----------------------------------------------------
+# Lnorm Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+m <- 3 ; s <- 5
+D <- Lnorm(m, s)
+x <- c(0.3, 2, 10)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+median(D) # Median
+mode(D) # Mode
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+elnorm(x, type = "mle")
+elnorm(x, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+mle("lnorm", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vlnorm(m, s, type = "mle")
+vlnorm(m, s, type = "me")
+
+avar_mle(D)
+avar_me(D)
+
+avar(D, type = "mle")
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dlnorm]{dlnorm()}}, \code{\link[=plnorm]{plnorm()}}, \code{\link[=qlnorm]{qlnorm()}}, \code{\link[=rlnorm]{rlnorm()}}
 }

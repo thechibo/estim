@@ -14,17 +14,96 @@ setClass("Multinom",
 #' @title Multinomial Distribution
 #' @name Multinom
 #'
-#' @param x an object of class `Multinom`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The multinomial distribution is a discrete probability distribution which models
+#' the probability of having x successes in n independent categorical trials
+#' with success probability vector p.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Multinom`.
-#' @param size,prob numeric. The distribution parameters.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Multinom` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Multinom` instead.
+#' @param size,prob numeric. The distribution parameters, `size` must be a
+#' positive integer and `prob` must be a probability vector.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
 #'
+#' @details
+#' The probability mass function (PMF) of the Multinomial distribution is:
+#' \deqn{ P(X_1 = x_1, ..., X_k = x_k) = \frac{n!}{x_1! x_2! ... x_k!} \prod_{i=1}^k p_i^{x_i}, }
+#' subject to \eqn{ \sum_{i=1}^{k} x_i = n }.
+#'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [dmultinom()], [rmultinom()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Multinomial Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' N <- 10 ; p <- c(0.1, 0.2, 0.7)
+#' D <- Multinom(N, p)
+#' x <- c(2, 3, 5)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' x <- r(D, n) # random generator function
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' mode(D) # Mode
+#' var(D) # Variance
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llmultinom(x, N, p)
+#'
+#' emultinom(x, type = "mle")
+#' emultinom(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("multinom", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vmultinom(N, p, type = "mle")
+#' vmultinom(N, p, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Multinom <- function(size = 1, prob = c(0.5, 0.5)) {
   new("Multinom", size = size, prob = prob)
 }
@@ -51,6 +130,12 @@ setValidity("Multinom", function(object) {
 
 #' @rdname Multinom
 setMethod("d", signature = c(distr = "Multinom", x = "numeric"),
+          function(distr, x) {
+            dmultinom(x, size = distr@size, prob = distr@prob)
+          })
+
+#' @rdname Multinom
+setMethod("d", signature = c(distr = "Multinom", x = "matrix"),
           function(distr, x) {
             dmultinom(x, size = distr@size, prob = distr@prob)
           })
@@ -118,7 +203,13 @@ setMethod("finf",
 
   k <- length(x@prob)
 
-  D <- x@size * (diag(1 / x@prob[-k]) - matrix(1, k - 1, 1) %*% matrix(1, 1, k - 1) /
+  if (k == 1) {
+    y <- 1 / x@prob[-k]
+  } else {
+    y <- diag(1 / x@prob[-k])
+  }
+
+  D <- x@size * (y - matrix(1, k - 1, 1) %*% matrix(1, 1, k - 1) /
               x@prob[k])
 
   rownames(D) <- paste0("prob", seq_along(x@prob[-k]))

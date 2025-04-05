@@ -11,23 +11,106 @@ setClass("Multigam",
          slots = c(shape = "numeric", scale = "numeric"),
          prototype = list(shape = 1, scale = 1))
 
-#' @title Gamma Distribution
+#' @title Multivariate Gamma Distribution
 #' @name Multigam
 #'
-#' @param x an object of class `Multigam`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The multivariate gamma distribution is a multivariate absolute continuous
+#' probability distribution, defined as the cumulative sum of independent
+#' gamma random variables with possibly different shape parameters
+#' \eqn{\alpha_i > 0, i\in\[k \]} and the same scale \eqn{\beta > 0}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Multigam`.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Gamma` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Gamma` instead.
 #' @param shape,scale numeric. The distribution parameters.
-#' @param par0,method,lower,upper arguments passed to optim.
-#' @param log logical. Should the log of the density be returned?
-#' @param n numeric. The sample size.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
+#' @param log logical. Should the logarithm of the density be returned?
+#' @param par0,method,lower,upper arguments passed to optim for the mle
+#' optimization.
+#'
+#' @details
+#' The probability density function (PDF) of the multivariate gamma distribution
+#' is given by:
+#' \deqn{ f(x; \alpha, \beta) = \frac{\beta^{-\alpha_0}}{\prod_{i=1}^k\Gamma(\alpha_i)}, e^{-x_k/\beta} x_1^{\alpha_1-1}\prod_{i=1}^k (x_i - x_{i-1})^{(\alpha_i-1)} \quad x > 0. }
 #'
 #' @inherit Distributions return
 #'
+#' @references
+#'
+#' - Oikonomidis, I. & Trevezas, S. (2025), Moment-Type Estimators for the
+#' Dirichlet and the Multivariate Gamma Distributions, arXiv,
+#' https://arxiv.org/abs/2311.15025
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Multivariate Gamma Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' a <- c(0.5, 3, 5) ; b <- 5
+#' D <- Multigam(a, b)
+#' x <- c(0.3, 2, 10)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' var(D) # Variance
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llmultigam(x, a, b)
+#'
+#' emultigam(x, type = "mle")
+#' emultigam(x, type = "me")
+#' emultigam(x, type = "same")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' same(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("multigam", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vmultigam(a, b, type = "mle")
+#' vmultigam(a, b, type = "me")
+#' vmultigam(a, b, type = "same")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#' avar_same(D)
+#'
+#' avar(D, type = "mle")
 Multigam <- function(shape = 1, scale = 1) {
   new("Multigam", shape = shape, scale = scale)
 }
@@ -53,22 +136,31 @@ setValidity("Multigam", function(object) {
 #' @export
 dmultigam <- function(x, shape, scale, log = FALSE) {
 
-  if (length(x) != length(shape)) {
-    stop("The lengths of x (", length(x), ") and shape (",
-         length(shape), ") must be equal.")
+  if (is.vector(x)) {
+    x <- matrix(x, nrow = 1)
+  }
+  if (ncol(x) != length(shape)) {
+    stop("the columns of x must be equal to the length of shape")
+  }
+  if (any(shape <= 0) || scale <= 0) {
+    stop("shape and scale must be positive")
   }
 
-  z <- fd(x)
-  xk <- x[length(x)]
-  a0 <- sum(shape)
-
-  ld <- sum(shape * log(z)) - a0 * log(scale) - sum(lgamma(shape)) - xk / scale
+  y <- apply(x, 1,
+             FUN = function(x) {
+               if (any(x <= 0)) {
+                 -Inf
+               } else {
+                 sum(shape * log(fd(x))) - sum(shape) * log(scale) -
+                   sum(lgamma(shape)) - x[length(x)] / scale
+               }
+             })
 
   if (!log) {
-    ld <- exp(ld)
+    return(exp(y))
+  } else {
+    return(y)
   }
-
-  ld
 
 }
 
@@ -88,6 +180,12 @@ rmultigam <- function(n, shape, scale) {
 
 #' @rdname Multigam
 setMethod("d", signature = c(distr = "Multigam", x = "numeric"),
+          function(distr, x) {
+            dmultigam(x, shape = distr@shape, scale = distr@scale)
+          })
+
+#' @rdname Multigam
+setMethod("d", signature = c(distr = "Multigam", x = "matrix"),
           function(distr, x) {
             dmultigam(x, shape = distr@shape, scale = distr@scale)
           })

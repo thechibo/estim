@@ -14,17 +14,99 @@ setClass("Exp",
 #' @title Exponential Distribution
 #' @name Exp
 #'
-#' @param x an object of class `Exp`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Exponential distribution is a continuous probability distribution often
+#' used to model the time between independent events that occur at a constant
+#' average rate. It is defined by the rate parameter \eqn{\lambda > 0}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Exp`.
-#' @param rate numeric. The distribution parameters.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Exp` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Exp` instead.
+#' @param rate numeric. The distribution rate parameter.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
 #'
+#' @details
+#' The probability density function (PDF) of the Exponential distribution is
+#' given by: \deqn{ f(x; \lambda) = \lambda e^{-\lambda x}, \quad x \geq 0 .}
+#'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [dexp()], [pexp()], [qexp()], [rexp()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Exp Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' rate <- 5
+#' D <- Exp(rate)
+#' x <- c(0.3, 2, 10)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llexp(x, rate)
+#'
+#' eexp(x, type = "mle")
+#' eexp(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("exp", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vexp(rate, type = "mle")
+#' vexp(rate, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Exp <- function(rate = 1) {
   new("Exp", rate = rate)
 }

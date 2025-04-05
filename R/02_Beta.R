@@ -15,7 +15,7 @@ setClass("Beta",
 #' @name Beta
 #'
 #' @description
-#' The Beta distribution is a absolute continuous probability distribution with
+#' The Beta distribution is an absolute continuous probability distribution with
 #' support \eqn{S = [0,1]}, parameterized by two shape parameters,
 #' \eqn{\alpha > 0} and \eqn{\beta > 0}.
 #'
@@ -34,26 +34,9 @@ setClass("Beta",
 #' @details
 #' The probability density function (PDF) of the Beta distribution is given by:
 #' \deqn{ f(x; \alpha, \beta) = \frac{x^{\alpha - 1} (1 - x)^{\beta - 1}}{B(\alpha, \beta)},
-#' \quad \alpha\in\mathbb{R}_+, \, \beta\in\mathbb{R}_+}
+#' \quad \alpha\in\mathbb{R}_+, \, \beta\in\mathbb{R}_+,}
 #' for \eqn{x \in S = [0, 1]}, where \eqn{B(\alpha, \beta)} is the Beta function:
 #' \deqn{ B(\alpha, \beta) = \int_0^1 t^{\alpha - 1} (1 - t)^{\beta - 1} dt.}
-#'
-#' @section Moments:
-#' The Beta distribution has the following known moments:
-#' - **Mean**: \eqn{E[X] = \frac{\alpha}{\alpha + \beta}.}
-#' - **Median**: Approximated by \eqn{\frac{\alpha - 1/3}{\alpha + \beta - 2/3}}, for \eqn{\alpha, \beta > 1}
-#' - **Mode**: \eqn{\frac{\alpha - 1}{\alpha + \beta - 2}}, for \eqn{\alpha, \beta > 1.}
-#' - **Variance**: \eqn{Var(X) = \frac{\alpha\beta}{(\alpha + \beta)^2 (\alpha + \beta + 1)}.}
-#' - **Skewness**: \eqn{\frac{2(\beta - \alpha)\sqrt{\alpha + \beta + 1}}{(\alpha + \beta + 2)\sqrt{\alpha\beta}}}
-#' - **Kurtosis**: \eqn{\frac{6[(\alpha - \beta)^2 (\alpha + \beta + 1) - \alpha\beta (\alpha + \beta + 2)]}{\alpha\beta (\alpha + \beta + 2) (\alpha + \beta + 3)}}
-#' - **Entropy**: \eqn{H(X) = \log B(\alpha, \beta) - (\alpha - 1)\psi(\alpha) - (\beta - 1)\psi(\beta) + (\alpha + \beta - 2)\psi(\alpha + \beta)}
-#' - **Fisher Information**: The Fisher information matrix for \eqn{(\alpha, \beta)} is given by:
-#'   \deqn{ I(\alpha, \beta) = \begin{bmatrix} \psi' (\alpha) - \psi' (\alpha + \beta) & -\psi' (\alpha + \beta) \\ -\psi' (\alpha + \beta) & \psi' (\beta) - \psi' (\alpha + \beta) \end{bmatrix} }
-#'
-#' @section Estimation:
-#' The parameters \eqn{(\alpha, \beta)} can be estimated using:
-#' - **Method of Moments**: Solving for \eqn{\alpha} and \eqn{\beta} using sample mean and variance.
-#' - **Maximum Likelihood Estimation (MLE)**: Numerical methods are typically used to maximize the log-likelihood function.
 #'
 #' @inherit Distributions return
 #'
@@ -65,10 +48,6 @@ setClass("Beta",
 #'
 #' - Papadatos, N. (2022), On point estimators for gamma and beta distributions,
 #' arXiv preprint arXiv:2205.10799.
-#'
-#' - Oikonomidis, I. & Trevezas, S. (2025), Moment-Type Estimators for the
-#' Dirichlet and the Multivariate Gamma Distributions, arXiv,
-#' https://arxiv.org/abs/2311.15025
 #'
 #' @seealso
 #' Functions from the `stats` package: [dbeta()], [pbeta()], [qbeta()], [rbeta()]
@@ -84,46 +63,42 @@ setClass("Beta",
 #' a <- 3 ; b <- 5
 #' D <- Beta(a, b)
 #' x <- c(0.3, 0.8, 0.5)
-#' n <- 5
+#' n <- 100
 #'
-#' # Density function
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
 #' df <- d(D) ; df(x) # df is a function itself
-#' d(D, x) # alternative way to use the function
 #'
-#' # Distribution function
-#' pf <- p(D) ; pf(x)
-#' p(D, x)
+#' # ------------------
+#' # Moments
+#' # ------------------
 #'
-#' # Inverse distribution function
-#' qf <- qn(D) ; qf(x)
-#' qn(D, x)
-#'
-#' # Random Generator function
-#' rf <- r(D) ; rf(n)
-#' r(D, n)
+#' mean(D) # Expectation
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
 #'
 #' # List of all available moments
 #' mom <- moments(D)
+#' mom$mean # expectation
 #'
-#' # Expectation
-#' mean(D)
-#' mom$mean
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
 #'
-#' # Variance and Standard Deviation
-#' var(D)
-#' sd(D)
-#'
-#' # Skewness and Excess Kurtosis
-#' skew(D)
-#' kurt(D)
-#'
-#' # Entropy
-#' entro(D)
-#'
-#' # Fisher Information Matrix
-#' finf(D)
-#'
-#' # Point Estimation - The e Functions
+#' ll(D, x)
+#' llbeta(x, a, b)
 #'
 #' ebeta(x, type = "mle")
 #' ebeta(x, type = "me")
@@ -136,7 +111,9 @@ setClass("Beta",
 #'
 #' mle("beta", x) # the distr argument can be a character
 #'
-#' # Asymptotic Variance - The v Functions
+#' # ------------------
+#' # As. Variance
+#' # ------------------
 #'
 #' vbeta(a, b, type = "mle")
 #' vbeta(a, b, type = "me")

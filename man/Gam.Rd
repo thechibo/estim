@@ -76,12 +76,13 @@ vgamma(shape, scale, type = "mle")
 \S4method{avar_same}{Gam}(distr)
 }
 \arguments{
-\item{shape, scale}{numeric. The distribution parameters.}
+\item{shape, scale}{numeric. The distribution parameters (positive real
+numbers).}
 
-\item{distr}{an object of class \code{Gam}.}
-
-\item{x}{an object of class \code{Gam}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Gamma} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Gamma} instead.}
 
 \item{n}{numeric. The sample size.}
 
@@ -89,7 +90,8 @@ argument, \code{x} is a numeric vector, a sample of observations.}
 
 \item{...}{extra arguments.}
 
-\item{par0, method, lower, upper}{arguments passed to optim.}
+\item{par0, method, lower, upper}{arguments passed to optim for the mle
+optimization.}
 }
 \value{
 Each type of function returns a different type of object:
@@ -102,7 +104,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -110,5 +112,95 @@ estimator.
 }
 }
 \description{
-Gamma Distribution
+The Gamma distribution is an absolute continuous probability distribution
+with two parameters: shape \eqn{\alpha > 0} and scale \eqn{\beta > 0}.
+}
+\details{
+The probability density function (PDF) of the Gamma distribution is given by:
+\deqn{ f(x; \alpha, \beta) = \frac{\beta^{-\alpha} x^{\alpha-1} e^{-x/\beta}}{\Gamma(\alpha)}, \quad x > 0. }
+}
+\examples{
+# -----------------------------------------------------
+# Gamma Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+a <- 3 ; b <- 5
+D <- Gam(a, b)
+x <- c(0.3, 2, 10)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+median(D) # Median
+mode(D) # Mode
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llgamma(x, a, b)
+
+egamma(x, type = "mle")
+egamma(x, type = "me")
+egamma(x, type = "same")
+
+mle(D, x)
+me(D, x)
+same(D, x)
+e(D, x, type = "mle")
+
+mle("gam", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vgamma(a, b, type = "mle")
+vgamma(a, b, type = "me")
+vgamma(a, b, type = "same")
+
+avar_mle(D)
+avar_me(D)
+avar_same(D)
+
+avar(D, type = "mle")
+}
+\references{
+\itemize{
+\item Tamae, H., Irie, K. & Kubokawa, T. (2020), A score-adjusted approach to
+closed-form estimators for the gamma and beta distributions, Japanese Journal
+of Statistics and Data Science 3, 543–561.
+\item Papadatos, N. (2022), On point estimators for gamma and beta distributions,
+arXiv preprint arXiv:2205.10799.
+}
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dgamma]{dgamma()}}, \code{\link[=pgamma]{pgamma()}}, \code{\link[=qgamma]{qgamma()}}, \code{\link[=rgamma]{rgamma()}}
 }

@@ -14,17 +14,85 @@ setClass("Unif",
 #' @title Uniform Distribution
 #' @name Unif
 #'
-#' @param x an object of class `Unif`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Uniform distribution is an absolute continuous probability distribution
+#' where all intervals of the same length within the distribution's support are
+#' equally probable. It is defined by two parameters: the lower bound \eqn{a}
+#' and the upper bound \eqn{b}, with \eqn{a < b}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Unif`.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Unif` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Unif` instead.
 #' @param min,max numeric. The distribution parameters.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
 #'
+#' @details
+#' The probability density function (PDF) of the Uniform distribution is:
+#' \deqn{ f(x; a, b) = \frac{1}{b - a}, \quad a \le x \le b .}
+#'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [dunif()], [punif()], [qunif()], [runif()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Uniform Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' a <- 3 ; b <- 5
+#' D <- Unif(a, b)
+#' x <- c(0.3, 0.8, 0.5)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, x) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llunif(x, a, b)
+#'
+#' eunif(x, type = "mle")
+#' eunif(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("unif", x) # the distr argument can be a character
 Unif <- function(min = 0, max = 1) {
   new("Unif", min = min, max = max)
 }

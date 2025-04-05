@@ -14,15 +14,77 @@ setClass("Stud",
 #' @title Student Distribution
 #' @name Stud
 #'
-#' @param x an object of class `Stud`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Student's t-distribution is a continuous probability distribution used
+#' primarily in hypothesis testing and in constructing confidence intervals for
+#' small sample sizes. It is defined by one parameter: the degrees of freedom
+#' \eqn{\nu > 0}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Stud`.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Stud` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Stud` instead.
 #' @param df numeric. The distribution parameter.
+#'
+#' @details
+#' The probability density function (PDF) of the Student's t-distribution is:
+#' \deqn{ f(x; \nu) = \frac{\Gamma\left(\frac{\nu + 1}{2}\right)}{\sqrt{\nu\pi}\ \Gamma\left(\frac{\nu}{2}\right)}\left(1 + \frac{x^2}{\nu}\right)^{-\frac{\nu + 1}{2}} .}
 #'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [dt()], [pt()], [qt()], [rt()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Student Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' df <- 12
+#' D <- Stud(df)
+#' x <- c(-3, 0, 3)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' d1 <- d(D) ; d1(x) # d1 is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llt(x, df)
+#'
 Stud <- function(df = 1) {
   new("Stud", df = df)
 }

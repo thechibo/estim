@@ -11,23 +11,105 @@ setClass("Bern",
          slots = c(prob = "numeric"),
          prototype = list(prob = 0.5))
 
-#' @title Bernoulli Distribution
+#' @title Bern Distribution
 #' @name Bern
 #'
-#' @param x an object of class `Bern`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Bernoulli distribution is a discrete probability distribution which takes
+#' the value 1 with probability \eqn{p} and the value 0 with probability
+#' \eqn{1 - p}, where \eqn{0 \leq p \leq 1}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Bern`.
-#' @param prob numeric. The distribution parameter.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Bern` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Bern` instead.
+#' @param prob numeric. The distribution parameter, within the (0, 1) interval.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
+#' @param log,log.p logical. Should the logarithm of the probability be returned?
+#' @param lower.tail logical. If TRUE (default), probabilities are
+#' \eqn{P(X \leq x)}, otherwise \eqn{P(X > x)}.
 #' @param ... extra arguments.
+#'
+#' @details
+#' The probability mass function (PMF) of the Bernoulli distribution is given
+#' by: \deqn{ f(x; p) = p^x (1 - p)^{1 - x}, \quad p \in (0, 1), \quad x \in \{0, 1\}.}
 #'
 #' @inherit Distributions return
 #'
-#' @importFrom extraDistr dbern pbern qbern rbern
+#' @seealso
+#' Functions from the `stats` package: [dbinom()], [pbinom()], [qbinom()], [rbinom()]
+#'
 #' @export
 #'
-#' @seealso [Distributions], [moments]
+#' @examples
+#' # -----------------------------------------------------
+#' # Bernoulli Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' p <- 0.7
+#' D <- Bern(p)
+#' x <- c(0, 1)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llbern(x, p)
+#'
+#' ebern(x, type = "mle")
+#' ebern(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("bern", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vbern(p, type = "mle")
+#' vbern(p, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Bern <- function(prob = 0.5) {
   new("Bern", prob = prob)
 }
@@ -47,27 +129,51 @@ setValidity("Bern", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Bern
+#' @export
+dbern <- function(x, prob, log = FALSE) {
+  dbinom(x, size = 1, prob, log)
+}
+
+#' @rdname Bern
+#' @export
+pbern <- function(x, prob, lower.tail = TRUE, log.p = FALSE) {
+  pbinom(x, size = 1, prob, lower.tail, log.p)
+}
+
+#' @rdname Bern
+#' @export
+qbern <- function(x, prob, lower.tail = TRUE, log.p = FALSE) {
+  qbinom(x, size = 1, prob, lower.tail, log.p)
+}
+
+#' @rdname Bern
+#' @export
+rbern <- function(n, prob) {
+  rbinom(n, size = 1, prob)
+}
+
+#' @rdname Bern
 setMethod("d", signature = c(distr = "Bern", x = "numeric"),
           function(distr, x) {
-            extraDistr::dbern(x, prob = distr@prob)
+            dbinom(x, size = 1, prob = distr@prob)
           })
 
 #' @rdname Bern
 setMethod("p", signature = c(distr = "Bern", x = "numeric"),
           function(distr, x) {
-            extraDistr::pbern(x, prob = distr@prob)
+            pbinom(x, size = 1, prob = distr@prob)
           })
 
 #' @rdname Bern
 setMethod("qn", signature = c(distr = "Bern", x = "numeric"),
           function(distr, x) {
-            extraDistr::qbern(x, prob = distr@prob)
+            qbinom(x, size = 1, prob = distr@prob)
           })
 
 #' @rdname Bern
 setMethod("r", signature = c(distr = "Bern", n = "numeric"),
           function(distr, n) {
-            extraDistr::rbern(n, prob = distr@prob)
+            rbinom(n, size = 1, prob = distr@prob)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -14,18 +14,88 @@ setClass("Cauchy",
 #' @title Cauchy Distribution
 #' @name Cauchy
 #'
-#' @param x an object of class `Cauchy`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Cauchy distribution is an absolute continuous probability distribution
+#' characterized by its location parameter \eqn{x_0} and scale parameter
+#' \eqn{\gamma > 0}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Cauchy`.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Cauchy` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Cauchy` instead.
 #' @param location,scale numeric. The distribution parameters.
-#' @param par0,method,lower,upper arguments passed to optim.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
+#' @param par0,method,lower,upper arguments passed to optim for the mle
+#' optimization.
+#'
+#' @details
+#' The probability density function (PDF) of the Cauchy distribution is given
+#' by: \deqn{ f(x; x_0, \gamma) = \frac{1}{\pi \gamma \left[1 + \left(\frac{x - x_0}{\gamma}\right)^2\right]}.}
 #'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [dcauchy()], [pcauchy()], [qcauchy()], [rcauchy()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Cauchy Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' x0 <- 3 ; scale <- 5
+#' D <- Cauchy(x0, scale)
+#' x <- c(-5, 3, 10)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' median(D) # Median
+#' mode(D) # Mode
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llcauchy(x, x0, scale)
+#'
+#' ecauchy(x, type = "mle")
+#' ecauchy(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("cauchy", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vcauchy(x0, scale, type = "mle")
+#' avar_mle(D)
+#' avar(D, type = "mle")
 Cauchy <- function(location = 0, scale = 1) {
   new("Cauchy", location = location, scale = scale)
 }

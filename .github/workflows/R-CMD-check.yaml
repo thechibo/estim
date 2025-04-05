@@ -57,27 +57,6 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
-      - name: Install TinyTeX (for LaTeX)
-        if: matrix.config.os == 'ubuntu-latest'
-        run: |
-          R -e "install.packages('tinytex')"
-          R -e "tinytex::install_tinytex()"
-
-      - name: Install TinyTeX (for LaTeX)
-        if: matrix.config.os == 'macos-latest'
-        run: |
-          Rscript -e 'install.packages("tinytex"); tinytex::install_tinytex()'
-          sudo tlmgr update --self --all || true
-        shell: bash
-
-      - name: Reinstall TinyTeX (for LaTeX) on Windows
-        if: matrix.config.os == 'windows-latest'
-        run: |
-          Rscript -e 'if (tinytex::is_tinytex()) tinytex::uninstall_tinytex()'
-          Rscript -e 'install.packages("tinytex", repos="https://cran.rstudio.com/")'
-          Rscript -e 'tinytex::install_tinytex()'
-        shell: bash
-
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true

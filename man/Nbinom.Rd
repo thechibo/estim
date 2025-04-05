@@ -23,7 +23,7 @@
 \alias{vnbinom}
 \alias{avar_mle,Nbinom-method}
 \alias{avar_me,Nbinom-method}
-\title{Negative Binomial Distribution}
+\title{Nbinometric Distribution}
 \usage{
 Nbinom(size = 1, prob = 0.5)
 
@@ -70,12 +70,12 @@ vnbinom(size, prob, type = "mle")
 \S4method{avar_me}{Nbinom}(distr)
 }
 \arguments{
-\item{size, prob}{numeric. The distribution parameters.}
+\item{size, prob}{numeric. The distribution parameter.}
 
-\item{distr}{an object of class \code{Nbinom}.}
-
-\item{x}{an object of class \code{Nbinom}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Nbinom} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Nbinom} instead.}
 
 \item{n}{numeric. The sample size.}
 
@@ -94,7 +94,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -102,5 +102,83 @@ estimator.
 }
 }
 \description{
-Negative Binomial Distribution
+The Negative Binomial distribution is a discrete probability distribution
+that models the number of failures before a specified number of successes
+occurs in a sequence of independent Bernoulli trials. It is defined by
+parameters \eqn{r > 0} (number of successes) and \eqn{0 < p \leq 1}
+(probability of success).
+}
+\details{
+The probability mass function (PMF) of the negative binomial distribution is:
+\deqn{ P(X = k) = \binom{k + r - 1}{k} (1 - p)^k p^r, \quad k \in \mathbb{N}_0.}
+}
+\examples{
+# -----------------------------------------------------
+# Negative Binomial Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+N <- 10 ; p <- 0.4
+D <- Nbinom(N, p)
+x <- 0:4
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+median(D) # Median
+mode(D) # Mode
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llnbinom(x, N, p)
+
+enbinom(x, N, type = "mle")
+enbinom(x, N, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+# ------------------
+# As. Variance
+# ------------------
+
+vnbinom(N, p, type = "mle")
+vnbinom(N, p, type = "me")
+
+avar_mle(D)
+avar_me(D)
+
+avar(D, type = "mle")
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dnbinom]{dnbinom()}}, \code{\link[=pnbinom]{pnbinom()}}, \code{\link[=qnbinom]{qnbinom()}}, \code{\link[=rnbinom]{rnbinom()}}
 }

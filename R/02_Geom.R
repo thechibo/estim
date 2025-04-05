@@ -14,17 +14,99 @@ setClass("Geom",
 #' @title Geometric Distribution
 #' @name Geom
 #'
-#' @param x an object of class `Geom`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Geometric distribution is a discrete probability distribution that models
+#' the number of failures before the first success in a sequence of independent
+#' Bernoulli trials, each with success probability \eqn{0 < p \leq 1}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Geom`.
-#' @param prob numeric. The distribution parameters.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Geom` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Geom` instead.
+#' @param prob numeric. The distribution parameter.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
 #'
+#' @details
+#' The probability mass function (PMF) of the Geometric distribution is:
+#' \deqn{ P(X = k) = (1 - p)^k p, \quad k \in \mathbb{N}_0.}
+#'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [dgeom()], [pgeom()], [qgeom()], [rgeom()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Geom Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' p <- 0.4
+#' D <- Geom(p)
+#' x <- 0:4
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llgeom(x, p)
+#'
+#' egeom(x, type = "mle")
+#' egeom(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("geom", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vgeom(p, type = "mle")
+#' vgeom(p, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Geom <- function(prob = 0.5) {
   new("Geom", prob = prob)
 }

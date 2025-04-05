@@ -21,7 +21,7 @@
 \alias{vbinom}
 \alias{avar_mle,Binom-method}
 \alias{avar_me,Binom-method}
-\title{Binomial Distribution}
+\title{Binom Distribution}
 \usage{
 Binom(size = 1, prob = 0.5)
 
@@ -64,12 +64,13 @@ vbinom(size, prob, type = "mle")
 \S4method{avar_me}{Binom}(distr)
 }
 \arguments{
-\item{size, prob}{numeric. The distribution parameters.}
+\item{size, prob}{numeric. The distribution parameters, \code{size} must be a
+positive integer and \code{prob} must be within the (0, 1) interval.}
 
-\item{distr}{an object of class \code{Binom}.}
-
-\item{x}{an object of class \code{Binom}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Binom} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Binom} instead.}
 
 \item{n}{numeric. The sample size.}
 
@@ -88,7 +89,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -96,5 +97,80 @@ estimator.
 }
 }
 \description{
-Binomial Distribution
+The binomial distribution is a discrete probability distribution which models
+the probability of having x successes in n independent Binomoulli trials with
+success probability p.
+}
+\details{
+The probability mass function (PMF) of the binomial distribution is given
+by: \deqn{ f(x; n, p) = \binom{n}{x} p^x (1 - p)^{n - x}, \quad N \in
+\mathbb{N}, \quad p \in (0, 1),} with \eqn{x \in \{0, 1, \dots, N\}}.
+}
+\examples{
+# -----------------------------------------------------
+# Binomial Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+N <- 10 ; p <- 0.7
+D <- Binom(N, p)
+x <- 0:N
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llbinom(x, N, p)
+
+ebinom(x, size = N, type = "mle")
+ebinom(x, size = N, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+# ------------------
+# As. Variance
+# ------------------
+
+vbinom(N, p, type = "mle")
+vbinom(N, p, type = "me")
+
+avar_mle(D)
+avar_me(D)
+
+avar(D, type = "mle")
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dbinom]{dbinom()}}, \code{\link[=pbinom]{pbinom()}}, \code{\link[=qbinom]{qbinom()}}, \code{\link[=rbinom]{rbinom()}}
 }

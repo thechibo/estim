@@ -11,22 +11,104 @@ setClass("Nbinom",
          slots = c(size = "numeric", prob = "numeric"),
          prototype = list(size = 1, prob = 0.5))
 
-#' @title Negative Binomial Distribution
+#' @title Nbinometric Distribution
 #' @name Nbinom
 #'
-#' @param x an object of class `Nbinom`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Negative Binomial distribution is a discrete probability distribution
+#' that models the number of failures before a specified number of successes
+#' occurs in a sequence of independent Bernoulli trials. It is defined by
+#' parameters \eqn{r > 0} (number of successes) and \eqn{0 < p \leq 1}
+#' (probability of success).
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Nbinom`.
-#' @param size,prob numeric. The distribution parameters.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Nbinom` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Nbinom` instead.
+#' @param size,prob numeric. The distribution parameter.
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
 #'
-#' @importFrom stats integrate
+#' @details
+#' The probability mass function (PMF) of the negative binomial distribution is:
+#' \deqn{ P(X = k) = \binom{k + r - 1}{k} (1 - p)^k p^r, \quad k \in \mathbb{N}_0.}
 #'
 #' @inherit Distributions return
 #'
+#' @importFrom stats integrate
+#'
+#' @seealso
+#' Functions from the `stats` package: [dnbinom()], [pnbinom()], [qnbinom()], [rnbinom()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Negative Binomial Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' N <- 10 ; p <- 0.4
+#' D <- Nbinom(N, p)
+#' x <- 0:4
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llnbinom(x, N, p)
+#'
+#' enbinom(x, N, type = "mle")
+#' enbinom(x, N, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vnbinom(N, p, type = "mle")
+#' vnbinom(N, p, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Nbinom <- function(size = 1, prob = 0.5) {
   new("Nbinom", size = size, prob = prob)
 }

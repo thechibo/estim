@@ -8,12 +8,12 @@
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
-Implements estimation methods for parameters of common distribution families. The common d, p, q, r function family for each distribution is enriched with the ll, e, and v counterparts, computing the log-likelihood, performing estimation, and calculating the asymptotic variance - covariance matrix, respectively. Parameter estimation is performed analytically whenever possible.
+Implements an S4 distribution system and estimation methods for parameters of common distribution families. The common d, p, q, r function family for each distribution is enriched with the ll, e, and v counterparts, computing the log-likelihood, performing estimation, and calculating the asymptotic variance - covariance matrix, respectively. Parameter estimation is performed analytically whenever possible.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://thechibo.github.io/estim/}
+  \item \url{https://thechibo.github.io/estim}
   \item Report bugs at \url{https://github.com/thechibo/estim/issues}
 }
 

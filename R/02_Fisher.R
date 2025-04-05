@@ -14,15 +14,77 @@ setClass("Fisher",
 #' @title Fisher Distribution
 #' @name Fisher
 #'
-#' @param x an object of class `Fisher`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Fisher (F) distribution is an absolute continuous probability
+#' distribution that arises frequently in the analysis of variance (ANOVA) and
+#' in hypothesis testing. It is defined by two degrees of freedom parameters
+#' \eqn{d_1 > 0} and \eqn{d_2 > 0}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Fisher`.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Fisher` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Fisher` instead.
 #' @param df1,df2 numeric. The distribution parameters.
+#'
+#' @details
+#' The probability density function (PDF) of the F-distribution is given by:
+#' \deqn{ f(x; d_1, d_2) = \frac{\sqrt{\left(\frac{d_1 x}{d_1 x + d_2}\right)^{d_1} \left(\frac{d_2}{d_1 x + d_2}\right)^{d_2}}}{x B(d_1/2, d_2/2)}, \quad x > 0 .}
 #'
 #' @inherit Distributions return
 #'
+#' @seealso
+#' Functions from the `stats` package: [df()], [pf()], [qf()], [rf()]
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Fisher Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' df1 <- 14 ; df2 <- 20
+#' D <- Fisher(df1, df2)
+#' x <- c(0.3, 2, 10)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' p(D, x) # distribution function
+#' qn(D, 0.8) # inverse distribution function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' median(D) # Median
+#' mode(D) # Mode
+#' var(D) # Variance
+#' sd(D) # Standard Deviation
+#' skew(D) # Skewness
+#' kurt(D) # Excess Kurtosis
+#' entro(D) # Entropy
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' llf(x, df1, df2)
+#'
 Fisher <- function(df1 = 1, df2 = 1) {
   new("Fisher", df1 = df1, df2 = df2)
 }

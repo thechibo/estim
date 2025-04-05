@@ -5,6 +5,7 @@
 \alias{dmultigam}
 \alias{rmultigam}
 \alias{d,Multigam,numeric-method}
+\alias{d,Multigam,matrix-method}
 \alias{r,Multigam,numeric-method}
 \alias{mean,Multigam-method}
 \alias{var,Multigam-method}
@@ -19,7 +20,7 @@
 \alias{avar_mle,Multigam-method}
 \alias{avar_me,Multigam-method}
 \alias{avar_same,Multigam-method}
-\title{Gamma Distribution}
+\title{Multivariate Gamma Distribution}
 \usage{
 Multigam(shape = 1, scale = 1)
 
@@ -28,6 +29,8 @@ dmultigam(x, shape, scale, log = FALSE)
 rmultigam(n, shape, scale)
 
 \S4method{d}{Multigam,numeric}(distr, x)
+
+\S4method{d}{Multigam,matrix}(distr, x)
 
 \S4method{r}{Multigam,numeric}(distr, n)
 
@@ -60,20 +63,21 @@ vmultigam(shape, scale, type = "mle")
 \arguments{
 \item{shape, scale}{numeric. The distribution parameters.}
 
-\item{x}{an object of class \code{Multigam}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
-
-\item{log}{logical. Should the log of the density be returned?}
+\item{log}{logical. Should the logarithm of the density be returned?}
 
 \item{n}{numeric. The sample size.}
 
-\item{distr}{an object of class \code{Multigam}.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Gamma} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Gamma} instead.}
 
 \item{type}{character, case ignored. The estimator type (mle, me, or same).}
 
 \item{...}{extra arguments.}
 
-\item{par0, method, lower, upper}{arguments passed to optim.}
+\item{par0, method, lower, upper}{arguments passed to optim for the mle
+optimization.}
 }
 \value{
 Each type of function returns a different type of object:
@@ -86,7 +90,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -94,5 +98,85 @@ estimator.
 }
 }
 \description{
-Gamma Distribution
+The multivariate gamma distribution is a multivariate absolute continuous
+probability distribution, defined as the cumulative sum of independent
+gamma random variables with possibly different shape parameters
+\eqn{\alpha_i > 0, i\in\[k \]} and the same scale \eqn{\beta > 0}.
+}
+\details{
+The probability density function (PDF) of the multivariate gamma distribution
+is given by:
+\deqn{ f(x; \alpha, \beta) = \frac{\beta^{-\alpha_0}}{\prod_{i=1}^k\Gamma(\alpha_i)}, e^{-x_k/\beta} x_1^{\alpha_1-1}\prod_{i=1}^k (x_i - x_{i-1})^{(\alpha_i-1)} \quad x > 0. }
+}
+\examples{
+# -----------------------------------------------------
+# Multivariate Gamma Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+a <- c(0.5, 3, 5) ; b <- 5
+D <- Multigam(a, b)
+x <- c(0.3, 2, 10)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+var(D) # Variance
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llmultigam(x, a, b)
+
+emultigam(x, type = "mle")
+emultigam(x, type = "me")
+emultigam(x, type = "same")
+
+mle(D, x)
+me(D, x)
+same(D, x)
+e(D, x, type = "mle")
+
+mle("multigam", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vmultigam(a, b, type = "mle")
+vmultigam(a, b, type = "me")
+vmultigam(a, b, type = "same")
+
+avar_mle(D)
+avar_me(D)
+avar_same(D)
+
+avar(D, type = "mle")
+}
+\references{
+\itemize{
+\item Oikonomidis, I. & Trevezas, S. (2025), Moment-Type Estimators for the
+Dirichlet and the Multivariate Gamma Distributions, arXiv,
+https://arxiv.org/abs/2311.15025
+}
 }

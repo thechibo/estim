@@ -14,19 +14,104 @@ setClass("Dir",
 #' @title Dirichlet Distribution
 #' @name Dir
 #'
-#' @param x an object of class `Dir`. If the function also has a `distr`
-#' argument, `x` is a numeric vector, a sample of observations.
+#' @description
+#' The Dirichlet distribution is an absolute continuous probability,
+#' specifically a multivariate generalization of the beta distribution,
+#' parameterized by a vector \eqn{\boldsymbol{\alpha} =
+#' (\alpha_1, \alpha_2, ..., \alpha_k)} with \eqn{\alpha_i > 0}.
+#'
 #' @param n numeric. The sample size.
-#' @param distr an object of class `Dir`.
-#' @param alpha numeric. The distribution parameters.
-#' @param par0,method,lower,upper arguments passed to optim.
+#' @param distr,x If both arguments coexist, `distr` is an object of class
+#' `Dir` and `x` is a numeric vector, the sample of observations. For the
+#' moment functions that only take an `x` argument, `x` is an object of class
+#' `Dir` instead.
+#' @param alpha numeric. The distribution parameter vector.
+#' @param log logical. Should the logarithm of the density be returned?
 #' @param type character, case ignored. The estimator type (mle, me, or same).
 #' @param ... extra arguments.
+#' @param par0,method,lower,upper arguments passed to optim for the mle
+#' optimization.
+#'
+#' @details
+#' The probability density function (PDF) of the Dirichlet distribution is given
+#' by:
+#' \deqn{ f(x_1, ..., x_k; \alpha_1, ..., \alpha_k) = \frac{1}{B(\boldsymbol{\alpha})} \prod_{i=1}^k x_i^{\alpha_i - 1}, }
+#' where \eqn{B(\boldsymbol{\alpha})} is the multivariate Beta function:
+#' \deqn{ B(\boldsymbol{\alpha}) = \frac{\prod_{i=1}^k \Gamma(\alpha_i)}{\Gamma\left(\sum_{i=1}^k \alpha_i\right)} }
+#' and \eqn{\sum_{i=1}^k x_i = 1}, \eqn{x_i > 0}.
 #'
 #' @inherit Distributions return
 #'
-#' @importFrom extraDistr ddirichlet rdirichlet
+#' @references
+#'
+#' - Oikonomidis, I. & Trevezas, S. (2025), Moment-Type Estimators for the
+#' Dirichlet and the Multivariate Gamma Distributions, arXiv,
+#' https://arxiv.org/abs/2311.15025
+#'
 #' @export
+#'
+#' @examples
+#' # -----------------------------------------------------
+#' # Dir Distribution Example
+#' # -----------------------------------------------------
+#'
+#' # Create the distribution
+#' a <- c(0.5, 2, 5)
+#' D <- Dir(a)
+#' x <- c(0.3, 0.2, 0.5)
+#' n <- 100
+#'
+#' # ------------------
+#' # dpqr Functions
+#' # ------------------
+#'
+#' d(D, x) # density function
+#' x <- r(D, n) # random generator function
+#'
+#' # alternative way to use the function
+#' df <- d(D) ; df(x) # df is a function itself
+#'
+#' # ------------------
+#' # Moments
+#' # ------------------
+#'
+#' mean(D) # Expectation
+#' mode(D) # Mode
+#' var(D) # Variance
+#' entro(D) # Entropy
+#' finf(D) # Fisher Information Matrix
+#'
+#' # List of all available moments
+#' mom <- moments(D)
+#' mom$mean # expectation
+#'
+#' # ------------------
+#' # Point Estimation
+#' # ------------------
+#'
+#' ll(D, x)
+#' lldirichlet(x, a)
+#'
+#' edirichlet(x, type = "mle")
+#' edirichlet(x, type = "me")
+#'
+#' mle(D, x)
+#' me(D, x)
+#' e(D, x, type = "mle")
+#'
+#' mle("dir", x) # the distr argument can be a character
+#'
+#' # ------------------
+#' # As. Variance
+#' # ------------------
+#'
+#' vdirichlet(a, type = "mle")
+#' vdirichlet(a, type = "me")
+#'
+#' avar_mle(D)
+#' avar_me(D)
+#'
+#' avar(D, type = "mle")
 Dir <- function(alpha = c(1, 1)) {
   new("Dir", alpha = alpha)
 }
@@ -46,15 +131,70 @@ setValidity("Dir", function(object) {
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 #' @rdname Dir
+#' @export
+ddir <- function(x, alpha, log = FALSE) {
+
+  if (is.vector(x)) {
+    x <- matrix(x, nrow = 1)
+  }
+  if (ncol(x) != length(alpha)) {
+    stop("the columns of x must be equal to the length of alpha")
+  }
+  if (any(alpha <= 0)) {
+    stop("alpha must be positive")
+  }
+
+  y <- apply(x, 1,
+        FUN = function(x) {
+          if (any(x <= 0) || abs(sum(x) - 1) > 1e-10) {
+            -Inf
+          } else {
+            lgamma(sum(alpha)) - sum(lgamma(alpha)) + sum((alpha - 1) * log(x))
+          }
+        })
+
+  if (!log) {
+    return(exp(y))
+  } else {
+    return(y)
+  }
+
+}
+
+#' @rdname Dir
+#' @export
+rdir <- function(n, alpha) {
+
+  if (length(n) > 1 || !is.numeric(n) || n < 0) {
+    stop("n must be a positive integer")
+  }
+  if (any(alpha <= 0)) {
+    stop("alpha must be positive")
+  }
+
+  k <- length(alpha)
+  m <- matrix(rgamma(n * k, shape = alpha), nrow = n, ncol = k, byrow = TRUE)
+
+  m / rowSums(m)
+
+}
+
+#' @rdname Dir
 setMethod("d", signature = c(distr = "Dir", x = "numeric"),
           function(distr, x) {
-            extraDistr::ddirichlet(x, alpha = distr@alpha)
+            ddir(x, alpha = distr@alpha)
+          })
+
+#' @rdname Dir
+setMethod("d", signature = c(distr = "Dir", x = "matrix"),
+          function(distr, x) {
+            ddir(x, alpha = distr@alpha)
           })
 
 #' @rdname Dir
 setMethod("r", signature = c(distr = "Dir", n = "numeric"),
           function(distr, n) {
-            extraDistr::rdirichlet(n, alpha = distr@alpha)
+            rdir(n, alpha = distr@alpha)
           })
 
 ## ~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -70,12 +70,12 @@ vexp(rate, type = "mle")
 \S4method{avar_me}{Exp}(distr)
 }
 \arguments{
-\item{rate}{numeric. The distribution parameters.}
+\item{rate}{numeric. The distribution rate parameter.}
 
-\item{distr}{an object of class \code{Exp}.}
-
-\item{x}{an object of class \code{Exp}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Exp} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Exp} instead.}
 
 \item{n}{numeric. The sample size.}
 
@@ -94,7 +94,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -102,5 +102,83 @@ estimator.
 }
 }
 \description{
-Exponential Distribution
+The Exponential distribution is a continuous probability distribution often
+used to model the time between independent events that occur at a constant
+average rate. It is defined by the rate parameter \eqn{\lambda > 0}.
+}
+\details{
+The probability density function (PDF) of the Exponential distribution is
+given by: \deqn{ f(x; \lambda) = \lambda e^{-\lambda x}, \quad x \geq 0 .}
+}
+\examples{
+# -----------------------------------------------------
+# Exp Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+rate <- 5
+D <- Exp(rate)
+x <- c(0.3, 2, 10)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+median(D) # Median
+mode(D) # Mode
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llexp(x, rate)
+
+eexp(x, type = "mle")
+eexp(x, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+mle("exp", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vexp(rate, type = "mle")
+vexp(rate, type = "me")
+
+avar_mle(D)
+avar_me(D)
+
+avar(D, type = "mle")
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dexp]{dexp()}}, \code{\link[=pexp]{pexp()}}, \code{\link[=qexp]{qexp()}}, \code{\link[=rexp]{rexp()}}
 }

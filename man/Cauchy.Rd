@@ -76,10 +76,10 @@ vcauchy(location, scale, type = "mle")
 \arguments{
 \item{location, scale}{numeric. The distribution parameters.}
 
-\item{distr}{an object of class \code{Cauchy}.}
-
-\item{x}{an object of class \code{Cauchy}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Cauchy} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Cauchy} instead.}
 
 \item{n}{numeric. The sample size.}
 
@@ -87,7 +87,8 @@ argument, \code{x} is a numeric vector, a sample of observations.}
 
 \item{...}{extra arguments.}
 
-\item{par0, method, lower, upper}{arguments passed to optim.}
+\item{par0, method, lower, upper}{arguments passed to optim for the mle
+optimization.}
 }
 \value{
 Each type of function returns a different type of object:
@@ -100,7 +101,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -108,5 +109,70 @@ estimator.
 }
 }
 \description{
-Cauchy Distribution
+The Cauchy distribution is an absolute continuous probability distribution
+characterized by its location parameter \eqn{x_0} and scale parameter
+\eqn{\gamma > 0}.
+}
+\details{
+The probability density function (PDF) of the Cauchy distribution is given
+by: \deqn{ f(x; x_0, \gamma) = \frac{1}{\pi \gamma \left[1 + \left(\frac{x - x_0}{\gamma}\right)^2\right]}.}
+}
+\examples{
+# -----------------------------------------------------
+# Cauchy Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+x0 <- 3 ; scale <- 5
+D <- Cauchy(x0, scale)
+x <- c(-5, 3, 10)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+median(D) # Median
+mode(D) # Mode
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llcauchy(x, x0, scale)
+
+ecauchy(x, type = "mle")
+ecauchy(x, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+mle("cauchy", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vcauchy(x0, scale, type = "mle")
+avar_mle(D)
+avar(D, type = "mle")
+}
+\seealso{
+Functions from the \code{stats} package: \code{\link[=dcauchy]{dcauchy()}}, \code{\link[=pcauchy]{pcauchy()}}, \code{\link[=qcauchy]{qcauchy()}}, \code{\link[=rcauchy]{rcauchy()}}
 }

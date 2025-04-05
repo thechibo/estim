@@ -1,3 +1,8 @@
+# estim 0.11.2
+
+* Added distribution-specific documentation.
+* Removed pkgdown due to incompatibility with Sweave.
+
 # estim 0.11.1
 
 * Added pkgdown check.

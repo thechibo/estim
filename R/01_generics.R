@@ -46,7 +46,7 @@
 #' and the distribution. The `moments()` function returns a list with all the
 #' available methods.
 #'
-#' - Estimation: Returns a list. The estimator of the unknown parameters. Note
+#' - Estimation: Returns a list, the estimators of the unknown parameters. Note
 #' that in distribution families like the binomial, multinomial, and negative
 #' binomial, the size is not returned, since it is considered known.
 #'
@@ -58,31 +58,7 @@
 #' [Fisher], [Gam], [Geom], [Laplace], [Lnorm], [Multigam], [Multinom],
 #' [Nbinom], [Norm], [Pois], [Stud], [Unif], [Weib]
 #'
-#' @examples
-#' # -----------------------------------------------------
-#' # Beta Distribution Example
-#' # -----------------------------------------------------
-#'
-#' # Create the distribution
-#' D <- Beta(3, 5)
-#' x <- c(0.3, 0.8, 0.5)
-#' n <- 5
-#'
-#' # Density function
-#' df <- d(D) ; df(x) # df is a function itself
-#' d(D, x) # alternative way to use the function
-#'
-#' # Distribution function
-#' pf <- p(D) ; pf(x)
-#' p(D, x)
-#'
-#' # Inverse distribution function
-#' qf <- qn(D) ; qf(x)
-#' qn(D, x)
-#'
-#' # Random Generator function
-#' rf <- r(D) ; rf(n)
-#' r(D, n)
+#' @inherit Beta examples
 NULL
 
 setClass("Distribution")
@@ -114,7 +90,7 @@ setGeneric("r", function(distr, n, ...) {
 #' @name DistrFunctionals
 #'
 #' @param distr a `Distribution` object.
-#' @param x,n missing. Agruments not supplied.
+#' @param x,n missing. Arguments not supplied.
 #' @param ... extra arguments.
 #'
 #' @details
@@ -195,34 +171,7 @@ setMethod("r", signature = c(distr = "Distribution", n = "missing"),
 #'
 #' @seealso [Distributions], [loglikelihood], [estimation]
 #'
-#' @examples
-#' # -----------------------------------------------------
-#' # Beta Distribution Example
-#' # -----------------------------------------------------
-#'
-#' # Create the distribution
-#' D <- Beta(3, 5)
-#'
-#' # List of all available moments
-#' mom <- moments(D)
-#'
-#' # Expectation
-#' mean(D)
-#' mom$mean
-#'
-#' # Variance and Standard Deviation
-#' var(D)
-#' sd(D)
-#'
-#' # Skewness and Excess Kurtosis
-#' skew(D)
-#' kurt(D)
-#'
-#' # Entropy
-#' entro(D)
-#'
-#' # Fisher Information Matrix
-#' finf(D)
+#' @inherit Distributions examples
 moments <- function(x) {
   mom <- get_moment_methods(x)
   y <- lapply(mom, FUN = function(m) { do.call(m, list(x = x)) })
@@ -328,20 +277,7 @@ setGeneric("finf", function(x, ...) {
 #'
 #' @seealso [Distributions], [moments], [estimation]
 #'
-#' @examples
-#' # -----------------------------------------------------
-#' # Beta Distribution Example
-#' # -----------------------------------------------------
-#'
-#' # Create the distribution
-#' D <- Beta(3, 5)
-#'
-#' # Simulate a random sample from D
-#' set.seed(932)
-#' x <- r(D)(100)
-#'
-#' f <- ll(D) ; f(x) # used as a functional
-#' ll(D, x)
+#' @inherit Distributions examples
 setGeneric("ll", signature = c("distr", "x"),
            function(distr, x, ...) { standardGeneric("ll") })
 
@@ -432,42 +368,7 @@ setGeneric("dlloptim", signature = c("par", "tx", "distr"),
 #'
 #' @seealso [mle], [me], [same]
 #'
-#' @examples
-#' # -----------------------------------------------------
-#' # Beta Distribution Example
-#' # -----------------------------------------------------
-#'
-#' # Simulation
-#' set.seed(1)
-#' a <- 1
-#' b <- 2
-#' D <- Beta(a, b)
-#' x <- r(D)(100)
-#'
-#' # Point Estimation - The e Functions
-#'
-#' ebeta(x, type = "mle")
-#' ebeta(x, type = "me")
-#' ebeta(x, type = "same")
-#'
-#' mle(D, x)
-#' me(D, x)
-#' same(D, x)
-#' e(D, x, type = "mle")
-#'
-#' mle("beta", x) # the distr argument can be a character
-#'
-#' # Asymptotic Variance - The v Functions
-#'
-#' vbeta(a, b, type = "mle")
-#' vbeta(a, b, type = "me")
-#' vbeta(a, b, type = "same")
-#'
-#' avar_mle(D)
-#' avar_me(D)
-#' avar_same(D)
-#'
-#' avar(D, type = "mle")
+#' @inherit Distributions examples
 e <- function(distr, x, type = "mle", ...) {
   type <- tolower(type)
   if (type %in% c("mle", "me", "same")) {

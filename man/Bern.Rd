@@ -2,6 +2,10 @@
 % Please edit documentation in R/02_Bern.R
 \name{Bern}
 \alias{Bern}
+\alias{dbern}
+\alias{pbern}
+\alias{qbern}
+\alias{rbern}
 \alias{d,Bern,numeric-method}
 \alias{p,Bern,numeric-method}
 \alias{qn,Bern,numeric-method}
@@ -23,9 +27,17 @@
 \alias{vbern}
 \alias{avar_mle,Bern-method}
 \alias{avar_me,Bern-method}
-\title{Bernoulli Distribution}
+\title{Bern Distribution}
 \usage{
 Bern(prob = 0.5)
+
+dbern(x, prob, log = FALSE)
+
+pbern(x, prob, lower.tail = TRUE, log.p = FALSE)
+
+qbern(x, prob, lower.tail = TRUE, log.p = FALSE)
+
+rbern(n, prob)
 
 \S4method{d}{Bern,numeric}(distr, x)
 
@@ -70,14 +82,19 @@ vbern(prob, type = "mle")
 \S4method{avar_me}{Bern}(distr)
 }
 \arguments{
-\item{prob}{numeric. The distribution parameter.}
+\item{prob}{numeric. The distribution parameter, within the (0, 1) interval.}
 
-\item{distr}{an object of class \code{Bern}.}
+\item{log, log.p}{logical. Should the logarithm of the probability be returned?}
 
-\item{x}{an object of class \code{Bern}. If the function also has a \code{distr}
-argument, \code{x} is a numeric vector, a sample of observations.}
+\item{lower.tail}{logical. If TRUE (default), probabilities are
+\eqn{P(X \leq x)}, otherwise \eqn{P(X > x)}.}
 
 \item{n}{numeric. The sample size.}
+
+\item{distr, x}{If both arguments coexist, \code{distr} is an object of class
+\code{Bern} and \code{x} is a numeric vector, the sample of observations. For the
+moment functions that only take an \code{x} argument, \code{x} is an object of class
+\code{Bern} instead.}
 
 \item{type}{character, case ignored. The estimator type (mle, me, or same).}
 
@@ -94,7 +111,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -102,8 +119,83 @@ estimator.
 }
 }
 \description{
-Bernoulli Distribution
+The Bernoulli distribution is a discrete probability distribution which takes
+the value 1 with probability \eqn{p} and the value 0 with probability
+\eqn{1 - p}, where \eqn{0 \leq p \leq 1}.
+}
+\details{
+The probability mass function (PMF) of the Bernoulli distribution is given
+by: \deqn{ f(x; p) = p^x (1 - p)^{1 - x}, \quad p \in (0, 1), \quad x \in \{0, 1\}.}
+}
+\examples{
+# -----------------------------------------------------
+# Bernoulli Distribution Example
+# -----------------------------------------------------
+
+# Create the distribution
+p <- 0.7
+D <- Bern(p)
+x <- c(0, 1)
+n <- 100
+
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
+df <- d(D) ; df(x) # df is a function itself
+
+# ------------------
+# Moments
+# ------------------
+
+mean(D) # Expectation
+median(D) # Median
+mode(D) # Mode
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
+
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llbern(x, p)
+
+ebern(x, type = "mle")
+ebern(x, type = "me")
+
+mle(D, x)
+me(D, x)
+e(D, x, type = "mle")
+
+mle("bern", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vbern(p, type = "mle")
+vbern(p, type = "me")
+
+avar_mle(D)
+avar_me(D)
+
+avar(D, type = "mle")
 }
 \seealso{
-\link{Distributions}, \link{moments}
+Functions from the \code{stats} package: \code{\link[=dbinom]{dbinom()}}, \code{\link[=pbinom]{pbinom()}}, \code{\link[=qbinom]{qbinom()}}, \code{\link[=rbinom]{rbinom()}}
 }

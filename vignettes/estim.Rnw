@@ -38,13 +38,13 @@ library("estim")
 %% - \title{} in title case
 %% - \Plaintitle{} without LaTeX markup (if any)
 %% - \Shorttitle{} with LaTeX markup (if any), used as running title
-\title{The \pkg{estim} Package: Object-Oriented Distributions and Parameter Estimation in \proglang{R}}
-\Plaintitle{The estim Package: Object-Oriented Distributions and Parameter Estimation in R}
-\Shorttitle{The \pkg{estim} R Package}
+\title{The \pkg{xbar} Package: Object-Oriented Distributions and Parameter Estimation in \proglang{R}}
+\Plaintitle{The xbar Package: Object-Oriented Distributions and Parameter Estimation in R}
+\Shorttitle{The \pkg{xbar} R Package}
 
 %% - \Abstract{} almost as usual
 \Abstract{
-The \pkg{estim} package provides a comprehensive set of features for probabilities and mathematical statistics. It extends the range of available distribution families and facilitates the computation of key parametric quantities, such as moments and information-theoretic measures. The main focus of the package is parameter estimation through maximum likelihood and moment-based methods under an intuitive and efficient framework. All package features are available both in a \pkg{stats}-like syntax for entry-level users, and in an S4 object-oriented programming system for more experienced ones. The common \code{d}, \code{p}, \code{q}, \code{r} function family of each distribution, e.g. \fct{dnorm}, \fct{pnorm}, \fct{qnorm}, \fct{rnorm}, is enriched with the \code{ll} counterpart, e.g. \fct{llnorm}, that calculates the log-likelihood, the \code{e} counterpart, e.g. \fct{enorm}, that performs parameter estimation, and the \code{v} counterpart, e.g. \fct{vnorm}, that calculates the asymptotic variance-covariance matrix of an estimator. Furthermore, an S4-class distribution system is developed, so that these functions can be used generically. Moments and other parametric functions (mean, median, mode, variance, standard deviation, skewness, kurtosis, entropy, and Fisher information) are also included in the package. New distribution families, such as Dirichlet and multivariate gamma, not included in the \pkg{stats} package are made available. Parameter estimation is performed analytically if possible, while numerical optimization of the MLE (whenever required, e.g. the beta and gamma distribution families) is performed with computational efficiency, taking advantage of the score equation system to reduce the dimensionality of the optimization problem. Finally, the package includes functions to compute and plot the asymptotic variance and common finite-sample metrics (bias, variance, and root mean square error) of estimators, allowing their study and comparison. Overall, \pkg{estim} addresses several limitations in the state of the art \proglang{R} packages in an attempt to provide some of the most fundamental methods of statistics in a unified package.
+The \pkg{xbar} package provides a comprehensive set of features for probabilities and mathematical statistics. It extends the range of available distribution families and facilitates the computation of key parametric quantities, such as moments and information-theoretic measures. The main focus of the package is parameter estimation through maximum likelihood and moment-based methods under an intuitive and efficient framework. All package features are available both in a \pkg{stats}-like syntax for entry-level users, and in an S4 object-oriented programming system for more experienced ones. The common \code{d}, \code{p}, \code{q}, \code{r} function family of each distribution, e.g. \fct{dnorm}, \fct{pnorm}, \fct{qnorm}, \fct{rnorm}, is enriched with the \code{ll} counterpart, e.g. \fct{llnorm}, that calculates the log-likelihood, the \code{e} counterpart, e.g. \fct{enorm}, that performs parameter estimation, and the \code{v} counterpart, e.g. \fct{vnorm}, that calculates the asymptotic variance-covariance matrix of an estimator. Furthermore, an S4-class distribution system is developed, so that these functions can be used generically. Moments and other parametric functions (mean, median, mode, variance, standard deviation, skewness, kurtosis, entropy, and Fisher information) are also included in the package. New distribution families, such as Dirichlet and multivariate gamma, not included in the \pkg{stats} package are made available. Parameter estimation is performed analytically if possible, while numerical optimization of the MLE (whenever required, e.g. the beta and gamma distribution families) is performed with computational efficiency, taking advantage of the score equation system to reduce the dimensionality of the optimization problem. Finally, the package includes functions to compute and plot the asymptotic variance and common finite-sample metrics (bias, variance, and root mean square error) of estimators, allowing their study and comparison. Overall, \pkg{xbar} addresses several limitations in the state of the art \proglang{R} packages in an attempt to provide some of the most fundamental methods of statistics in a unified package.
 }
 
 %% - \Keywords{} with LaTeX markup, at least one required
@@ -71,7 +71,7 @@ The \pkg{estim} package provides a comprehensive set of features for probabiliti
 
 \section[Introduction]{Introduction} \label{s:intro}
 
-Package \pkg{estim} is designed to cover a broad collection of distribution families, extending the functionalities of the \pkg{stats} package to support new families, parametric quantity computation and parameter estimation. All package features are available both in a \pkg{stats}-like syntax for entry-level users, and in an S4 object-oriented programming system for more experienced ones. This section introduces the state-of-the-art \proglang{R} packages in this direction, highlighting both the advantages and the shortcomings of each package.
+Package \pkg{xbar} is designed to cover a broad collection of distribution families, extending the functionalities of the \pkg{stats} package to support new families, parametric quantity computation and parameter estimation. All package features are available both in a \pkg{stats}-like syntax for entry-level users, and in an S4 object-oriented programming system for more experienced ones. This section introduces the state-of-the-art \proglang{R} packages in this direction, highlighting both the advantages and the shortcomings of each package.
 
 \subsection[Literature Review]{Literature Review}\label{ss:review}
 
@@ -113,7 +113,7 @@ Such implementations can be found in popular, important \proglang{R} packages, l
 
 \subsubsection[The distr package ecosystem]{The distr package ecosystem}\label{ss:distr}
 
-The \proglang{R} package most similar to \pkg{estim} is the \pkg{distr} package, which started as an S4 distribution system \citep{distr2006, distr2014}. Since then, a few other complementary packages have been developed to offer new capabilities, including \pkg{distrEx} for moment computation and \pkg{distrMod} for parameter estimation. This package ecosystem is similar to \pkg{estim} in a number of ways, therefore their differences-and the thereof necessity for a new package-are explained in detail.
+The \proglang{R} package most similar to \pkg{xbar} is the \pkg{distr} package, which started as an S4 distribution system \citep{distr2006, distr2014}. Since then, a few other complementary packages have been developed to offer new capabilities, including \pkg{distrEx} for moment computation and \pkg{distrMod} for parameter estimation. This package ecosystem is similar to \pkg{xbar} in a number of ways, therefore their differences-and the thereof necessity for a new package-are explained in detail.
 
 The \pkg{distr} framework does not strictly adhere to S4 conventions, as the \fct{d}-\fct{p}-\fct{q}-\fct{r} function family is generated \emph{alongside} the random variable object. This design can lead to bugs upon modifying an object's parameter slots, as illustrated by the following example. Given a distribution object \code{D} from the $N(10, 1)$ distribution, a user wants to alter its mean to $-10$. This can be done in two different ways, using the \pkg{distr} function \code{mean<-} and accessing the parameter slot directly. In the second way, the \fct{r} function is not affected, since it was already created along with \code{D}.
 
@@ -137,7 +137,7 @@ mean(x) # 9.962192
 \begin{leftbar}
 \textbf{Note}
 
-\pkg{estim} actually started as a short extension of the \pkg{distr} package ecosystem. The initial purpose was to code the score-adjusted moment estimators (SAME) developed by the authors in *cite* and study their properties. However, upon examining the S4 implementation, realizing the extra complexity accompanying the definition of new distribution families, and eventually falling in the aforementioned bug, it was decided that it was preferable to create a new S4 system that could accommodate the needs of the research team.
+\pkg{xbar} actually started as a short extension of the \pkg{distr} package ecosystem. The initial purpose was to code the score-adjusted moment estimators (SAME) developed by the authors in *cite* and study their properties. However, upon examining the S4 implementation, realizing the extra complexity accompanying the definition of new distribution families, and eventually falling in the aforementioned bug, it was decided that it was preferable to create a new S4 system that could accommodate the needs of the research team.
 \end{leftbar}
 
 \subsubsection[The distr6 package]{The distr6 package}\label{ss:distr6}
@@ -158,25 +158,25 @@ devtools::install_github("xoopR/distr6")
 \end{CodeInput}
 \end{CodeChunk}
 
-It is important to underline that the \code{R6} system handles memory more efficiently in comparison with S3 and S4, avoiding the creation of object copies, as detailed in *citation*. However, many \proglang{R} users are not familiarized with the R6 system, since the majority of \proglang{R} functions are implemented in the \code{S3} system. This is the main reason the S4 system was chosen for the development of \pkg{estim}. The \pkg{distr6} package indeed includes a great number of distribution families. Unfortunately, it does not cover parameter estimation, which is the main reason behind the development of the \pkg{estim} package.
+It is important to underline that the \code{R6} system handles memory more efficiently in comparison with S3 and S4, avoiding the creation of object copies, as detailed in *citation*. However, many \proglang{R} users are not familiarized with the R6 system, since the majority of \proglang{R} functions are implemented in the \code{S3} system. This is the main reason the S4 system was chosen for the development of \pkg{xbar}. The \pkg{distr6} package indeed includes a great number of distribution families. Unfortunately, it does not cover parameter estimation, which is the main reason behind the development of the \pkg{xbar} package.
 
 \subsubsection[Parameter Estimation in R packages]{Parameter Estimation in R packages}\label{ss:par-est}
 
-Parameter estimation in the iid (independent and identically distributed) framework is implemented in some \proglang{R} packages, although not in \pkg{stats}. The two most notable mentions are the the \fct{MCEstimator} function of the \pkg{distrMod} R package (part of the \pkg{distr} ecosystem), and the \fct{fitdistr} function of the \pkg{MASS} package. Other packages that can perform maximum likelihood estimation given a log-likelihood function also exists, such as \pkg{stats4} and \pkg{bbmle}. However, the purpose of \pkg{estim} is to provide readily estimates without the need for the user to manually supply optimization functions or starting points.
+Parameter estimation in the iid (independent and identically distributed) framework is implemented in some \proglang{R} packages, although not in \pkg{stats}. The two most notable mentions are the the \fct{MCEstimator} function of the \pkg{distrMod} R package (part of the \pkg{distr} ecosystem), and the \fct{fitdistr} function of the \pkg{MASS} package. Other packages that can perform maximum likelihood estimation given a log-likelihood function also exists, such as \pkg{stats4} and \pkg{bbmle}. However, the purpose of \pkg{xbar} is to provide readily estimates without the need for the user to manually supply optimization functions or starting points.
 
 \fct{MCEstimator} computes parameter estimates by minimizing a user-defined criterion, such as the negative log-likelihood for maximum likelihood estimation or distance measures for minimum distance estimation.
 
-\fct{fitdistr} supports, at the moment of writing, the MLE for 14 common univariate distributions: beta, Cauchy, $\mathcal{X}^2$, exponential, Fisher's $F$, Gamma, Geometric, log-normal, logistic, negative binomial, normal, Poisson, Student's $t$, and Weibull. MLEs that can be explicitly derived are directly coded in the function, while non-explicit ones are numerically computed using \fct{optim}. The function optimized in these distributions is the log-likelihood in its general form, i.e. the sum of the log-densities, without simplifications with respect to the sufficient statistics, or the removal of constant terms. A similar approach is adopted by the \fct{fitdist} function of the \pkg{fitdistrplus} package, which covers maximum likelihood, quantile matching, maximum goodness-of-fit (minimum distance), and moment estimation. The advantages of \pkg{estim} in this direction are extensively discussed in Subsection \ref{ss:ll}.
+\fct{fitdistr} supports, at the moment of writing, the MLE for 14 common univariate distributions: beta, Cauchy, $\mathcal{X}^2$, exponential, Fisher's $F$, Gamma, Geometric, log-normal, logistic, negative binomial, normal, Poisson, Student's $t$, and Weibull. MLEs that can be explicitly derived are directly coded in the function, while non-explicit ones are numerically computed using \fct{optim}. The function optimized in these distributions is the log-likelihood in its general form, i.e. the sum of the log-densities, without simplifications with respect to the sufficient statistics, or the removal of constant terms. A similar approach is adopted by the \fct{fitdist} function of the \pkg{fitdistrplus} package, which covers maximum likelihood, quantile matching, maximum goodness-of-fit (minimum distance), and moment estimation. The advantages of \pkg{xbar} in this direction are extensively discussed in Subsection \ref{ss:ll}.
 
 \subsection[Purpose and Innovation]{Purpose and Innovation}\label{ss:innovation}
 
-The \pkg{estim} package provides a comprehensive set of features for mathematical and asymptotic statistics. It extends the range of available distribution families and facilitates the computation of key parametric quantities, such as moments and information-theoretic measures. The main focus of the package is parameter estimation through maximum likelihood and moment-based methods under an intuitive and efficient framework. Its goal is to encapsulate the distribution richness of the \pkg{distr6} package and enhance the capabilities of the \pkg{distr} package ecosystem in a simple framework. All package features are available both in a \pkg{stats}-like syntax for the entry-level users, and in a OOP system for more experienced ones. Overall, \pkg{estim} addresses several limitations in the state of the art \proglang{R} packages in an attempt to provide the most fundamental methods of statistics in a unified package. The remainder of this paper introduces the main functionalities of the package.
+The \pkg{xbar} package provides a comprehensive set of features for mathematical and asymptotic statistics. It extends the range of available distribution families and facilitates the computation of key parametric quantities, such as moments and information-theoretic measures. The main focus of the package is parameter estimation through maximum likelihood and moment-based methods under an intuitive and efficient framework. Its goal is to encapsulate the distribution richness of the \pkg{distr6} package and enhance the capabilities of the \pkg{distr} package ecosystem in a simple framework. All package features are available both in a \pkg{stats}-like syntax for the entry-level users, and in a OOP system for more experienced ones. Overall, \pkg{xbar} addresses several limitations in the state of the art \proglang{R} packages in an attempt to provide the most fundamental methods of statistics in a unified package. The remainder of this paper introduces the main functionalities of the package.
 
 \section[The estim S4 Distribution System]{The estim S4 Distribution System} \label{s:distr}
 
 \subsection[Probability Distributions]{Probability Distributions} \label{s:dpqr}
 
-In the \pkg{estim} OOP system each distribution has a respective S4 class, all of which are subclasses of the \code{Distribution} S4 class. Table \ref{tab:overview} shows the distributions available in the package, along with their class names.
+In the \pkg{xbar} OOP system each distribution has a respective S4 class, all of which are subclasses of the \code{Distribution} S4 class. Table \ref{tab:overview} shows the distributions available in the package, along with their class names.
 
 \begin{table}[t!]
 \centering
@@ -194,7 +194,7 @@ Fisher                  & \code{Fisher}     & Student                 & \code{St
 Gamma                   & \code{Gam}        & Uniform                 & \code{Unif}       \\
 Geometric               & \code{Geom}       & Weibull                 & \code{Weib}       \\ \hline
 \end{tabular}
-\caption{\label{tab:overview} Overview of the distributions implemented in the \pkg{estim} package, along with their respective class names.}
+\caption{\label{tab:overview} Overview of the distributions implemented in the \pkg{xbar} package, along with their respective class names.}
 \end{table}
 
 Defining an object from the desired distribution class is straightforward, as seen in the following example. The parameter names, which are generally identical to the ones defined in the \pkg{stats} package, can be omitted.
@@ -231,7 +231,7 @@ The quantile function is called \fct{qn} rather than the more intuitive \fct{q}.
 
 \subsection[Parametric Quantities of Interest]{Parametric Quantities of Interest} \label{ss:moments}
 
-The \pkg{estim} package contains a set of methods that calculate the theoretical moments (expectation, variance and standard deviation, skewness, excess kurtosis) and other important parametric functions (median, mode, entropy, Fisher information) of a distribution. Alternatively, the \fct{moments} function automatically finds the available methods for a given distribution and returns all of the results in a list.
+The \pkg{xbar} package contains a set of methods that calculate the theoretical moments (expectation, variance and standard deviation, skewness, excess kurtosis) and other important parametric functions (median, mode, entropy, Fisher information) of a distribution. Alternatively, the \fct{moments} function automatically finds the available methods for a given distribution and returns all of the results in a list.
 
 \begin{CodeChunk}
 \begin{CodeInput}
@@ -270,7 +270,7 @@ In mode(Beta(1, 1)) :
 
 \section[Parameter Estimation]{Parameter Estimation} \label{s:estim}
 
-The \pkg{estim} package includes a number of options when it comes to parameter estimation. In order to illustrate these alternatives, a random sample is generated from the Beta distribution.
+The \pkg{xbar} package includes a number of options when it comes to parameter estimation. In order to illustrate these alternatives, a random sample is generated from the Beta distribution.
 
 <<simulation>>=
 set.seed(1)
@@ -282,7 +282,7 @@ x <- r(D, 100)
 
 \subsection[Estimation Methods]{Estimation Methods}\label{ss:estim-methods}
 
-The \pkg{estim} package covers three major estimation methods: maximum likelihood estimation (MLE), moment estimation (ME), and score-adjusted estimation (SAME).
+The \pkg{xbar} package covers three major estimation methods: maximum likelihood estimation (MLE), moment estimation (ME), and score-adjusted estimation (SAME).
 
 In order to perform parameter estimation, a new \fct{e<name>} member is added to the \fct{d}-\fct{p}-\fct{q}-\fct{r} family, following the standard \pkg{stats} name convention. These \fct{e<name>} functions take two arguments, the observations \code{x} (an atomic vector for univariate or a matrix for multivariate distibutions) and the \code{type} of estimation method to use (a character with possible values \code{"mle"}, \code{"me"}, and \code{"same"}.)
 
@@ -327,7 +327,7 @@ llbeta(x, shape1, shape2)
 ll(D, x)
 @
 
-In some distribution families like beta and gamma, the MLE cannot be explicitly derived and numerical optimization algorithms have to be employed. Even in ``good" scenarios, with plenty of observations and a smooth optimization function, numerical algorithms should not be viewed as panacea, and extra care should be taken to ensure a fast and right convergence if possible. Two important steps are taken in \pkg{estim} in this direction:
+In some distribution families like beta and gamma, the MLE cannot be explicitly derived and numerical optimization algorithms have to be employed. Even in ``good" scenarios, with plenty of observations and a smooth optimization function, numerical algorithms should not be viewed as panacea, and extra care should be taken to ensure a fast and right convergence if possible. Two important steps are taken in \pkg{xbar} in this direction:
 
 \begin{enumerate}
   \item The log-likelihood function is analytically calculated for each distribution family, so that constant terms with respect to the parameters can be removed, leaving only the sufficient statistics as a requirement for the function evaluation.
@@ -376,7 +376,7 @@ i.e. restricted to the score equation system solution space, both parameters can
 It would perhaps be more intuitive to use the score equations to express $\alpha$ as a function of $\beta$ or vice versa. However, the above method can be directly generalized to the Dirichlet case and reduce the initial $k$-dimensional problem to a unidimensional one. The same technique can be utilized for the gamma and multivariate gamma distribution families, also reducing the dimension to unity, from $2$ and $k+1$ respectively.
 \end{leftbar}
 
-In \pkg{estim}, the resulting function that is inserted in the optimization algorithm is called \fct{lloptim}, and is not to be confused with the actual log-likelihood function \fct{ll}. The corresponding derivative is called \fct{dlloptim}. Therefore, whenever numerical computation of the MLE is required, \pkg{estim} calls the \fct{optim} function with the following arguments:
+In \pkg{xbar}, the resulting function that is inserted in the optimization algorithm is called \fct{lloptim}, and is not to be confused with the actual log-likelihood function \fct{ll}. The corresponding derivative is called \fct{dlloptim}. Therefore, whenever numerical computation of the MLE is required, \pkg{xbar} calls the \fct{optim} function with the following arguments:
 
 \begin{itemize}
   \item \fct{lloptim}, an efficient function to be optimized,
@@ -614,7 +614,7 @@ setMethod("me",
 
 The results in this paper were obtained using
 \proglang{R}~\Sexpr{paste(R.Version()[7:8], collapse = ".")} with the
-\pkg{estim}~\Sexpr{packageVersion("estim")} package. \proglang{R} itself
+\pkg{xbar}~\Sexpr{packageVersion("estim")} package. \proglang{R} itself
 and all packages used are available from the Comprehensive
 \proglang{R} Archive Network (CRAN) at
 \url{https://CRAN.R-project.org/}.

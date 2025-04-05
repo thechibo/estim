@@ -37,7 +37,7 @@ evaluate the aforementioned functions directly.
 \item Moments: Returns a numeric, either vector or matrix depending on the moment
 and the distribution. The \code{moments()} function returns a list with all the
 available methods.
-\item Estimation: Returns a list. The estimator of the unknown parameters. Note
+\item Estimation: Returns a list, the estimators of the unknown parameters. Note
 that in distribution families like the binomial, multinomial, and negative
 binomial, the size is not returned, since it is considered known.
 \item Variance: Returns a named matrix. The asymptotic covariance matrix of the
@@ -83,25 +83,70 @@ section.
 # -----------------------------------------------------
 
 # Create the distribution
-D <- Beta(3, 5)
+a <- 3 ; b <- 5
+D <- Beta(a, b)
 x <- c(0.3, 0.8, 0.5)
-n <- 5
+n <- 100
 
-# Density function
+# ------------------
+# dpqr Functions
+# ------------------
+
+d(D, x) # density function
+p(D, x) # distribution function
+qn(D, 0.8) # inverse distribution function
+x <- r(D, n) # random generator function
+
+# alternative way to use the function
 df <- d(D) ; df(x) # df is a function itself
-d(D, x) # alternative way to use the function
 
-# Distribution function
-pf <- p(D) ; pf(x)
-p(D, x)
+# ------------------
+# Moments
+# ------------------
 
-# Inverse distribution function
-qf <- qn(D) ; qf(x)
-qn(D, x)
+mean(D) # Expectation
+var(D) # Variance
+sd(D) # Standard Deviation
+skew(D) # Skewness
+kurt(D) # Excess Kurtosis
+entro(D) # Entropy
+finf(D) # Fisher Information Matrix
 
-# Random Generator function
-rf <- r(D) ; rf(n)
-r(D, n)
+# List of all available moments
+mom <- moments(D)
+mom$mean # expectation
+
+# ------------------
+# Point Estimation
+# ------------------
+
+ll(D, x)
+llbeta(x, a, b)
+
+ebeta(x, type = "mle")
+ebeta(x, type = "me")
+ebeta(x, type = "same")
+
+mle(D, x)
+me(D, x)
+same(D, x)
+e(D, x, type = "mle")
+
+mle("beta", x) # the distr argument can be a character
+
+# ------------------
+# As. Variance
+# ------------------
+
+vbeta(a, b, type = "mle")
+vbeta(a, b, type = "me")
+vbeta(a, b, type = "same")
+
+avar_mle(D)
+avar_me(D)
+avar_same(D)
+
+avar(D, type = "mle")
 }
 \seealso{
 \link{moments}, \link{loglikelihood}, \link{estimation}, \link{Bern},
