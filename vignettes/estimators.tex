@@ -1,7 +1,7 @@
 %%\documentclass[article]{jss}
 \documentclass[nojss]{jss}
 
-%\VignetteIndexEntry{Getting Started with estim}
+%\VignetteIndexEntry{Getting Started with estimators}
 
 %% -- LaTeX packages and custom commands ---------------------------------------
 
@@ -168,7 +168,7 @@ Parameter estimation in the iid (independent and identically distributed) framew
 
 The \pkg{xbar} package provides a comprehensive set of features for mathematical and asymptotic statistics. It extends the range of available distribution families and facilitates the computation of key parametric quantities, such as moments and information-theoretic measures. The main focus of the package is parameter estimation through maximum likelihood and moment-based methods under an intuitive and efficient framework. Its goal is to encapsulate the distribution richness of the \pkg{distr6} package and enhance the capabilities of the \pkg{distr} package ecosystem in a simple framework. All package features are available both in a \pkg{stats}-like syntax for the entry-level users, and in a OOP system for more experienced ones. Overall, \pkg{xbar} addresses several limitations in the state of the art \proglang{R} packages in an attempt to provide the most fundamental methods of statistics in a unified package. The remainder of this paper introduces the main functionalities of the package.
 
-\section[The estim S4 Distribution System]{The estim S4 Distribution System} \label{s:distr}
+\section[The estimators S4 Distribution System]{The estimators S4 Distribution System} \label{s:distr}
 
 \subsection[Probability Distributions]{Probability Distributions} \label{s:dpqr}
 
@@ -483,7 +483,7 @@ R> class(x)
 \begin{Soutput}
 [1] "SmallMetrics"
 attr(,"package")
-[1] "estim"
+[1] "estimators"
 \end{Soutput}
 \begin{Sinput}
 R> head(x@df)
@@ -519,7 +519,7 @@ plot(x)
 
 \begin{figure}[t!]
 \centering
-\includegraphics{estim-vis_small_beta}
+\includegraphics{estimators-vis_small_beta}
   \caption{\label{fig:vis-small-beta} Small-sample metrics comparison for MLE, ME, and SAME of the beta distribution $\alpha$ parameter.}
 \end{figure}
 
@@ -541,7 +541,7 @@ R> class(x)
 \begin{Soutput}
 [1] "SmallMetrics"
 attr(,"package")
-[1] "estim"
+[1] "estimators"
 \end{Soutput}
 \begin{Sinput}
 R> head(x@df)
@@ -577,7 +577,7 @@ R> class(x)
 \begin{Soutput}
 [1] "LargeMetrics"
 attr(,"package")
-[1] "estim"
+[1] "estimators"
 \end{Soutput}
 \begin{Sinput}
 R> head(x@df)
@@ -595,7 +595,7 @@ R> head(x@df)
 
 \begin{figure}[t!]
 \centering
-\includegraphics{estim-vis_large_beta}
+\includegraphics{estimators-vis_large_beta}
   \caption{\label{fig:vis-large-beta} Large-sample metrics comparison for MLE, ME, and SAME of the beta distribution $\alpha$ parameter.}
 \end{figure}
 
@@ -699,21 +699,11 @@ setMethod("me",
 \end{CodeInput}
 \end{CodeChunk}
 
-\section[Discussion]{Discussion}
-
-\subsection[Advantages]{Advantages}
-
-\subsection[Limitations]{Limitations}
-
-\subsection[Perspectives]{Perspectives}
-
-\section[Conclusion]{Conclusion}
-
 \section*{Computational details}
 
 The results in this paper were obtained using
-\proglang{R}~4.4.1 with the
-\pkg{xbar}~0.11.2 package. \proglang{R} itself
+\proglang{R}~4.4.3 with the
+\pkg{xbar}~0.11.3 package. \proglang{R} itself
 and all packages used are available from the Comprehensive
 \proglang{R} Archive Network (CRAN) at
 \url{https://CRAN.R-project.org/}.

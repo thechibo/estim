@@ -36,7 +36,7 @@ get_moment_methods <- function(x) {
 
   # Get class methods
   df_meth <- attr(methods(class = class(x)), "info")
-  meth <- df_meth[df_meth$from == "estim", ]$generic
+  meth <- df_meth[df_meth$from == "estimators", ]$generic
 
   mom[mom %in% meth]
 

@@ -1,26 +1,26 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# estim <img src=man/figures/logo.png align="right" height="139" alt="logo"/>
+# estimators <img src=man/figures/logo.png align="right" height="139" alt="logo"/>
 
 <!-- badges: start -->
 
 [![CRAN
-status](https://www.r-pkg.org/badges/version/estim)](https://CRAN.R-project.org/package=estim)
+status](https://www.r-pkg.org/badges/version/estimators)](https://CRAN.R-project.org/package=estimators)
 [![R-CMD-check](https://github.com/thechibo/estim/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/thechibo/estim/actions/workflows/R-CMD-check.yaml)
 [![Codecov test
 coverage](https://codecov.io/gh/thechibo/estim/branch/main/graph/badge.svg)](https://app.codecov.io/gh/thechibo/estim?branch=main)
 <!-- badges: end -->
 
 **Notice**: This package is no longer maintained and will be archived on
-the 1st of May 2025.  
+the 1st of June 2025.  
 Please switch to the new package:
 [`joker`](https://github.com/thechibo/joker).
 
 ## Introduction
 
-The `estim` R package develops an S4 distribution system and performs
-parameter estimation in common distribution families, making
+The `estimators` R package develops an S4 distribution system and
+performs parameter estimation in common distribution families, making
 well-established and state-of-the-art methods more accessible.
 
 ### Key Features
@@ -53,14 +53,14 @@ well-established and state-of-the-art methods more accessible.
 
 ## Installation
 
-You can install the release version of `estim` from CRAN by running the
-following line of code:
+You can install the release version of `estimators` from CRAN by running
+the following line of code:
 
 ``` r
- install.packages("estim")
+ install.packages("estimators")
 ```
 
-You can install the development version of `estim` from github by
+You can install the development version of `estimators` from github by
 running the following line of code:
 
 ``` r
@@ -73,11 +73,12 @@ repository](https://github.com/thechibo/estim "estim Github repository").
 ## Documentation
 
 Detailed documentation, along with reproducible examples, can be found
-in the package vignette `vignette(topic = "estim", package = "estim")`.
+in the package vignette
+`vignette(topic = "estimators", package = "estimators")`.
 
 ## Team
 
-The `estim` package is developed in the [Mathematics
+The `estimators` package is developed in the [Mathematics
 Department](https://en.math.uoa.gr/ "Mathematics Department Homepage")
 of the [University of
 Athens](https://en.uoa.gr/ "University of Athens Homepage"). The package

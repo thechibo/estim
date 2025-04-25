@@ -1,7 +1,7 @@
 %%\documentclass[article]{jss}
 \documentclass[nojss]{jss}
 
-%\VignetteIndexEntry{Getting Started with estim}
+%\VignetteIndexEntry{Getting Started with estimators}
 
 %% -- LaTeX packages and custom commands ---------------------------------------
 
@@ -22,7 +22,7 @@
 \SweaveOpts{engine=R, eps=FALSE, keep.source = TRUE}
 <<preliminaries, echo=FALSE, results=hide>>=
 options(prompt = "R> ", continue = "+  ", width = 70, useFancyQuotes = FALSE)
-library("estim")
+library("estimators")
 @
 
 %% -- Article metainformation (author, title, ...) -----------------------------
@@ -172,7 +172,7 @@ Parameter estimation in the iid (independent and identically distributed) framew
 
 The \pkg{xbar} package provides a comprehensive set of features for mathematical and asymptotic statistics. It extends the range of available distribution families and facilitates the computation of key parametric quantities, such as moments and information-theoretic measures. The main focus of the package is parameter estimation through maximum likelihood and moment-based methods under an intuitive and efficient framework. Its goal is to encapsulate the distribution richness of the \pkg{distr6} package and enhance the capabilities of the \pkg{distr} package ecosystem in a simple framework. All package features are available both in a \pkg{stats}-like syntax for the entry-level users, and in a OOP system for more experienced ones. Overall, \pkg{xbar} addresses several limitations in the state of the art \proglang{R} packages in an attempt to provide the most fundamental methods of statistics in a unified package. The remainder of this paper introduces the main functionalities of the package.
 
-\section[The estim S4 Distribution System]{The estim S4 Distribution System} \label{s:distr}
+\section[The estimators S4 Distribution System]{The estimators S4 Distribution System} \label{s:distr}
 
 \subsection[Probability Distributions]{Probability Distributions} \label{s:dpqr}
 
@@ -600,21 +600,11 @@ setMethod("me",
 \end{CodeInput}
 \end{CodeChunk}
 
-\section[Discussion]{Discussion}
-
-\subsection[Advantages]{Advantages}
-
-\subsection[Limitations]{Limitations}
-
-\subsection[Perspectives]{Perspectives}
-
-\section[Conclusion]{Conclusion}
-
 \section*{Computational details}
 
 The results in this paper were obtained using
 \proglang{R}~\Sexpr{paste(R.Version()[7:8], collapse = ".")} with the
-\pkg{xbar}~\Sexpr{packageVersion("estim")} package. \proglang{R} itself
+\pkg{xbar}~\Sexpr{packageVersion("estimators")} package. \proglang{R} itself
 and all packages used are available from the Comprehensive
 \proglang{R} Archive Network (CRAN) at
 \url{https://CRAN.R-project.org/}.

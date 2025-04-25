@@ -1,5 +1,5 @@
 #' @keywords internal
-#' @aliases estim-package
+#' @aliases estimators-package
 "_PACKAGE"
 
 ## usethis namespace: start

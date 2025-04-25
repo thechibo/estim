@@ -1,18 +1,18 @@
-# estim 0.11.3
+# estimators 0.11.3
 - This package is now deprecated and will be archived.
 - Please migrate to [joker](https://github.com/thechibo/joker)
 
-# estim 0.11.2
+# estimators 0.11.2
 
 * Added distribution-specific documentation.
 * Removed pkgdown due to incompatibility with Sweave.
 
-# estim 0.11.1
+# estimators 0.11.1
 
 * Added pkgdown check.
 * Attempted to fix compact-vignettes bug.
 
-# estim 0.11.0
+# estimators 0.11.0
 
 * Changed plot_small_metrics, plot_large_metrics to plot
 * Updated documentation pages.
@@ -22,27 +22,27 @@
 * Changed estimators to be lists instead of atomic vectors.
 * Created a more accurate idigamma() function.
 
-# estim 0.10.3
+# estimators 0.10.3
 
 * Added new JSS vignette.
 
-# estim 0.10.2
+# estimators 0.10.2
 
 * Tried to update test-coverage.
 * Fixed bug in Nbinom test.
 
-# estim 0.10.1
+# estimators 0.10.1
 
 * Removed false documentation file that caused R CMD check to fail.
 
-# estim 0.10.0
+# estimators 0.10.0
 
 * Added tests for all distributions.
 * Added many functions that were not available for several distributions.
 * Corrected multiple bugs.
 * Removed Ncchisq, Ncfisher. They will be added in later versions.
 
-# estim 0.9.0
+# estimators 0.9.0
 
 * Changed package name to estim.
 * Fixed Fisher df bug.
@@ -87,7 +87,7 @@
 
 # estimators 0.7.0
 
-* Created the estim and avar functions that cover all distributions and estimation methods.
+* Created the estimators and avar functions that cover all distributions and estimation methods.
 * Added ll<distrname> functions that calculate the log-likelihood to provide support in the default R style.
 * Added e<distrname> functions that perform parameter estimation to provide support in the default R style.
 * Added v<distrname> functions that calculate the estimator asymptotic variance to provide support in the default R style.
