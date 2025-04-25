@@ -1,5 +1,4 @@
-── R CMD check results ────────────── estimators 0.11.3 ────
-Duration: 9m 36.6s
+── R CMD check results ────────────── estimators 0.12.0 ────
+Duration: 9m 37.1s
 
-❯ checking for future file timestamps ... NOTE
-  unable to verify current time
+0 errors ✔ | 0 warnings ✔ | 0 notes ✔

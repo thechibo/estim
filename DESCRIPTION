@@ -1,6 +1,6 @@
 Package: estimators
 Title: Parameter Estimation
-Version: 0.11.3
+Version: 0.12.0
 Authors@R: c(
     person("Ioannis", "Oikonomidis", , "goikon@math.uoa.gr",
            role = c("aut", "cre"),
